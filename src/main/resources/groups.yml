@@ -1,0 +1,11 @@
+Survival:
+  worlds:
+    - world
+    - world_nether
+    - world_the_end
+
+Skyblock:
+  worlds:
+    - bskyblock_world
+    - bskyblock_world_nether
+    - bskyblock_world_the_end
