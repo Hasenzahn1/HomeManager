@@ -1,0 +1,11 @@
+prefix: "&7[&bHomeManager&7] "
+
+commands:
+  noPlayer: "&cYou have to be a player to use this command"
+  invalidCommand: "&cInvalid command please use &6%command%"
+  unknownPlayer: "&cUnknown player with name %name%"
+  noPermission: "&cYou don't have permission to use this command"
+  noPermissionOther: "&cYou don't have permission to use this command for other players"
+
+  sethome:
+    invalidHomeName: "&cThis home name is not allowed"
