@@ -1,39 +1,40 @@
 package me.hasenzahn1.homemanager;
 
-import me.hasenzahn1.homemanager.config.GroupConfig;
-import me.hasenzahn1.homemanager.group.WorldGroup;
-import org.bukkit.World;
+import me.hasenzahn1.homemanager.db.HomesDatabase;
+import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.util.HashMap;
 
 public final class HomeManager extends JavaPlugin {
 
+    public static String PREFIX = "[HomeManager]";
     private static HomeManager instance;
 
-    private GroupConfig groupConfig;
-    private HashMap<String, WorldGroup> worldGroupsByName;
-    private HashMap<World, WorldGroup> worldGroupsByWorld;
+    private WorldGroupManager worldGroupManager;
+    private HomesDatabase database;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        //Load Groups from Config
-        new File(getDataFolder(), "groups.yml").delete();
-        groupConfig = new GroupConfig();
-        worldGroupsByName = groupConfig.loadWorldGroups();
+        //Initialize Language
+        Language.initialize();
+        PREFIX = Language.getLang("prefix");
 
-        //Map worlds to their respective worldGroup
-        worldGroupsByWorld = new HashMap<>();
-        for (WorldGroup worldGroup : worldGroupsByName.values()) {
-            for(World world : worldGroup.getWorlds()) {
-                worldGroupsByWorld.put(world, worldGroup);
-            }
-        }
+        //Load groups form config
+        worldGroupManager = new WorldGroupManager();
+
+        //Create and initialize database
+        database = new HomesDatabase();
+        database.init();
     }
 
+    public HomesDatabase getDatabase() {
+        return database;
+    }
+
+    public WorldGroupManager getWorldGroupManager() {
+        return worldGroupManager;
+    }
 
     @Override
     public void onDisable() {
