@@ -44,7 +44,7 @@ public abstract class Database {
         close(connection);
     }
 
-    protected Connection getSQLConnection() {
+    public Connection getSQLConnection() {
         File dataFolder = new File(plugin.getDataFolder(), fileName + ".db");
         if (!dataFolder.exists()) {
             try {
@@ -89,8 +89,8 @@ public abstract class Database {
         }
     }
 
-    public void closeAllOpenedConnections(){
-        for(int i = openedConnections.size() - 1; i >= 0; i--){
+    public void closeAllOpenedConnections() {
+        for (int i = openedConnections.size() - 1; i >= 0; i--) {
             close(openedConnections.get(i));
         }
     }
