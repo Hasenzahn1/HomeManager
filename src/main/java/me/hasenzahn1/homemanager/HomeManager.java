@@ -1,5 +1,6 @@
 package me.hasenzahn1.homemanager;
 
+import me.hasenzahn1.homemanager.commands.SetHomeCommand;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,6 +27,9 @@ public final class HomeManager extends JavaPlugin {
         //Create and initialize database
         database = new HomesDatabase();
         database.init();
+
+        //Initialize commands
+        getCommand("sethome").setExecutor(new SetHomeCommand());
     }
 
     public HomesDatabase getDatabase() {

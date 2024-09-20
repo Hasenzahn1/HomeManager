@@ -3,6 +3,10 @@ Survival:
     - world
     - world_nether
     - world_the_end
+  sethome:
+    requiresExperience: true
+    experienceForEveryHome: false
+    experienceFormula: 2*amount+100
 
 Skyblock:
   worlds:

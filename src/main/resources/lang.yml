@@ -9,3 +9,7 @@ commands:
 
   sethome:
     invalidHomeName: "&cThis home name is not allowed"
+    maxHomes: "&cYou have reached the maximum number of homes"
+    duplicateHome: "&cYou already have a home with this name"
+    noExp: "&cYou don't have the required levels to set a home (%levels%)"
+    success: "&cSuccessfully set new home point"

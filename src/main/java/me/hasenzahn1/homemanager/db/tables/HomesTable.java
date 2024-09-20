@@ -1,5 +1,6 @@
 package me.hasenzahn1.homemanager.db.tables;
 
+import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
 import org.bukkit.Bukkit;
@@ -21,6 +22,7 @@ public class HomesTable extends Table {
 
     @Override
     public String getCreationString() {
+        System.out.println("Create homes");
         return "CREATE TABLE IF NOT EXISTS homes(" +
                 "uuid VARCHAR(36) NOT NULL, " +
                 "name VARCHAR(30) NOT NULL," +
@@ -29,13 +31,14 @@ public class HomesTable extends Table {
                 "y REAL NOT NULL," +
                 "z REAL NOT NULL," +
                 "yaw REAL NOT NULL," +
-                "pitch REAL NOT NULL" +
+                "pitch REAL NOT NULL," +
+                "worldgroup VARCHAR(30) NOT NULL" +
                 ");";
     }
 
-    public HashMap<String, Location> getHomesFromPlayer(Connection con, UUID uuid) {
+    public HashMap<String, Location> getHomesFromPlayer(Connection con, UUID uuid, String group) {
         HashMap<String, Location> homes = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = '" + uuid + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = '" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 String name = result.getString("name");
@@ -56,9 +59,9 @@ public class HomesTable extends Table {
         return homes;
     }
 
-    public int getHomeCountFromPlayer(Connection con, UUID player) {
+    public int getHomeCountFromPlayer(Connection con, UUID player, String group) {
         int count = 0;
-        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid='" + player + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid='" + player + "' AND worldgroup LIKE '" + group + "'")) {
 
             ResultSet set = statement.executeQuery();
             if (set.next()) {
@@ -72,7 +75,7 @@ public class HomesTable extends Table {
     }
 
     public void saveHomeToDatabase(Connection con, UUID player, String name, Location location) {
-        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
             statement.setString(1, player.toString());
             statement.setString(2, name);
             statement.setString(3, location.getWorld().getName());
@@ -81,6 +84,7 @@ public class HomesTable extends Table {
             statement.setDouble(6, location.getZ());
             statement.setFloat(7, location.getYaw());
             statement.setFloat(8, location.getPitch());
+            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().groupsByWorld().get(location.getWorld()).getName());
 
             statement.executeUpdate();
 

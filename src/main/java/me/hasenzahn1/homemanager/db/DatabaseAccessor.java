@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.db;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
+import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
 import org.bukkit.Location;
 
@@ -24,21 +25,31 @@ public class DatabaseAccessor {
         return new DatabaseAccessor(HomeManager.getInstance().getDatabase());
     }
 
-    public HashMap<String, Location> getHomesFromPlayer(UUID uuid) {
+    public HashMap<String, Location> getHomesFromPlayer(UUID uuid, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
-        return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid);
+        return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid, group);
     }
 
-    public int getHomeCountFromPlayer(UUID uuid) {
+    public int getHomeCountFromPlayer(UUID uuid, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
-        return database.getTable(HomesTable.class).getHomeCountFromPlayer(connection, uuid);
+        return database.getTable(HomesTable.class).getHomeCountFromPlayer(connection, uuid, group);
     }
 
     public void saveHomeToDatabase(UUID player, String name, Location location) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).saveHomeToDatabase(connection, player, name, location);
     }
-    
+
+    public int getFreeHomes(UUID player, String group) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(GroupInfosTable.class).getFreeHomes(connection, player, group);
+    }
+
+    public void saveFreeHomes(UUID player, String group, int maxSetHomes) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(GroupInfosTable.class).saveFreeHomes(connection, player, group, maxSetHomes);
+    }
+
     public void destroy() {
         database.close(connection);
         connection = null;
