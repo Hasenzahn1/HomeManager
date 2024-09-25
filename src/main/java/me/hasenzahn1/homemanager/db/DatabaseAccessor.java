@@ -50,6 +50,11 @@ public class DatabaseAccessor {
         database.getTable(GroupInfosTable.class).saveFreeHomes(connection, player, group, maxSetHomes);
     }
 
+    public void deleteHomesFromTheDatabase(UUID player, String homeName, String group) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(HomesTable.class).removeHomeFromDatabase(connection, player, homeName, group);
+    }
+
     public void destroy() {
         database.close(connection);
         connection = null;

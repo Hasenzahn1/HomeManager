@@ -92,4 +92,13 @@ public class HomesTable extends Table {
             e.printStackTrace();
         }
     }
+
+
+    public void removeHomeFromDatabase(Connection con, UUID player, String homename, String group) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + homename + "' AND worldgroup LIKE '" + group + "'")) {
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

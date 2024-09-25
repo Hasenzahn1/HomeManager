@@ -21,27 +21,27 @@ import java.util.regex.Pattern;
 
 
 /**
- * Execution Steps:
- * 1) Check if commandSender is a player
- * 2) Get player, his location and the group he is currently in
- * 3) Check if the player has the `homemanager.command.sethome.<group>` permission
- * 4) Check for more than 2 args
+ * Execution Steps:<br>
+ * 1) Check if commandSender is a player<br>
+ * 2) Get player, his location and the group he is currently in<br>
+ * 3) Check if the player has the `homemanager.command.sethome.<group>` permission<br>
+ * 4) Check for more than 2 args<br>
  * 5) Gather args. If only one arg is set. This is the home name, so the receiver is the player sending and the homename is arg[0]
- * If there are two args the player is attempting to set a home for another player so arg[0] is the receiver and arg[1] is the homename
- * 6) Convert receiver and giver to uuid and check if they are the same
- * 7) If the receiving players uuid is null (player does not exist) an error is raised
- * 8) If you are not setting the home for yourself, but you don't have the permission `homemanager.command.sethome.other.<group>` an error is raised
- * 9) Get the Receiving players homes from the db, and his maxhomes from the permission
- * 10) If the receiver has reached his maxhomes an error is raised
- * 11) Check if the homename is valid for the db
- * 12) Check if the receiver already has a home with this name
- * 13) Compute if the sender has to pay experience. (He is in survival and executes the command for himself)
- * 14) If he does not have to pay experience, or the group has requiresExperience set to false, => save home to the database
- * 15) Get the Free homes from the database
- * 16) If the player has a free home use it and save the home
- * 17) Calculate the required Experience for this home purchase
- * 18) If the player does not have enough experience send an error
- * 19) Reduce the experience and Save the home
+ * If there are two args the player is attempting to set a home for another player so arg[0] is the receiver and arg[1] is the homename<br>
+ * 6) Convert receiver and giver to uuid and check if they are the same<br>
+ * 7) If the receiving players uuid is null (player does not exist) an error is raised<br>
+ * 8) If you are not setting the home for yourself, but you don't have the permission `homemanager.command.sethome.other.<group>` an error is raised<br>
+ * 9) Get the Receiving players homes from the db, and his maxhomes from the permission<br>
+ * 10) If the receiver has reached his maxhomes an error is raised<br>
+ * 11) Check if the homename is valid for the db<br>
+ * 12) Check if the receiver already has a home with this name<br>
+ * 13) Compute if the sender has to pay experience. (He is in survival and executes the command for himself)<br>
+ * 14) If he does not have to pay experience, or the group has requiresExperience set to false, => save home to the database<br>
+ * 15) Get the Free homes from the database<br>
+ * 16) If the player has a free home use it and save the home<br>
+ * 17) Calculate the required Experience for this home purchase<br>
+ * 18) If the player does not have enough experience send an error<br>
+ * 19) Reduce the experience and Save the home<br>
  */
 public class SetHomeCommand implements CommandExecutor {
 
@@ -68,7 +68,7 @@ public class SetHomeCommand implements CommandExecutor {
         }
 
         //Check Command Arg Range
-        if (args.length > 2) {
+        if (args.length > 2 || args.length == 0) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/sethome (player) <name>")));
             return true;
         }
@@ -130,14 +130,15 @@ public class SetHomeCommand implements CommandExecutor {
         //TODO: Gamemode check to config
         boolean hasToPayExperience = isSelf && !playerGiveHome.getGameMode().isInvulnerable();
 
+        //Get FreeHomes From db
+        int freeHomes = dbSession.getFreeHomes(playerReceiveHomeUUID, group.getName());
+
         //No Experience Required
         if (!group.isSetHomeRequiresExperience() || !hasToPayExperience) {
+            dbSession.saveFreeHomes(playerReceiveHomeUUID, group.getName(), Math.max(0, freeHomes - 1));
             saveHomeToDatabaseAndDestroy(dbSession, playerReceiveHomeUUID, homeName, location);
             return true;
         }
-
-        //Get FreeHomes From db
-        int freeHomes = dbSession.getFreeHomes(playerReceiveHomeUUID, group.getName());
 
         //If the player has free homes use it.
         if (freeHomes > 0) {

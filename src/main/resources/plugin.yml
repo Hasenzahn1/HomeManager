@@ -9,3 +9,9 @@ commands:
   sethome:
     description: Sets a home at your position
     usage: /sethome (player) name
+  delhome:
+    description: Deletes the provided home
+    usage: /delhome (player) name (-g/-group <groupname>)
+  home:
+    description: Teleports to the specified home
+    usage: /home (player) name (-g/-group <groupname>)

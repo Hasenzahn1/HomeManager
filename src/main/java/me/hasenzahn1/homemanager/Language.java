@@ -9,11 +9,19 @@ public class Language {
     public static final String UNKNOWN_PLAYER = "commands.unknownPlayer";
     public static final String NO_PERMISSION = "commands.noPermission";
     public static final String NO_PERMISSION_OTHER = "commands.noPermissionOther";
+    public static final String UNKNOWN_GROUP = "commands.unknownGroup";
+    public static final String UNKNOWN_HOME = "commands.unknownHome";
+
     public static final String SET_HOME_INVALID_HOME_NAME = "commands.sethome.invalidHomeName";
     public static final String SET_HOME_MAX_HOMES = "commands.sethome.maxHomes";
     public static final String SET_HOME_DUPLICATE_HOME = "commands.sethome.duplicateHome";
     public static final String SET_HOME_NO_EXP = "commands.sethome.noExp";
     public static final String SET_HOME_SUCCESS = "commands.sethome.success";
+
+    public static final String DEL_HOME_SUCCESS = "commands.delhome.success";
+
+    public static final String HOME_SUCCESS = "commands.home.success";
+
 
     private static LanguageConfig languageConfig;
 
