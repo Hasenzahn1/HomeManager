@@ -15,3 +15,6 @@ commands:
   home:
     description: Teleports to the specified home
     usage: /home (player) name (-g/-group <groupname>)
+  homes:
+    description: Displays the homes of the player.
+    usage: /homes (player) (-g/-group <groupname>)

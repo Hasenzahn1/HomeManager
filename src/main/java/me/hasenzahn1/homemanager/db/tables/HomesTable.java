@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.db.tables;
 
 import me.hasenzahn1.homemanager.HomeManager;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
 import org.bukkit.Bukkit;
@@ -84,21 +85,25 @@ public class HomesTable extends Table {
             statement.setDouble(6, location.getZ());
             statement.setFloat(7, location.getYaw());
             statement.setFloat(8, location.getPitch());
-            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().groupsByWorld().get(location.getWorld()).getName());
+            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().getWorldGroup(location.getWorld()).getName());
 
             statement.executeUpdate();
+            Logger.DEBUG.log("Added home of player " + player + " to the database with name " + name);
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error saving home to database for player " + player + " with name " + name + " at " + location);
+            Logger.ERROR.log(e.getMessage());
         }
     }
 
 
-    public void removeHomeFromDatabase(Connection con, UUID player, String homename, String group) {
-        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + homename + "' AND worldgroup LIKE '" + group + "'")) {
+    public void removeHomeFromDatabase(Connection con, UUID player, String name, String group) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + name + "' AND worldgroup LIKE '" + group + "'")) {
             statement.executeUpdate();
+            Logger.DEBUG.log("Successfully deleted home of player " + player + " to the database with name " + name + " in group " + group);
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error deleting home from database for player " + player + " with name " + name + " in group " + group);
+            Logger.ERROR.log(e.getMessage());
         }
     }
 }

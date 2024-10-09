@@ -54,12 +54,12 @@ public class PermissionUtils {
         List<String> groups = new ArrayList<>();
         for (PermissionAttachmentInfo info : sender.getEffectivePermissions()) {
             if (info.getPermission().equalsIgnoreCase(permissionStub + ".*")) {
-                return List.copyOf(HomeManager.getInstance().getWorldGroupManager().groupsByName().keySet());
+                return HomeManager.getInstance().getWorldGroupManager().getWorldGroupNames();
             }
 
             if (info.getPermission().startsWith(permissionStub + ".")) {
                 String groupName = info.getPermission().replace(permissionStub + ".", "");
-                if (HomeManager.getInstance().getWorldGroupManager().groupsByName().containsKey(groupName))
+                if (HomeManager.getInstance().getWorldGroupManager().groupExists(groupName))
                     groups.add(groupName);
             }
         }

@@ -1,11 +1,13 @@
 package me.hasenzahn1.homemanager;
 
+import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.config.LanguageConfig;
 
 public class Language {
 
     public static final String NO_PLAYER = "commands.noPlayer";
     public static final String INVALID_COMMAND = "commands.invalidCommand";
+    public static final String INVALID_FLAG = "commands.invalidFlag";
     public static final String UNKNOWN_PLAYER = "commands.unknownPlayer";
     public static final String NO_PERMISSION = "commands.noPermission";
     public static final String NO_PERMISSION_OTHER = "commands.noPermissionOther";
@@ -21,12 +23,14 @@ public class Language {
     public static final String DEL_HOME_SUCCESS = "commands.delhome.success";
 
     public static final String HOME_SUCCESS = "commands.home.success";
+    public static final String HOME_LIST_HEADER = "commands.homeList.header";
 
 
     private static LanguageConfig languageConfig;
 
     public static void initialize() {
-        HomeManager.getInstance().saveResource("lang.yml", true);
+        Logger.DEBUG.log("Initializing language system");
+        HomeManager.getInstance().saveResource("lang.yml", DefaultConfig.DEBUG_REPLACE_CONFIG);
         languageConfig = new LanguageConfig();
     }
 
