@@ -55,7 +55,8 @@ public class HomesTable extends Table {
                 homes.put(name, location);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error retrieving homes from database for player " + uuid + " in group " + group);
+            Logger.ERROR.log(e.getMessage());
         }
         return homes;
     }
@@ -70,7 +71,8 @@ public class HomesTable extends Table {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error retrieving home count for player " + player + " in group " + group);
+            Logger.ERROR.log(e.getMessage());
         }
         return count;
     }

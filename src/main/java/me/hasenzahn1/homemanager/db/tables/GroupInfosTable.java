@@ -1,5 +1,6 @@
 package me.hasenzahn1.homemanager.db.tables;
 
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
 
@@ -31,8 +32,10 @@ public class GroupInfosTable extends Table {
             statement.setInt(3, maxHomes);
 
             statement.executeUpdate();
+            Logger.DEBUG.log("Successfully saved free home to database for player " + uuid + " in group " + group + " with homes " + maxHomes);
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error saving free homes to database for player " + uuid + " in group " + group + " with homes " + maxHomes);
+            Logger.ERROR.log(e.getMessage());
         }
     }
 
@@ -43,7 +46,8 @@ public class GroupInfosTable extends Table {
                 return rs.getInt(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.ERROR.log("Error retrieving free homes from database for player " + uuid + " in group " + group);
+            Logger.ERROR.log(e.getMessage());
         }
         return 0;
     }
