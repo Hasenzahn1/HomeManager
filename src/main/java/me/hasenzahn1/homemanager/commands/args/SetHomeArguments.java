@@ -7,11 +7,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class SetHomeArguments {
-
-    private static final Pattern HOME_NAME_MATCHER = Pattern.compile("^[A-Za-z0-9ß#+_-]{1,16}$"); //TODO: LOAD FROM CONFIG
 
     private final String playerReceiveHome;
     private final String homeName;
@@ -50,10 +47,6 @@ public class SetHomeArguments {
 
     public boolean isSelf() {
         return cmdSenderUUID.equals(playerReceiveHomeUUID);
-    }
-
-    public boolean isValidHomeName() {
-        return HOME_NAME_MATCHER.matcher(homeName).matches();
     }
 
     public boolean senderHasValidOtherPermission() {

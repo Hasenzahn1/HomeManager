@@ -71,7 +71,7 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Check Command Arg Range
         if (!arguments.isValidArguments()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/sethome (player) <name>")));
+            Language.sendInvalidArgumentMessage(playerGiveHome, command, true, arguments.getWorldGroup());
             return true;
         }
 
@@ -95,13 +95,6 @@ public class SetHomeCommand implements CommandExecutor {
         //Check is player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.size() >= maxHomes) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_MAX_HOMES)));
-            dbSession.destroy();
-            return true;
-        }
-
-        //Check is home name is valid for db
-        if (!arguments.isValidHomeName()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_INVALID_HOME_NAME)));
             dbSession.destroy();
             return true;
         }

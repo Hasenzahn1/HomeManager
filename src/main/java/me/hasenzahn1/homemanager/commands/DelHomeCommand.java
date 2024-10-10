@@ -30,20 +30,20 @@ public class DelHomeCommand implements CommandExecutor {
         HomeAndDelHomeArguments arguments = HomeAndDelHomeArguments.parse(((Player) commandSender), args);
 
         //Check for base delhome permission
-        if (!commandSender.hasPermission("homemanager.delhome." + arguments.getSendersCurrentWorldGroup().getName())) {
+        if (!commandSender.hasPermission("homemanager.commands.delhome." + arguments.getSendersCurrentWorldGroup().getName())) {
             commandSender.sendMessage(Component.text(Language.getLang(Language.NO_PERMISSION)));
             return true;
         }
 
         //Check if the command is valid
         if (!arguments.isValidArguments()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/delhome (player) <name> (-group group)")));
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
             return true;
         }
 
         //Check if groupFlagArg is incorrect
         if (!arguments.isGroupFlagValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_FLAG, "flag", arguments.getGroupFlag(), "command", "/delhome (player) <name> (-group group)")));
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
             return true;
         }
 

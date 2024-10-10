@@ -2,12 +2,13 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.commands.args.ListHomesArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
-import me.hasenzahn1.homemanager.group.WorldGroup;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 public class HomeListCommand implements CommandExecutor {
 
@@ -29,86 +29,57 @@ public class HomeListCommand implements CommandExecutor {
             return true;
         }
 
-        WorldGroup playerCurrentGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(((Player) commandSender).getWorld());
+        ListHomesArguments arguments = ListHomesArguments.parse(((Player) commandSender), args);
 
         //Check for base delhome permission
-        if (!commandSender.hasPermission("homemanager.homelist." + playerCurrentGroup.getName())) {
+        if (!commandSender.hasPermission("homemanager.commands.homelist." + arguments.getSendersCurrentWorldGroup().getName())) {
             commandSender.sendMessage(Component.text(Language.getLang(Language.NO_PERMISSION)));
             return true;
         }
 
-        //Gather data from arguments
-        Player playerExecutingCommand = (Player) commandSender;
-        String playerGetHomesFrom = "";
-        String groupName = "";
-        String groupFlagArg = "";
-        boolean groupFlagSet = false;
-
-        if (args.length > 4) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/homes (player) (-group group)")));
+        if (!arguments.isValidArguments()) {
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, false, arguments.getWorldGroup());
             return true;
         }
 
-        if (args.length == 0 || args.length == 2) { //Fall /homes || oder /homes (--group group)
-            playerGetHomesFrom = playerExecutingCommand.getName();
-        } else { //Fall /home (player) || oder /home (player) (--group group)
-            playerGetHomesFrom = args[0];
-        }
-
-        //Get Group from command
-        if (args.length == 2 || args.length == 3) {
-            groupFlagArg = args[args.length - 2];
-            groupName = args[args.length - 1].toLowerCase();
-            groupFlagSet = true;
-        } else {
-            groupName = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(playerExecutingCommand.getWorld()).getName().toLowerCase();
-        }
-
         //Check if groupFlagArg is incorrect
-        if (groupFlagSet && !groupFlagArg.equals("-g") && !groupFlagArg.equals("-group")) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/home (player) <name> (-group group)")));
+        if (!arguments.isGroupFlagValid()) {
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, false, arguments.getWorldGroup());
             return true;
         }
 
         //Unknown player
-        if (Bukkit.getOfflinePlayerIfCached(playerGetHomesFrom) == null) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", playerGetHomesFrom)));
+        if (!arguments.argPlayerValid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getPlayerArgumentName())));
             return true;
         }
 
-        //Check if group exists
-        boolean groupExists = HomeManager.getInstance().getWorldGroupManager().groupExists(groupName);
-
-        UUID playerExecutingUUID = playerExecutingCommand.getUniqueId();
-        UUID playerGetHomesFromUUID = Bukkit.getOfflinePlayerIfCached(playerGetHomesFrom).getUniqueId();
-
-        boolean isSelf = playerExecutingUUID.equals(playerGetHomesFromUUID);
-
         //Check if the player has the required .other.group permission if requested
-        if (groupExists && (!isSelf || groupFlagSet) && !playerExecutingCommand.hasPermission("homemanager.home.other." + groupName)) {
+        if (!arguments.senderHasValidOtherPermission()) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
             return true;
         }
 
         //Group does not exist
-        if (!groupExists) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", groupName)));
+        if (!arguments.isGroupValid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupFlagArg())));
             return true;
         }
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(playerGetHomesFromUUID, groupName);
+        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerListHomesUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER));
+        OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID());
 
         int currentHomeIndex = 0;
         int maxhomes = playerHomes.size();
 
         for (String homename : playerHomes.keySet()) {
             Component currentHome = Component.text(homename);
-            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + playerGetHomesFrom + " " + homename + " -g " + groupName));
+            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + homename + " -g " + arguments.getWorldGroup().getName()));
             display = display.append(currentHome);
 
             if (currentHomeIndex < maxhomes - 1) display = display.append(Component.text(", "));

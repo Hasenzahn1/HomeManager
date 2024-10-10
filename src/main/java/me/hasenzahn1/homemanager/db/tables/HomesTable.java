@@ -23,7 +23,6 @@ public class HomesTable extends Table {
 
     @Override
     public String getCreationString() {
-        System.out.println("Create homes");
         return "CREATE TABLE IF NOT EXISTS homes(" +
                 "uuid VARCHAR(36) NOT NULL, " +
                 "name VARCHAR(30) NOT NULL," +

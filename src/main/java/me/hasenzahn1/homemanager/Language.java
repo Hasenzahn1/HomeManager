@@ -2,19 +2,21 @@ package me.hasenzahn1.homemanager;
 
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.config.LanguageConfig;
+import me.hasenzahn1.homemanager.group.WorldGroup;
+import net.kyori.adventure.text.Component;
+import org.bukkit.command.Command;
+import org.bukkit.entity.Player;
 
 public class Language {
 
     public static final String NO_PLAYER = "commands.noPlayer";
     public static final String INVALID_COMMAND = "commands.invalidCommand";
-    public static final String INVALID_FLAG = "commands.invalidFlag";
     public static final String UNKNOWN_PLAYER = "commands.unknownPlayer";
     public static final String NO_PERMISSION = "commands.noPermission";
     public static final String NO_PERMISSION_OTHER = "commands.noPermissionOther";
     public static final String UNKNOWN_GROUP = "commands.unknownGroup";
     public static final String UNKNOWN_HOME = "commands.unknownHome";
 
-    public static final String SET_HOME_INVALID_HOME_NAME = "commands.sethome.invalidHomeName";
     public static final String SET_HOME_MAX_HOMES = "commands.sethome.maxHomes";
     public static final String SET_HOME_DUPLICATE_HOME = "commands.sethome.duplicateHome";
     public static final String SET_HOME_NO_EXP = "commands.sethome.noExp";
@@ -40,6 +42,23 @@ public class Language {
             lang = lang.replace("%" + args[i] + "%", args[i + 1]);
         }
         return lang.replace("&", "§");
+    }
+
+    public static void sendInvalidArgumentMessage(Player player, Command command, boolean displayHomeNameArg, WorldGroup worldGroup) {
+        String cmd = command.getName().equalsIgnoreCase("homes") ? "homelist" : command.getName().toLowerCase();
+
+        boolean hasOtherPermission = player.hasPermission("homemanager.commands." + cmd + ".other." + worldGroup.getName());
+        boolean hasGroupPermission = player.hasPermission("homemanager.commands." + cmd + ".group." + worldGroup.getName());
+        if (command.getName().toLowerCase().contains("set")) hasGroupPermission = false;
+        System.out.println(hasOtherPermission + ", " + hasGroupPermission + ", " + "homemanager.commands." + command.getName().toLowerCase() + ".other." + worldGroup.getName());
+
+        String cmdSyntax = "/" + command.getName().toLowerCase() + " ";
+        if (hasOtherPermission) cmdSyntax += "(player) ";
+        if (displayHomeNameArg) cmdSyntax += "<homename> ";
+        if (hasGroupPermission) cmdSyntax += "(-g group) ";
+        String basetext = getLang(INVALID_COMMAND, "command", cmdSyntax);
+
+        player.sendMessage(Component.text(HomeManager.PREFIX + basetext));
     }
 
 
