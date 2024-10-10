@@ -40,7 +40,6 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
-
         //Check if groupFlagArg is incorrect
         if (!arguments.isGroupFlagValid()) {
             Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
@@ -54,7 +53,7 @@ public class HomeCommand implements CommandExecutor {
         }
 
         //Check if the player has the required .other.group permission if requested
-        if (!arguments.senderHasValidOtherPermission("homemanager.home")) {
+        if (!arguments.senderHasValidOtherPermission("homemanager.commands.home")) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
             return true;
         }
@@ -62,6 +61,11 @@ public class HomeCommand implements CommandExecutor {
         //Group does not exist
         if (!arguments.isGroupValid()) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupFlagArg())));
+            return true;
+        }
+
+        if (!arguments.senderHasValidGroupPermission("homemanager.commands.home")) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
             return true;
         }
 

@@ -14,6 +14,7 @@ public class Language {
     public static final String UNKNOWN_PLAYER = "commands.unknownPlayer";
     public static final String NO_PERMISSION = "commands.noPermission";
     public static final String NO_PERMISSION_OTHER = "commands.noPermissionOther";
+    public static final String NO_PERMISSION_GROUP = "commands.noPermissionGroup";
     public static final String UNKNOWN_GROUP = "commands.unknownGroup";
     public static final String UNKNOWN_HOME = "commands.unknownHome";
 
@@ -50,7 +51,6 @@ public class Language {
         boolean hasOtherPermission = player.hasPermission("homemanager.commands." + cmd + ".other." + worldGroup.getName());
         boolean hasGroupPermission = player.hasPermission("homemanager.commands." + cmd + ".group." + worldGroup.getName());
         if (command.getName().toLowerCase().contains("set")) hasGroupPermission = false;
-        System.out.println(hasOtherPermission + ", " + hasGroupPermission + ", " + "homemanager.commands." + command.getName().toLowerCase() + ".other." + worldGroup.getName());
 
         String cmdSyntax = "/" + command.getName().toLowerCase() + " ";
         if (hasOtherPermission) cmdSyntax += "(player) ";

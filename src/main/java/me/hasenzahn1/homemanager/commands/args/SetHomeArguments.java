@@ -33,6 +33,8 @@ public class SetHomeArguments {
         else playerReceiveHomeUUID = receiver.getUniqueId();
 
         worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(cmdSender.getWorld());
+
+        this.toManyArguments = toManyArguments;
     }
 
     public boolean isValidArguments() {

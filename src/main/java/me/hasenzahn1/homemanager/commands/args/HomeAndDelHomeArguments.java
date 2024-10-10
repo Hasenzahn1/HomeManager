@@ -67,6 +67,11 @@ public class HomeAndDelHomeArguments {
         return cmdSender.hasPermission(commandBasePerm + ".other." + worldGroup.getName());
     }
 
+    public boolean senderHasValidGroupPermission(String commandBasePerm) {
+        if (sendersCurrentWorldGroup.equals(worldGroup)) return true;
+        return cmdSender.hasPermission(commandBasePerm + ".group." + worldGroup.getName());
+    }
+
     public boolean isGroupFlagValid() {
         if (groupFlag.isEmpty()) return true;
         return groupFlag.equalsIgnoreCase("-g") || groupFlag.equalsIgnoreCase("--group");

@@ -55,7 +55,7 @@ public class ListHomesArguments {
 
     public boolean senderHasValidOtherPermission() {
         if (isSelf()) return true;
-        return cmdSender.hasPermission("homemanager.commands.listhomes.other." + worldGroup.getName());
+        return cmdSender.hasPermission("homemanager.commands.homelist.other." + worldGroup.getName());
     }
 
     public boolean isGroupFlagValid() {
@@ -66,6 +66,11 @@ public class ListHomesArguments {
     public boolean isGroupValid() {
         if (groupFlagArg.isEmpty()) return true;
         return worldGroup.getName().equalsIgnoreCase(groupFlagArg);
+    }
+
+    public boolean senderHasValidGroupPermission() {
+        if (sendersCurrentWorldGroup.equals(worldGroup)) return true;
+        return cmdSender.hasPermission("homemanager.commands.homelist.group." + worldGroup.getName());
     }
 
     public WorldGroup getWorldGroup() {

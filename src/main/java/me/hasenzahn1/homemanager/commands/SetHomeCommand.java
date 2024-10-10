@@ -94,7 +94,7 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Check is player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.size() >= maxHomes) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_MAX_HOMES)));
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_MAX_HOMES, "amount", String.valueOf(maxHomes))));
             dbSession.destroy();
             return true;
         }
@@ -116,14 +116,14 @@ public class SetHomeCommand implements CommandExecutor {
         //No Experience Required
         if (!arguments.getWorldGroup().isSetHomeRequiresExperience() || !hasToPayExperience) {
             dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), Math.max(0, freeHomes - 1));
-            saveHomeToDatabaseAndDestroy(dbSession, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
             return true;
         }
 
         //If the player has free homes use it.
         if (freeHomes > 0) {
             dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), freeHomes - 1);
-            saveHomeToDatabaseAndDestroy(dbSession, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
             return true;
         }
 
@@ -139,12 +139,12 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Reduce experience and save to db
         playerGiveHome.setLevel(Math.max(0, playerGiveHome.getLevel() - ((int) Math.ceil(requiredLevels))));
-        saveHomeToDatabaseAndDestroy(dbSession, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+        saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
         return true;
     }
 
-    private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, UUID player, String homeName, Location location) {
-        Bukkit.getPlayer(player).sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS)));
+    private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, String homeName, Location location) {
+        cmdSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS)));
         session.saveHomeToDatabase(player, homeName, location);
         session.destroy();
     }

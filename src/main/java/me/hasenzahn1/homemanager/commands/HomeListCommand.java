@@ -54,7 +54,7 @@ public class HomeListCommand implements CommandExecutor {
             return true;
         }
 
-        //Check if the player has the required .other.group permission if requested
+        //Check if the player has the required .other.<group> permission if requested
         if (!arguments.senderHasValidOtherPermission()) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
             return true;
@@ -63,6 +63,12 @@ public class HomeListCommand implements CommandExecutor {
         //Group does not exist
         if (!arguments.isGroupValid()) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupFlagArg())));
+            return true;
+        }
+
+        //Check if the player has the required .group.<group> permission if requested
+        if (!arguments.senderHasValidGroupPermission()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
             return true;
         }
 
