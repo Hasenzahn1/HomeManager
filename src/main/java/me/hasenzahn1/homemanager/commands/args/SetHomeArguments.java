@@ -44,7 +44,7 @@ public class SetHomeArguments {
     }
 
     public boolean argPlayerValid() {
-        return playerReceiveHome != null;
+        return playerReceiveHomeUUID != null;
     }
 
     public boolean isSelf() {

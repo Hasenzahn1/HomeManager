@@ -8,11 +8,13 @@ commands:
   noPermissionOther: "&cYou don't have permission to use this command for other players"
   noPermissionGroup: "&cYou don't have permission to use this command in the specified worldgroup"
   unknownGroup: "&cUnknown Group with name %name%"
-  unknownHome: "&cThere is no home with name %name% in worldgroup %group%"
+  unknownHome: "&cThere is no home with name %name%"
+  unknownHomeOther: "&cThe player %player% has no home with name %name%"
 
   sethome:
     maxHomes: "&cYou have reached the maximum number of homes (&6%amount%&c)"
-    duplicateHome: "&cYou already have a home with this name"
+    duplicateHome: "&cYou already have a home with the name %name%"
+    duplicateHomeOther: "&cThe player %player% already has a home with the name %name%"
     noExp: "&cYou don't have the required levels to set a home (%levels%)"
     success: "&aSuccessfully set home point %name%"
     successOther: "&aSuccessfully set home point %name% of player %player%"
@@ -24,6 +26,7 @@ commands:
     successOther: "&aSuccessfully teleported to home %name% of player %player%"
   homeList:
     noHomes: "&cYou have to homes to list"
+    noHomesOther: "&cThe player %player% has no homes to list"
     header: "Homes: "
 
   homeadmin:

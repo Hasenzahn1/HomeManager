@@ -77,7 +77,7 @@ public class DelHomeCommand implements CommandExecutor {
 
         //Check if home exists
         if (!playerHomes.containsKey(arguments.getHomeName())) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME, "name", arguments.getHomeName(), "group", arguments.getWorldGroup().getName())));
+            sendUnknownHomeMessage(arguments);
             dbSession.destroy();
             return true;
         }
@@ -91,6 +91,15 @@ public class DelHomeCommand implements CommandExecutor {
         dbSession.destroy();
         sendSuccessMessage(arguments);
         return true;
+    }
+
+    private void sendUnknownHomeMessage(HomeAndDelHomeArguments arguments) {
+        if (arguments.isSelf()) {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME, "name", arguments.getHomeName())));
+        } else {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName())));
+
+        }
     }
 
     public void sendSuccessMessage(HomeAndDelHomeArguments arguments) {

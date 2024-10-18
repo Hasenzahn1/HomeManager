@@ -77,11 +77,13 @@ public class HomeListCommand implements CommandExecutor {
         HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerListHomesUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
+        //No Homes Message
         if (playerHomes.isEmpty()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES)));
+            sendNoHomesMessage(arguments);
             return true;
         }
 
+        //Create homes list
         Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER));
         OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID());
 
@@ -99,6 +101,14 @@ public class HomeListCommand implements CommandExecutor {
 
         commandSender.sendMessage(display);
         return true;
+    }
+
+    private void sendNoHomesMessage(ListHomesArguments arguments) {
+        if (arguments.isSelf()) {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES)));
+        } else {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID()).getName())));
+        }
     }
 
 }

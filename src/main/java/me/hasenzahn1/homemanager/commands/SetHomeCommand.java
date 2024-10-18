@@ -77,7 +77,7 @@ public class SetHomeCommand implements CommandExecutor {
 
         //No valid set player
         if (!arguments.argPlayerValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER)));
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getPlayerArgumentName())));
             return true;
         }
 
@@ -90,7 +90,7 @@ public class SetHomeCommand implements CommandExecutor {
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
         HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName());
-        int maxHomes = PermissionUtils.getMaxHomesFromPermission(Bukkit.getPlayer(arguments.getPlayerReceiveHomeUUID()), arguments.getWorldGroup().getName());
+        int maxHomes = PermissionUtils.getMaxHomesFromPermission(commandSender, arguments.getWorldGroup().getName());
 
         //Check is player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.size() >= maxHomes) {
@@ -101,7 +101,7 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Check Duplicate Home Name
         if (playerHomes.containsKey(arguments.getHomeName())) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME)));
+            sendDuplicateHomesMessage(commandSender, arguments);
             dbSession.destroy();
             return true;
         }
@@ -115,7 +115,8 @@ public class SetHomeCommand implements CommandExecutor {
 
         //No Experience Required
         if (!arguments.getWorldGroup().isSetHomeRequiresExperience() || !hasToPayExperience) {
-            dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), Math.max(0, freeHomes - 1));
+            if (arguments.isSelf())
+                dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), Math.max(0, freeHomes - 1));
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
             return true;
         }
@@ -154,6 +155,14 @@ public class SetHomeCommand implements CommandExecutor {
             sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS, "name", homeName)));
         } else {
             sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(player).getName())));
+        }
+    }
+
+    private void sendDuplicateHomesMessage(CommandSender sender, SetHomeArguments arguments) {
+        if (arguments.isSelf()) {
+            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME, "name", arguments.getHomeName())));
+        } else {
+            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getPlayerReceiveHomeUUID()).getName())));
         }
     }
 }
