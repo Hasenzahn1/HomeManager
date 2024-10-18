@@ -4,10 +4,12 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
+import me.hasenzahn1.homemanager.migration.PluginMigrator;
 import org.bukkit.Location;
 
 import java.sql.Connection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class DatabaseAccessor {
@@ -53,6 +55,11 @@ public class DatabaseAccessor {
     public void deleteHomesFromTheDatabase(UUID player, String homeName, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).removeHomeFromDatabase(connection, player, homeName, group);
+    }
+
+    public void bulkAddHomeFromMigration(List<PluginMigrator.HomeData> data) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(HomesTable.class).bulkAddHomeFromMigration(connection, data);
     }
 
     public void destroy() {

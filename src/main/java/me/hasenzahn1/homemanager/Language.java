@@ -28,6 +28,7 @@ public class Language {
     public static final String HOME_SUCCESS = "commands.home.success";
     public static final String HOME_LIST_HEADER = "commands.homeList.header";
 
+    public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
 
     private static LanguageConfig languageConfig;
 

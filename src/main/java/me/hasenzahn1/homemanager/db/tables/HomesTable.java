@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
+import me.hasenzahn1.homemanager.migration.PluginMigrator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -12,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class HomesTable extends Table {
@@ -105,6 +107,29 @@ public class HomesTable extends Table {
         } catch (SQLException e) {
             Logger.ERROR.log("Error deleting home from database for player " + player + " with name " + name + " in group " + group);
             Logger.ERROR.log(e.getMessage());
+        }
+    }
+
+    public void bulkAddHomeFromMigration(Connection con, List<PluginMigrator.HomeData> data) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
+            con.setAutoCommit(false);
+            for (PluginMigrator.HomeData homeData : data) {
+                statement.setString(1, homeData.uuid().toString());
+                statement.setString(2, homeData.name());
+                statement.setString(3, homeData.world());
+                statement.setDouble(4, homeData.x());
+                statement.setDouble(5, homeData.y());
+                statement.setDouble(6, homeData.z());
+                statement.setFloat(7, homeData.yaw());
+                statement.setFloat(8, homeData.pitch());
+                statement.setString(9, homeData.getWorldGroup().getName());
+
+                statement.executeUpdate();
+            }
+            con.commit();
+            con.setAutoCommit(true);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

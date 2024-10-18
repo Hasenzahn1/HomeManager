@@ -21,3 +21,7 @@ commands:
     success: "&aSuccessfully teleported to home %name%"
   homeList:
     header: "Homes: "
+
+  homeadmin:
+    migrate:
+      success: "&aSuccessfully migrated homes in &6%millis% &ams"

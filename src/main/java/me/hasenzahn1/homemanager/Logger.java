@@ -32,7 +32,7 @@ public enum Logger {
         if (this == DEBUG && !DefaultConfig.DEBUG_LOGGING) {
             return;
         }
-
+        Bukkit.getConsoleSender().sendMessage(Component.text(prefix + msg));
         if (this != DEBUG) Bukkit.getConsoleSender().sendMessage(Component.text(prefix + msg));
 
         if (this == DEBUG) {

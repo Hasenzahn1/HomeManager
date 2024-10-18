@@ -1,9 +1,6 @@
 package me.hasenzahn1.homemanager;
 
-import me.hasenzahn1.homemanager.commands.DelHomeCommand;
-import me.hasenzahn1.homemanager.commands.HomeCommand;
-import me.hasenzahn1.homemanager.commands.HomeListCommand;
-import me.hasenzahn1.homemanager.commands.SetHomeCommand;
+import me.hasenzahn1.homemanager.commands.*;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
@@ -42,6 +39,7 @@ public final class HomeManager extends JavaPlugin {
         getCommand("delhome").setExecutor(new DelHomeCommand());
         getCommand("home").setExecutor(new HomeCommand());
         getCommand("homes").setExecutor(new HomeListCommand());
+        getCommand("homeadmin").setExecutor(new HomeAdminCommand());
     }
 
     public HomesDatabase getDatabase() {
@@ -59,4 +57,5 @@ public final class HomeManager extends JavaPlugin {
     public static HomeManager getInstance() {
         return instance;
     }
+
 }
