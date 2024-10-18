@@ -144,8 +144,16 @@ public class SetHomeCommand implements CommandExecutor {
     }
 
     private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, String homeName, Location location) {
-        cmdSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS)));
+        sendSuccessMessage(((Player) cmdSender), player, homeName);
         session.saveHomeToDatabase(player, homeName, location);
         session.destroy();
+    }
+
+    private void sendSuccessMessage(Player sender, UUID player, String homeName) {
+        if (sender.getUniqueId().equals(player)) {
+            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS, "name", homeName)));
+        } else {
+            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(player).getName())));
+        }
     }
 }

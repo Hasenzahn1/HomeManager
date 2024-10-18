@@ -14,12 +14,16 @@ commands:
     maxHomes: "&cYou have reached the maximum number of homes (&6%amount%&c)"
     duplicateHome: "&cYou already have a home with this name"
     noExp: "&cYou don't have the required levels to set a home (%levels%)"
-    success: "&aSuccessfully set new home point"
+    success: "&aSuccessfully set home point %name%"
+    successOther: "&aSuccessfully set home point %name% of player %player%"
   delhome:
     success: "&aSuccessfully deleted home %name%"
+    successOther: "&aSuccessfully deleted home %name% of player %player%"
   home:
     success: "&aSuccessfully teleported to home %name%"
+    successOther: "&aSuccessfully teleported to home %name% of player %player%"
   homeList:
+    noHomes: "&cYou have to homes to list"
     header: "Homes: "
 
   homeadmin:

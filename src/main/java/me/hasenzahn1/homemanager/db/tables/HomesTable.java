@@ -34,7 +34,8 @@ public class HomesTable extends Table {
                 "z REAL NOT NULL," +
                 "yaw REAL NOT NULL," +
                 "pitch REAL NOT NULL," +
-                "worldgroup VARCHAR(30) NOT NULL" +
+                "worldgroup VARCHAR(30) NOT NULL," +
+                "PRIMARY KEY (uuid, name, worldgroup)" +
                 ");";
     }
 
@@ -111,7 +112,7 @@ public class HomesTable extends Table {
     }
 
     public void bulkAddHomeFromMigration(Connection con, List<PluginMigrator.HomeData> data) {
-        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
             con.setAutoCommit(false);
             for (PluginMigrator.HomeData homeData : data) {
                 statement.setString(1, homeData.uuid().toString());

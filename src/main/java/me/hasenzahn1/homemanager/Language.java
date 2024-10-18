@@ -22,10 +22,15 @@ public class Language {
     public static final String SET_HOME_DUPLICATE_HOME = "commands.sethome.duplicateHome";
     public static final String SET_HOME_NO_EXP = "commands.sethome.noExp";
     public static final String SET_HOME_SUCCESS = "commands.sethome.success";
+    public static final String SET_HOME_SUCCESS_OTHER = "commands.sethome.successOther";
 
     public static final String DEL_HOME_SUCCESS = "commands.delhome.success";
+    public static final String DEL_HOME_SUCCESS_OTHER = "commands.delhome.successOther";
 
     public static final String HOME_SUCCESS = "commands.home.success";
+    public static final String HOME_SUCCESS_OTHER = "commands.home.successOther";
+
+    public static final String HOME_LIST_NO_HOMES = "commands.homeList.noHomes";
     public static final String HOME_LIST_HEADER = "commands.homeList.header";
 
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";

@@ -5,6 +5,7 @@ import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.HomeAndDelHomeArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -84,8 +85,16 @@ public class HomeCommand implements CommandExecutor {
 
         arguments.getCmdSender().teleport(location);
 
-        commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS, "name", arguments.getHomeName())));
+        sendSuccessMessage(arguments);
         return true;
+    }
+
+    public void sendSuccessMessage(HomeAndDelHomeArguments arguments) {
+        if (arguments.isSelf()) {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS, "name", arguments.getHomeName())));
+        } else {
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+        }
     }
 
 }
