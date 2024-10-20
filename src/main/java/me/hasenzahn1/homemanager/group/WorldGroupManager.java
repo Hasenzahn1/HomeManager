@@ -2,8 +2,10 @@ package me.hasenzahn1.homemanager.group;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
+import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.config.GroupConfig;
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,13 +21,20 @@ public class WorldGroupManager {
     private final HashMap<World, WorldGroup> worldGroupsByWorld;
 
     public WorldGroupManager() {
-        new File(HomeManager.getInstance().getDataFolder(), "groups.yml").delete(); //TODO: DEBUG REMOVE
+        if (DefaultConfig.DEBUG_REPLACE_CONFIG) {
+            new File(HomeManager.getInstance().getDataFolder(), "groups.yml").delete(); //TODO: DEBUG REMOVE
+        }
         groupConfig = new GroupConfig();
 
         worldGroupsByName = new HashMap<>();
         worldGroupsByWorld = new HashMap<>();
 
-        loadGroupsFromConfig();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                loadGroupsFromConfig();
+            }
+        }.runTaskLater(HomeManager.getInstance(), 20L);
     }
 
     public void reloadFromDisk() {
@@ -44,6 +53,7 @@ public class WorldGroupManager {
         for (WorldGroup worldGroup : worldGroupsByName.values()) {
             for (World world : worldGroup.getWorlds()) {
                 worldGroupsByWorld.put(world, worldGroup);
+                Logger.DEBUG.log("Registered world " + world.getName() + " for group " + worldGroup.getName());
             }
         }
     }

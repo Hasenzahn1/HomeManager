@@ -7,6 +7,7 @@ Survival:
     requiresExperience: true
     experienceForEveryHome: false
     experienceFormula: 2*amount+100
+    experienceTable: [ 0, 5, 10, 15, 25, 40, 65, 105, 170, 275, 445 ]
 
 Skyblock:
   worlds:

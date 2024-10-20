@@ -25,7 +25,7 @@ commands:
     success: "&aSuccessfully teleported to home %name%"
     successOther: "&aSuccessfully teleported to home %name% of player %player%"
   homeList:
-    noHomes: "&cYou have to homes to list"
+    noHomes: "&cYou have no homes to list"
     noHomesOther: "&cThe player %player% has no homes to list"
     header: "Homes: "
 

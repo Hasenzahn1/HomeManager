@@ -1,3 +1,3 @@
 debug:
   logging: true
-  regenerateConfigsOnStart: true
+  regenerateConfigsOnStart: false

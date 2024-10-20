@@ -4,7 +4,6 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.SetHomeArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
-import me.hasenzahn1.homemanager.util.ExpressionEvaluator;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -129,7 +128,7 @@ public class SetHomeCommand implements CommandExecutor {
         }
 
         //Calculate Experience
-        double requiredLevels = ExpressionEvaluator.eval(arguments.getWorldGroup().getSetHomeExperienceFormula().replace("amount", "" + playerHomes.size()));
+        int requiredLevels = arguments.getWorldGroup().getRequiredExperience(playerHomes.size());
 
         //You don't have enough experience, but you have to pay experience
         if (playerGiveHome.getLevel() < requiredLevels) {
