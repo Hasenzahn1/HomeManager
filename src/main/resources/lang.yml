@@ -3,31 +3,33 @@ prefix: "&7[&bHomeManager&7] "
 commands:
   noPlayer: "&cYou have to be a player to use this command"
   invalidCommand: "&cInvalid command please use &6%command%"
-  unknownPlayer: "&cUnknown player with name %name%"
+  unknownPlayer: "&cUnknown player with name &6%name%"
   noPermission: "&cYou don't have permission to use this command"
   noPermissionOther: "&cYou don't have permission to use this command for other players"
   noPermissionGroup: "&cYou don't have permission to use this command in the specified worldgroup"
-  unknownGroup: "&cUnknown Group with name %name%"
-  unknownHome: "&cThere is no home with name %name%"
-  unknownHomeOther: "&cThe player %player% has no home with name %name%"
+  unknownGroup: "&cUnknown Group with name &6%name%"
+  unknownHome: "&cThere is no home with name &6%name%"
+  unknownHomeOther: "&cThe player &6%player% &chas no home with name &6%name%"
 
   sethome:
     maxHomes: "&cYou have reached the maximum number of homes (&6%amount%&c)"
-    duplicateHome: "&cYou already have a home with the name %name%"
-    duplicateHomeOther: "&cThe player %player% already has a home with the name %name%"
-    noExp: "&cYou don't have the required levels to set a home (%levels%)"
-    success: "&aSuccessfully set home point %name%"
-    successOther: "&aSuccessfully set home point %name% of player %player%"
+    duplicateHome: "&cYou already have a home with the name &6%name%"
+    duplicateHomeOther: "&cThe player &6%player% &calready has a home with the name &6%name%"
+    noExp: "&cYou don't have the required levels to set a home (&6%levels%&c)"
+    success: "&aSuccessfully set home point &6%name%"
+    successOther: "&aSuccessfully set home point &6%name% &cof player &6%player%"
   delhome:
-    success: "&aSuccessfully deleted home %name%"
-    successOther: "&aSuccessfully deleted home %name% of player %player%"
+    success: "&aSuccessfully deleted home &6%name%"
+    successOther: "&aSuccessfully deleted home &6%name% &cof player &6%player%"
   home:
-    success: "&aSuccessfully teleported to home %name%"
-    successOther: "&aSuccessfully teleported to home %name% of player %player%"
+    success: "&aSuccessfully teleported to home &6%name%"
+    successOther: "&aSuccessfully teleported to home &6%name% &cof player &6%player%"
   homeList:
     noHomes: "&cYou have no homes to list"
-    noHomesOther: "&cThe player %player% has no homes to list"
-    header: "Homes: "
+    noHomesOther: "&cThe player &6%player% &chas no homes to list"
+    header: "%prefix% &7Homes: "
+    home: "&7%name%"
+    separator: "&7,"
 
   homeadmin:
     migrate:

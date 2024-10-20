@@ -35,6 +35,8 @@ public class Language {
     public static final String HOME_LIST_NO_HOMES = "commands.homeList.noHomes";
     public static final String HOME_LIST_NO_HOMES_OTHER = "commands.homeList.noHomesOther";
     public static final String HOME_LIST_HEADER = "commands.homeList.header";
+    public static final String HOME_LIST_HOME = "commands.homeList.home";
+    public static final String HOME_LIST_SEPARATOR = "commands.homeList.separator";
 
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
 

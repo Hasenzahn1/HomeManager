@@ -84,18 +84,19 @@ public class HomeListCommand implements CommandExecutor {
         }
 
         //Create homes list
-        Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER));
+        Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX));
         OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID());
 
         int currentHomeIndex = 0;
         int maxhomes = playerHomes.size();
 
         for (String homename : playerHomes.keySet()) {
-            Component currentHome = Component.text(homename);
+            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", homename));
             currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + homename + " -g " + arguments.getWorldGroup().getName()));
             display = display.append(currentHome);
 
-            if (currentHomeIndex < maxhomes - 1) display = display.append(Component.text(", "));
+            if (currentHomeIndex < maxhomes - 1)
+                display = display.append(Component.text(Language.getLang(Language.HOME_LIST_SEPARATOR)));
             currentHomeIndex++;
         }
 
