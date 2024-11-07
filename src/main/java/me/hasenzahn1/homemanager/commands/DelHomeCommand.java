@@ -4,9 +4,9 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.HomeAndDelHomeArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -73,10 +73,10 @@ public class DelHomeCommand implements CommandExecutor {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
 
         //Check if home exists
-        if (!playerHomes.containsKey(arguments.getHomeName())) {
+        if (!playerHomes.containsKey(arguments.getHomeName().toLowerCase())) {
             sendUnknownHomeMessage(arguments);
             dbSession.destroy();
             return true;
@@ -87,9 +87,9 @@ public class DelHomeCommand implements CommandExecutor {
         dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), freeHomes + 1);
 
         //Delete home
-        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), arguments.getHomeName(), arguments.getWorldGroup().getName());
+        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), playerHomes.get(arguments.getHomeName()).getName(), arguments.getWorldGroup().getName());
         dbSession.destroy();
-        sendSuccessMessage(arguments);
+        sendSuccessMessage(arguments, playerHomes.get(arguments.getHomeName().toLowerCase()).getName());
         return true;
     }
 
@@ -102,11 +102,11 @@ public class DelHomeCommand implements CommandExecutor {
         }
     }
 
-    public void sendSuccessMessage(HomeAndDelHomeArguments arguments) {
+    public void sendSuccessMessage(HomeAndDelHomeArguments arguments, String homeName) {
         if (arguments.isSelf()) {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS, "name", arguments.getHomeName())));
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS, "name", homeName)));
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
         }
     }
 }

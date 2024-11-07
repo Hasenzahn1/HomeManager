@@ -4,9 +4,9 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.HomeAndDelHomeArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -72,28 +72,28 @@ public class HomeCommand implements CommandExecutor {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        HashMap<String, PlayerHome> dbHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
+        PlayerHome requestedHome = dbHomes.get(arguments.getHomeName().toLowerCase());
+
         //Check if home exists
-        if (!playerHomes.containsKey(arguments.getHomeName())) {
+        if (requestedHome == null) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME, "name", arguments.getHomeName(), "group", arguments.getWorldGroup().getName())));
             return true;
         }
 
-        Location location = playerHomes.get(arguments.getHomeName());
+        arguments.getCmdSender().teleport(requestedHome.getLocation());
 
-        arguments.getCmdSender().teleport(location);
-
-        sendSuccessMessage(arguments);
+        sendSuccessMessage(arguments, requestedHome.getName());
         return true;
     }
 
-    public void sendSuccessMessage(HomeAndDelHomeArguments arguments) {
+    public void sendSuccessMessage(HomeAndDelHomeArguments arguments, String homeName) {
         if (arguments.isSelf()) {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS, "name", arguments.getHomeName())));
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS, "name", homeName)));
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
         }
     }
 

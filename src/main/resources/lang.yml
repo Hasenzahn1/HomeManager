@@ -17,19 +17,19 @@ commands:
     duplicateHomeOther: "&cThe player &6%player% &calready has a home with the name &6%name%"
     noExp: "&cYou don't have the required levels to set a home (&6%levels%&c)"
     success: "&aSuccessfully set home point &6%name%"
-    successOther: "&aSuccessfully set home point &6%name% &cof player &6%player%"
+    successOther: "&aSuccessfully set home point &6%name% &aof player &6%player%"
   delhome:
     success: "&aSuccessfully deleted home &6%name%"
-    successOther: "&aSuccessfully deleted home &6%name% &cof player &6%player%"
+    successOther: "&aSuccessfully deleted home &6%name% &aof player &6%player%"
   home:
     success: "&aSuccessfully teleported to home &6%name%"
-    successOther: "&aSuccessfully teleported to home &6%name% &cof player &6%player%"
+    successOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"
   homeList:
     noHomes: "&cYou have no homes to list"
     noHomesOther: "&cThe player &6%player% &chas no homes to list"
-    header: "%prefix% &7Homes: "
+    header: "%prefix%&7Homes: "
     home: "&7%name%"
-    separator: "&7,"
+    separator: "&7, "
 
   homeadmin:
     migrate:

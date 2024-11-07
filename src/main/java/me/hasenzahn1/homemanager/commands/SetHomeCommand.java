@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.SetHomeArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -88,7 +89,10 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName());
+        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName());
+        PlayerHome requestedHome = playerHomes.get(arguments.getHomeName().toLowerCase());
+
+        //Gather Max Homes from db
         int maxHomes = PermissionUtils.getMaxHomesFromPermission(commandSender, arguments.getWorldGroup().getName());
 
         //Check is player has reached his maxHome Limit
@@ -99,11 +103,13 @@ public class SetHomeCommand implements CommandExecutor {
         }
 
         //Check Duplicate Home Name
-        if (playerHomes.containsKey(arguments.getHomeName())) {
+        if (requestedHome != null) {
             sendDuplicateHomesMessage(commandSender, arguments);
             dbSession.destroy();
             return true;
         }
+
+        requestedHome = new PlayerHome(arguments.getHomeName(), location);
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
@@ -116,14 +122,14 @@ public class SetHomeCommand implements CommandExecutor {
         if (!arguments.getWorldGroup().isSetHomeRequiresExperience() || !hasToPayExperience) {
             if (arguments.isSelf())
                 dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), Math.max(0, freeHomes - 1));
-            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), requestedHome);
             return true;
         }
 
         //If the player has free homes use it.
         if (freeHomes > 0) {
             dbSession.saveFreeHomes(arguments.getPlayerReceiveHomeUUID(), arguments.getWorldGroup().getName(), freeHomes - 1);
-            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+            saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), requestedHome);
             return true;
         }
 
@@ -139,13 +145,13 @@ public class SetHomeCommand implements CommandExecutor {
 
         //Reduce experience and save to db
         playerGiveHome.setLevel(Math.max(0, playerGiveHome.getLevel() - ((int) Math.ceil(requiredLevels))));
-        saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), arguments.getHomeName(), location);
+        saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getPlayerReceiveHomeUUID(), requestedHome);
         return true;
     }
 
-    private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, String homeName, Location location) {
-        sendSuccessMessage(((Player) cmdSender), player, homeName);
-        session.saveHomeToDatabase(player, homeName, location);
+    private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, PlayerHome home) {
+        sendSuccessMessage(((Player) cmdSender), player, home.getName());
+        session.saveHomeToDatabase(player, home);
         session.destroy();
     }
 

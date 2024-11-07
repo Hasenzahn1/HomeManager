@@ -4,8 +4,8 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
-import org.bukkit.Location;
 
 import java.sql.Connection;
 import java.util.HashMap;
@@ -27,7 +27,7 @@ public class DatabaseAccessor {
         return new DatabaseAccessor(HomeManager.getInstance().getDatabase());
     }
 
-    public HashMap<String, Location> getHomesFromPlayer(UUID uuid, String group) {
+    public HashMap<String, PlayerHome> getHomesFromPlayer(UUID uuid, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid, group);
     }
@@ -37,9 +37,9 @@ public class DatabaseAccessor {
         return database.getTable(HomesTable.class).getHomeCountFromPlayer(connection, uuid, group);
     }
 
-    public void saveHomeToDatabase(UUID player, String name, Location location) {
+    public void saveHomeToDatabase(UUID player, PlayerHome home) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
-        database.getTable(HomesTable.class).saveHomeToDatabase(connection, player, name, location);
+        database.getTable(HomesTable.class).saveHomeToDatabase(connection, player, home);
     }
 
     public int getFreeHomes(UUID player, String group) {

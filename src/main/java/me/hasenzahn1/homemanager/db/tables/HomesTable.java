@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,8 +40,8 @@ public class HomesTable extends Table {
                 ");";
     }
 
-    public HashMap<String, Location> getHomesFromPlayer(Connection con, UUID uuid, String group) {
-        HashMap<String, Location> homes = new HashMap<>();
+    public HashMap<String, PlayerHome> getHomesFromPlayer(Connection con, UUID uuid, String group) {
+        HashMap<String, PlayerHome> homes = new HashMap<>();
         try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = '" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -54,7 +55,7 @@ public class HomesTable extends Table {
 
                 Location location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
-                homes.put(name, location);
+                homes.put(name.toLowerCase(), new PlayerHome(name, location));
             }
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving homes from database for player " + uuid + " in group " + group);
@@ -79,23 +80,23 @@ public class HomesTable extends Table {
         return count;
     }
 
-    public void saveHomeToDatabase(Connection con, UUID player, String name, Location location) {
+    public void saveHomeToDatabase(Connection con, UUID player, PlayerHome home) {
         try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
             statement.setString(1, player.toString());
-            statement.setString(2, name);
-            statement.setString(3, location.getWorld().getName());
-            statement.setDouble(4, location.getX());
-            statement.setDouble(5, location.getY());
-            statement.setDouble(6, location.getZ());
-            statement.setFloat(7, location.getYaw());
-            statement.setFloat(8, location.getPitch());
-            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().getWorldGroup(location.getWorld()).getName());
+            statement.setString(2, home.getName());
+            statement.setString(3, home.getLocation().getWorld().getName());
+            statement.setDouble(4, home.getLocation().getX());
+            statement.setDouble(5, home.getLocation().getY());
+            statement.setDouble(6, home.getLocation().getZ());
+            statement.setFloat(7, home.getLocation().getYaw());
+            statement.setFloat(8, home.getLocation().getPitch());
+            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().getWorldGroup(home.getLocation().getWorld()).getName());
 
             statement.executeUpdate();
-            Logger.DEBUG.log("Added home of player " + player + " to the database with name " + name);
+            Logger.DEBUG.log("Added home of player " + player + " to the database with name " + home.getName());
 
         } catch (SQLException e) {
-            Logger.ERROR.log("Error saving home to database for player " + player + " with name " + name + " at " + location);
+            Logger.ERROR.log("Error saving home to database for player " + player + " with name " + home.getName() + " at " + home.getLocation());
             Logger.ERROR.log(e.getMessage());
         }
     }

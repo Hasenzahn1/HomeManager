@@ -4,10 +4,10 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.ListHomesArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
+import me.hasenzahn1.homemanager.homes.PlayerHome;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -74,7 +74,7 @@ public class HomeListCommand implements CommandExecutor {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, Location> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerListHomesUUID(), arguments.getWorldGroup().getName());
+        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerListHomesUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         //No Homes Message
@@ -90,9 +90,9 @@ public class HomeListCommand implements CommandExecutor {
         int currentHomeIndex = 0;
         int maxhomes = playerHomes.size();
 
-        for (String homename : playerHomes.keySet()) {
-            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", homename));
-            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + homename + " -g " + arguments.getWorldGroup().getName()));
+        for (PlayerHome home : playerHomes.values()) {
+            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.getName()));
+            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + home.getName() + " -g " + arguments.getWorldGroup().getName()));
             display = display.append(currentHome);
 
             if (currentHomeIndex < maxhomes - 1)
