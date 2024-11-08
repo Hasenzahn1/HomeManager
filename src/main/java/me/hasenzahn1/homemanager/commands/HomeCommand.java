@@ -2,7 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
-import me.hasenzahn1.homemanager.commands.args.HomeAndDelHomeArguments;
+import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.PlayerHome;
 import net.kyori.adventure.text.Component;
@@ -28,28 +28,11 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
-        HomeAndDelHomeArguments arguments = HomeAndDelHomeArguments.parse(((Player) commandSender), args);
+        PlayerNameGroupArguments arguments = PlayerNameGroupArguments.parseArguments(((Player) commandSender), args);
 
         //Check for base delhome permission
-        if (!commandSender.hasPermission("homemanager.commands.home." + arguments.getSendersCurrentWorldGroup().getName())) {
+        if (!arguments.senderHasValidCommandPermission("homemanager.commands.home")) {
             commandSender.sendMessage(Component.text(Language.getLang(Language.NO_PERMISSION)));
-            return true;
-        }
-
-        if (!arguments.isValidArguments()) {
-            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
-            return true;
-        }
-
-        //Check if groupFlagArg is incorrect
-        if (!arguments.isGroupFlagValid()) {
-            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
-            return true;
-        }
-
-        //Unknown player
-        if (!arguments.isArgPlayerValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getActionPlayerName())));
             return true;
         }
 
@@ -59,14 +42,31 @@ public class HomeCommand implements CommandExecutor {
             return true;
         }
 
-        //Group does not exist
-        if (!arguments.isGroupValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupFlagArg())));
+        if (!arguments.senderHasValidGroupPermission("homemanager.commands.home")) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
             return true;
         }
 
-        if (!arguments.senderHasValidGroupPermission("homemanager.commands.home")) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
+        if (arguments.invalidArguments()) {
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
+            return true;
+        }
+
+        //Unknown player
+        if (arguments.playerArgInvalid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getOptionalPlayerArg())));
+            return true;
+        }
+
+        //Check if groupFlagArg is incorrect
+        if (arguments.groupFlagInvalid()) {
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
+            return true;
+        }
+
+        //Group does not exist
+        if (arguments.groupInvalid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupName())));
             return true;
         }
 
@@ -89,7 +89,7 @@ public class HomeCommand implements CommandExecutor {
         return true;
     }
 
-    public void sendSuccessMessage(HomeAndDelHomeArguments arguments, String homeName) {
+    public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {
             arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_SUCCESS, "name", homeName)));
         } else {

@@ -2,7 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
-import me.hasenzahn1.homemanager.commands.args.ListHomesArguments;
+import me.hasenzahn1.homemanager.commands.args.PlayerGroupArguments;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.PlayerHome;
 import net.kyori.adventure.text.Component;
@@ -29,52 +29,54 @@ public class HomeListCommand implements CommandExecutor {
             return true;
         }
 
-        ListHomesArguments arguments = ListHomesArguments.parse(((Player) commandSender), args);
+        PlayerGroupArguments arguments = PlayerGroupArguments.parseArguments(((Player) commandSender), args);
 
         //Check for base delhome permission
-        if (!commandSender.hasPermission("homemanager.commands.homelist." + arguments.getSendersCurrentWorldGroup().getName())) {
+        if (!arguments.senderHasValidCommandPermission("homemanager.commands.homelist")) {
             commandSender.sendMessage(Component.text(Language.getLang(Language.NO_PERMISSION)));
             return true;
         }
 
-        if (!arguments.isValidArguments()) {
-            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, false, arguments.getWorldGroup());
+        //Check if the player has the required .other.<group> permission if requested
+        if (!arguments.senderHasValidOtherPermission("homemanager.commands.homelist")) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
             return true;
         }
 
-        //Check if groupFlagArg is incorrect
-        if (!arguments.isGroupFlagValid()) {
+        //Check if the player has the required .group.<group> permission if requested
+        if (!arguments.senderHasValidGroupPermission("homemanager.commands.homelist")) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
+            return true;
+        }
+
+        if (arguments.invalidArguments()) {
+            System.out.println("Invalid Arguments");
             Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, false, arguments.getWorldGroup());
             return true;
         }
 
         //Unknown player
-        if (!arguments.argPlayerValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getPlayerArgumentName())));
+        if (arguments.playerArgInvalid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getOptionalPlayerArg())));
             return true;
         }
 
-        //Check if the player has the required .other.<group> permission if requested
-        if (!arguments.senderHasValidOtherPermission()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
+        //Check if groupFlagArg is incorrect
+        if (arguments.groupFlagInvalid()) {
+            System.out.println("Invalid Group Flag");
+            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, false, arguments.getWorldGroup());
             return true;
         }
 
         //Group does not exist
-        if (!arguments.isGroupValid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupFlagArg())));
-            return true;
-        }
-
-        //Check if the player has the required .group.<group> permission if requested
-        if (!arguments.senderHasValidGroupPermission()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_GROUP)));
+        if (arguments.groupInvalid()) {
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_GROUP, "name", arguments.getGroupName())));
             return true;
         }
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getPlayerListHomesUUID(), arguments.getWorldGroup().getName());
+        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         //No Homes Message
@@ -85,7 +87,7 @@ public class HomeListCommand implements CommandExecutor {
 
         //Create homes list
         Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX));
-        OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID());
+        OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID());
 
         int currentHomeIndex = 0;
         int maxhomes = playerHomes.size();
@@ -104,11 +106,11 @@ public class HomeListCommand implements CommandExecutor {
         return true;
     }
 
-    private void sendNoHomesMessage(ListHomesArguments arguments) {
+    private void sendNoHomesMessage(PlayerGroupArguments arguments) {
         if (arguments.isSelf()) {
             arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES)));
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getPlayerListHomesUUID()).getName())));
+            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
         }
     }
 
