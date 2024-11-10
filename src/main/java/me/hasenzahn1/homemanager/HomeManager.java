@@ -1,6 +1,10 @@
 package me.hasenzahn1.homemanager;
 
-import me.hasenzahn1.homemanager.commands.*;
+import me.hasenzahn1.homemanager.commands.DelHomeCommand;
+import me.hasenzahn1.homemanager.commands.HomeCommand;
+import me.hasenzahn1.homemanager.commands.HomeListCommand;
+import me.hasenzahn1.homemanager.commands.SetHomeCommand;
+import me.hasenzahn1.homemanager.commands.homeadmin.HomeAdminCommand;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;

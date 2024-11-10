@@ -9,18 +9,14 @@ import me.hasenzahn1.homemanager.util.PermissionUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
-public class SetHomeCommand implements CommandExecutor {
-
-    private final Pattern nameMatcher = Pattern.compile("^[A-Za-z0-9ß#+_-]{1,16}$");
+public class SetHomeCommand extends BaseHomeCommand {
 
     // /sethome (player) \<name>
     @Override
@@ -34,29 +30,13 @@ public class SetHomeCommand implements CommandExecutor {
         //Parse Arguments
         PlayerNameArguments arguments = PlayerNameArguments.parseArguments(((Player) commandSender), args);
 
-        //Check base sethome permission
-        if (!arguments.senderHasValidCommandPermission("homemanager.commands.sethome")) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION)));
-            return true;
-        }
 
-        //Check other Permission (no permission and players differ)
-        if (!arguments.senderHasValidOtherPermission("homemanager.commands.sethome")) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PERMISSION_OTHER)));
+        if (checkInvalidPermissions(commandSender, arguments, "homemanager.commands.sethome"))
             return true;
-        }
 
-        //Check Command Arg Range
-        if (arguments.invalidArguments()) {
-            Language.sendInvalidArgumentMessage(arguments.getCmdSender(), command, true, arguments.getWorldGroup());
+        if (checkInvalidPlayerArgs(commandSender, arguments, command))
             return true;
-        }
 
-        //No valid set player
-        if (arguments.playerArgInvalid()) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_PLAYER, "name", arguments.getOptionalPlayerArg())));
-            return true;
-        }
 
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();

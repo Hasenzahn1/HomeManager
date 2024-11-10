@@ -1,4 +1,4 @@
-package me.hasenzahn1.homemanager.commands;
+package me.hasenzahn1.homemanager.commands.homeadmin;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;

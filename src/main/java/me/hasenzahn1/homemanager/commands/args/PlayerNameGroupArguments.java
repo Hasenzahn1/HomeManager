@@ -20,7 +20,7 @@ public class PlayerNameGroupArguments extends PlayerNameArguments {
         worldGroup = HomeManager.getInstance().getWorldGroupManager().getOrDefault(groupName, cmdSenderWorldGroup);
     }
 
-    public boolean senderHasValidGroupPermission(String commandBasePerm) {
+    public boolean senderHasGroupPermission(String commandBasePerm) {
         if (cmdSenderWorldGroup.equals(worldGroup)) return true;
         return cmdSender.hasPermission(commandBasePerm + ".group." + worldGroup.getName());
     }

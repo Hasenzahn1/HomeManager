@@ -45,11 +45,11 @@ public class PlayerArguments {
         return cmdSenderUUID.equals(cmdSender.getUniqueId());
     }
 
-    public boolean senderHasValidCommandPermission(String commandBasePerm) {
+    public boolean senderHasBasePermission(String commandBasePerm) {
         return cmdSender.hasPermission(commandBasePerm + "." + cmdSenderWorldGroup.getName());
     }
 
-    public boolean senderHasValidOtherPermission(String commandBasePerm) {
+    public boolean senderHasOtherPermission(String commandBasePerm) {
         if (isSelf()) return true;
         return cmdSender.hasPermission(commandBasePerm + ".other." + cmdSenderWorldGroup.getName());
     }
