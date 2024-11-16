@@ -5,8 +5,8 @@ import org.bukkit.Location;
 
 public class PlayerHome {
 
-    private String name;
-    private Location location;
+    private final String name;
+    private final Location location;
 
     public PlayerHome(String name, Location location) {
         this.name = name;

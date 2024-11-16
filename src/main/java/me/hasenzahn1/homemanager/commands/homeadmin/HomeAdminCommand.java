@@ -17,7 +17,7 @@ public class HomeAdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player executor)) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PLAYER)));
             return true;
         }
@@ -27,7 +27,6 @@ public class HomeAdminCommand implements CommandExecutor {
             return true;
         }
 
-        Player executor = (Player) commandSender;
         if (args.length == 0) {
             commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.INVALID_COMMAND, "command", "/homeadmin <migrate>")));
             return true;

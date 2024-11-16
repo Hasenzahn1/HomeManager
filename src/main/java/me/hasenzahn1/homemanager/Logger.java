@@ -21,7 +21,7 @@ public enum Logger {
     DEBUG("[HomeManager] Debug: ");
 
     private final String prefix;
-    private SimpleDateFormat formater;
+    private final SimpleDateFormat formater;
 
     Logger(String prefix) {
         this.prefix = prefix;

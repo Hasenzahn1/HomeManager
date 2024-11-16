@@ -88,13 +88,13 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //You don't have enough experience, but you have to pay experience
         if (arguments.getCmdSender().getLevel() < requiredLevels) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_NO_EXP, "levels", String.valueOf((int) Math.ceil(requiredLevels)))));
+            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels))));
             dbSession.destroy();
             return true;
         }
 
         //Reduce experience and save to db
-        arguments.getCmdSender().setLevel(Math.max(0, arguments.getCmdSender().getLevel() - ((int) Math.ceil(requiredLevels))));
+        arguments.getCmdSender().setLevel(Math.max(0, arguments.getCmdSender().getLevel() - requiredLevels));
         saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
         return true;
     }
