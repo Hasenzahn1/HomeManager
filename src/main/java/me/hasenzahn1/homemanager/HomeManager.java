@@ -1,10 +1,8 @@
 package me.hasenzahn1.homemanager;
 
-import me.hasenzahn1.homemanager.commands.DelHomeCommand;
-import me.hasenzahn1.homemanager.commands.HomeCommand;
-import me.hasenzahn1.homemanager.commands.HomeListCommand;
-import me.hasenzahn1.homemanager.commands.SetHomeCommand;
+import me.hasenzahn1.homemanager.commands.*;
 import me.hasenzahn1.homemanager.commands.homeadmin.HomeAdminCommand;
+import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
@@ -19,6 +17,8 @@ public final class HomeManager extends JavaPlugin {
     private HomesDatabase database;
 
     private DefaultConfig config;
+
+    private CompletionsHelper completionsHelper;
 
     @Override
     public void onEnable() {
@@ -38,12 +38,20 @@ public final class HomeManager extends JavaPlugin {
         database = new HomesDatabase();
         database.init();
 
+        completionsHelper = new CompletionsHelper();
+
         //Initialize commands
-        getCommand("sethome").setExecutor(new SetHomeCommand());
-        getCommand("delhome").setExecutor(new DelHomeCommand());
-        getCommand("home").setExecutor(new HomeCommand());
-        getCommand("homes").setExecutor(new HomeListCommand());
+        registerCommand("sethome", new SetHomeCommand(completionsHelper));
+        registerCommand("delhome", new DelHomeCommand(completionsHelper));
+        registerCommand("home", new HomeCommand(completionsHelper));
+        registerCommand("homes", new HomeListCommand(completionsHelper));
+
         getCommand("homeadmin").setExecutor(new HomeAdminCommand());
+    }
+
+    private void registerCommand(String name, BaseHomeCommand command) {
+        getCommand(name).setExecutor(command);
+        getCommand(name).setTabCompleter(command);
     }
 
     public HomesDatabase getDatabase() {

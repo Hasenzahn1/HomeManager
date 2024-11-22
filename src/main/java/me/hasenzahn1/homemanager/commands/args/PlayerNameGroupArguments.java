@@ -27,7 +27,7 @@ public class PlayerNameGroupArguments extends PlayerNameArguments {
 
     public boolean groupFlagInvalid() {
         if (groupFlagArg.isEmpty()) return false;
-        return !groupFlagArg.equalsIgnoreCase("-g") && !groupFlagArg.equalsIgnoreCase("--group");
+        return !groupFlagArg.equalsIgnoreCase("-g") && !groupFlagArg.equalsIgnoreCase("-group");
     }
 
     public boolean groupInvalid() {

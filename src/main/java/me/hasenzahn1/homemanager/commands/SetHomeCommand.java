@@ -3,6 +3,7 @@ package me.hasenzahn1.homemanager.commands;
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
+import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.PlayerHome;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
@@ -12,11 +13,17 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class SetHomeCommand extends BaseHomeCommand {
+
+    public SetHomeCommand(CompletionsHelper completionsHelper) {
+        super(completionsHelper);
+    }
 
     // /sethome (player) \<name>
     @Override
@@ -102,6 +109,7 @@ public class SetHomeCommand extends BaseHomeCommand {
     private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, PlayerHome home) {
         sendSuccessMessage(((Player) cmdSender), player, home.getName());
         session.saveHomeToDatabase(player, home);
+        completionsHelper.invalidateHomes(player); // Arg Completion
         session.destroy();
     }
 
@@ -119,5 +127,27 @@ public class SetHomeCommand extends BaseHomeCommand {
         } else {
             sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
         }
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        if (!(commandSender instanceof Player player)) return List.of();
+
+        List<String> arg1Completions = List.of("<homename>");
+        if (strings.length >= 3) return List.of();
+
+        boolean playerHasOtherPermission = player.hasPermission("homemanager.commands.sethome.other." + HomeManager.getInstance().getWorldGroupManager().getWorldGroup(player.getWorld()).getName());
+
+        List<String> offlinePlayers = playerHasOtherPermission ? completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), strings[0]) : List.of();
+
+        if (strings[0].isEmpty()) return arg1Completions;
+        if (strings.length == 1 && offlinePlayers.isEmpty()) return arg1Completions;
+        if (strings.length == 1 && playerHasOtherPermission) return offlinePlayers;
+
+
+        if (offlinePlayers.isEmpty()) return List.of();
+
+
+        return arg1Completions;
     }
 }

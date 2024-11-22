@@ -4,12 +4,20 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
+import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
-public abstract class BaseHomeCommand implements CommandExecutor {
+public abstract class BaseHomeCommand implements CommandExecutor, TabCompleter {
+
+    protected final CompletionsHelper completionsHelper;
+
+    public BaseHomeCommand(CompletionsHelper completionsHelper) {
+        this.completionsHelper = completionsHelper;
+    }
 
     public boolean checkInvalidPermissions(CommandSender sender, PlayerNameArguments arguments, String basePerm) {
         //Check base sethome permission

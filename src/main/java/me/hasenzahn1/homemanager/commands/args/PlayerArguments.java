@@ -42,7 +42,7 @@ public class PlayerArguments {
     }
 
     public boolean isSelf() {
-        return cmdSenderUUID.equals(cmdSender.getUniqueId());
+        return cmdSenderUUID.equals(optionalPlayerUUID);
     }
 
     public boolean senderHasBasePermission(String commandBasePerm) {

@@ -52,17 +52,12 @@ public class PermissionUtils {
     public static List<String> getGroupsFromOtherPermission(CommandSender sender, String permissionStub) {
         if (sender == null) return List.of();
         List<String> groups = new ArrayList<>();
-        for (PermissionAttachmentInfo info : sender.getEffectivePermissions()) {
-            if (info.getPermission().equalsIgnoreCase(permissionStub + ".*")) {
-                return HomeManager.getInstance().getWorldGroupManager().getWorldGroupNames();
-            }
 
-            if (info.getPermission().startsWith(permissionStub + ".")) {
-                String groupName = info.getPermission().replace(permissionStub + ".", "");
-                if (HomeManager.getInstance().getWorldGroupManager().groupExists(groupName))
-                    groups.add(groupName);
-            }
+        for (String group : HomeManager.getInstance().getWorldGroupManager().getWorldGroupNames()) {
+            if (sender.hasPermission(permissionStub + "." + group))
+                groups.add(group);
         }
+        
         return groups; //TODO return default group max homes
     }
 

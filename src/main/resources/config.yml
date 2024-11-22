@@ -1,3 +1,5 @@
 debug:
   logging: true
   regenerateConfigsOnStart: true
+
+tabCompletionCacheExpireDuration: 100000
