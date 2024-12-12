@@ -31,7 +31,7 @@ it will count as if the player for whom you're setting the home has paid the req
 Experience cost is calculated based on a formula defined in the config. You can also configure whether experience is
 charged for each home set or only for new, non-deleted homes.
 The success/fail messages will be sent to the players chat.
-There will be a worldguard flag to decide whether you can place homes in a region. This will be default true
+//There will be a worldguard flag to decide whether you can place homes in a region. This will be default true
 
 ### /delhome (player) \<name> (--group \<group>)
 
@@ -88,7 +88,7 @@ player)
 
 Admin commands:
 
-- Purge:
+- Purge: (/remove all)
     - Clears all homes on the server
     - Prompts the user again to confirm
 - Reload:

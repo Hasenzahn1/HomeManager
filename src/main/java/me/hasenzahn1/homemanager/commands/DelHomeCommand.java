@@ -56,14 +56,16 @@ public class DelHomeCommand extends BaseHomeCommand {
             return true;
         }
 
+        PlayerHome home = playerHomes.get(arguments.getHomeName().toLowerCase());
+
         //Grant free home
         int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), freeHomes + 1);
 
         //Delete home
-        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), playerHomes.get(arguments.getHomeName()).getName(), arguments.getWorldGroup().getName());
+        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.getName(), arguments.getWorldGroup().getName());
         dbSession.destroy();
-        sendSuccessMessage(arguments, playerHomes.get(arguments.getHomeName().toLowerCase()).getName());
+        sendSuccessMessage(arguments, home.getName());
         completionsHelper.invalidateHomes(arguments.getActionPlayerUUID());
         return true;
     }
