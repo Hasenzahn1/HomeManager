@@ -7,7 +7,6 @@ import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.PlayerHome;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,7 +29,7 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Check player
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PLAYER)));
+            Language.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -72,18 +71,17 @@ public class DelHomeCommand extends BaseHomeCommand {
 
     private void sendUnknownHomeMessage(PlayerNameGroupArguments arguments) {
         if (arguments.isSelf()) {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME, "name", arguments.getHomeName())));
+            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName())));
-
+            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName());
         }
     }
 
     public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS, "name", homeName)));
+            Language.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", homeName);
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+            Language.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
         }
     }
 

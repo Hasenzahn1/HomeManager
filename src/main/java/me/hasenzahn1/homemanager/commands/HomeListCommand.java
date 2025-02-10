@@ -32,7 +32,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //Check player
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PLAYER)));
+            Language.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -80,9 +80,9 @@ public class HomeListCommand extends BaseHomeCommand {
 
     private void sendNoHomesMessage(PlayerGroupArguments arguments) {
         if (arguments.isSelf()) {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES)));
+            Language.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES);
         } else {
-            arguments.getCmdSender().sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+            Language.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
         }
     }
 

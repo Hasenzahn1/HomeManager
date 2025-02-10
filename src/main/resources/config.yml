@@ -1,5 +1,6 @@
 debug:
   logging: true
-  regenerateConfigsOnStart: true
+  regenerateConfigsOnStart: false
 
+# Duration is ms (100000ms => 100s)
 tabCompletionCacheExpireDuration: 100000

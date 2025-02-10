@@ -1,5 +1,7 @@
 prefix: "&7[&bHomeManager&7] "
 
+# Add an Actionbar behind the message to send the message to the players actionbar
+
 commands:
   noPlayer: "&cYou have to be a player to use this command"
   invalidCommand: "&cInvalid command please use &6%command%"
@@ -18,11 +20,13 @@ commands:
     noExp: "&cYou don't have the required levels to set a home (&6%levels%&c)"
     success: "&aSuccessfully set home point &6%name%"
     successOther: "&aSuccessfully set home point &6%name% &aof player &6%player%"
+    invalidName: "&cInvalid home name &6%name%"
   delhome:
     success: "&aSuccessfully deleted home &6%name%"
     successOther: "&aSuccessfully deleted home &6%name% &aof player &6%player%"
   home:
     success: "&aSuccessfully teleported to home &6%name%"
+    successActionbar: "&aTeleported to home &6%name%"
     successOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"
   homeList:
     noHomes: "&cYou have no homes to list"

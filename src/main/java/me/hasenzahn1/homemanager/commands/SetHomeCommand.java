@@ -7,7 +7,6 @@ import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.PlayerHome;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,7 +29,7 @@ public class SetHomeCommand extends BaseHomeCommand {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         //Check player
         if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.NO_PLAYER)));
+            Language.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -55,7 +54,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Check is player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.size() >= maxHomes) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_MAX_HOMES, "amount", String.valueOf(maxHomes))));
+            Language.sendMessage(commandSender, Language.SET_HOME_MAX_HOMES, "amount", String.valueOf(maxHomes));
             dbSession.destroy();
             return true;
         }
@@ -66,6 +65,14 @@ public class SetHomeCommand extends BaseHomeCommand {
             dbSession.destroy();
             return true;
         }
+
+        //Check for Invalid Characters in homeName
+        if (arguments.isInvalidHomeName()) {
+            Language.sendMessage(commandSender, Language.SET_HOME_INVALID_NAME, "name", arguments.getHomeName());
+            dbSession.destroy();
+            return true;
+        }
+
         requestedHome = new PlayerHome(arguments.getHomeName(), arguments.getCmdSender().getLocation());
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
@@ -95,7 +102,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //You don't have enough experience, but you have to pay experience
         if (arguments.getCmdSender().getLevel() < requiredLevels) {
-            commandSender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels))));
+            Language.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();
             return true;
         }
@@ -115,17 +122,17 @@ public class SetHomeCommand extends BaseHomeCommand {
 
     private void sendSuccessMessage(Player sender, UUID player, String homeName) {
         if (sender.getUniqueId().equals(player)) {
-            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS, "name", homeName)));
+            Language.sendMessage(sender, Language.SET_HOME_SUCCESS, "name", homeName);
         } else {
-            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(player).getName())));
+            Language.sendMessage(sender, Language.SET_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(player).getName());
         }
     }
 
     private void sendDuplicateHomesMessage(CommandSender sender, PlayerNameArguments arguments) {
         if (arguments.isSelf()) {
-            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME, "name", arguments.getHomeName())));
+            Language.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME, "name", arguments.getHomeName());
         } else {
-            sender.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName())));
+            Language.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
         }
     }
 

@@ -16,6 +16,10 @@ public class PlayerNameArguments extends PlayerArguments {
         return homeName;
     }
 
+    public boolean isInvalidHomeName() {
+        return homeName.matches("[!-~]{0,30}");
+    }
+
     public static PlayerNameArguments parseArguments(Player cmdSender, String[] args) {
         if (args.length == 0)
             return new PlayerNameArguments(cmdSender, "", "", true);
