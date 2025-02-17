@@ -51,4 +51,22 @@ public class GroupInfosTable extends Table {
         }
         return 0;
     }
+
+    public void incrementFreeHomes(Connection con, UUID uuid, String group) {
+        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes + 1 WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
+            statement.executeUpdate();
+            Logger.DEBUG.log("Successfully incremented free homes for player " + uuid + " in group " + group);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void decrementFreeHomes(Connection con, UUID uuid, String group) {
+        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes - 1 WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "' AND freehomes > 0")) {
+            statement.executeUpdate();
+            Logger.DEBUG.log("Successfully decremented free homes for player " + uuid + " in group " + group);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

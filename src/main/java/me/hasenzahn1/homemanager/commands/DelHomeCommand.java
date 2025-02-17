@@ -52,7 +52,7 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Check if home exists
         if (!playerHomes.homeExists(arguments.getHomeName())) {
-            sendUnknownHomeMessage(arguments);
+            Language.sendUnknownHomeMessage(arguments);
             dbSession.destroy();
             return true;
         }
@@ -64,8 +64,7 @@ public class DelHomeCommand extends BaseHomeCommand {
         dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
 
         //Grant free home
-        int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
-        dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), freeHomes + 1);
+        dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         sendSuccessMessage(arguments, home.name());
@@ -73,13 +72,6 @@ public class DelHomeCommand extends BaseHomeCommand {
         return true;
     }
 
-    private void sendUnknownHomeMessage(PlayerNameGroupArguments arguments) {
-        if (arguments.isSelf()) {
-            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
-        } else {
-            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName());
-        }
-    }
 
     public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {

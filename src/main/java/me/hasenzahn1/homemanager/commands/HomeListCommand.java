@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -62,25 +63,29 @@ public class HomeListCommand extends BaseHomeCommand {
         }
 
         //Create homes list
+        Component homeListText = createHomeListText(arguments, playerHomes);
+        commandSender.sendMessage(homeListText);
+        return true;
+    }
+
+    private Component createHomeListText(PlayerGroupArguments arguments, PlayerHomes playerHomes) {
         Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX));
         OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID());
 
-        int currentHomeIndex = 0;
-        int maxhomes = playerHomes.getHomeAmount();
         List<Home> homes = playerHomes.getHomes().stream().sorted(Comparator.comparing(Home::name)).toList();
+        List<Component> components = new ArrayList<>();
 
+        //Create Components
         for (Home home : homes) {
             Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.name()));
             currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
-            display = display.append(currentHome);
-
-            if (currentHomeIndex < maxhomes - 1)
-                display = display.append(Component.text(Language.getLang(Language.HOME_LIST_SEPARATOR)));
-            currentHomeIndex++;
+            components.add(currentHome);
+            components.add(Component.text(Language.getLang(Language.HOME_LIST_SEPARATOR)));
         }
 
-        commandSender.sendMessage(display);
-        return true;
+        //Combine Components
+        for (int i = 0; i < components.size() - 1; i++) display = display.append(components.get(i));
+        return display;
     }
 
     private void sendNoHomesMessage(PlayerGroupArguments arguments) {

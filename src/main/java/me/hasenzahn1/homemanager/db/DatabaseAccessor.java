@@ -52,6 +52,16 @@ public class DatabaseAccessor {
         database.getTable(GroupInfosTable.class).saveFreeHomes(connection, player, group, maxSetHomes);
     }
 
+    public void incrementFreeHomes(UUID player, String group) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(GroupInfosTable.class).incrementFreeHomes(connection, player, group);
+    }
+
+    public void decrementFreeHomes(UUID player, String group) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(GroupInfosTable.class).decrementFreeHomes(connection, player, group);
+    }
+
     public void deleteHomesFromTheDatabase(UUID player, String homeName, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).removeHomeFromDatabase(connection, player, homeName, group);

@@ -46,7 +46,6 @@ public class SetHomeCommand extends BaseHomeCommand {
         if (ArgumentValidator.checkInvalidPlayerArgs(commandSender, arguments, command))
             return true;
 
-
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
         PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
@@ -68,33 +67,34 @@ public class SetHomeCommand extends BaseHomeCommand {
         //Gather Max Homes from db
         int maxHomes = PermissionUtils.getMaxHomesFromPermission(commandSender, arguments.getWorldGroup().getName());
 
-        //Check if player has reached his maxHome Limit
+        //Check if the player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.getHomeAmount() >= maxHomes) {
             Language.sendMessage(commandSender, Language.SET_HOME_MAX_HOMES, "amount", String.valueOf(maxHomes));
             dbSession.destroy();
             return true;
         }
 
+        //Create the home
         Home requestedHome = new Home(arguments.getHomeName(), arguments.getCmdSender().getLocation());
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
         boolean hasToPayExperience = arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable();
 
-        //Get FreeHomes From db
-        int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
-
         //No Experience Required
-        if (!arguments.getWorldGroup().getSettings().isSetHomeRequiresExperience() || !hasToPayExperience) {
+        if (!hasToPayExperience || !arguments.getWorldGroup().getSettings().isSetHomeRequiresExperience()) {
             if (arguments.isSelf())
-                dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), Math.max(0, freeHomes - 1));
+                dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
             return true;
         }
 
+        //Get FreeHomes From db
+        int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+
         //If the player has free homes use it.
         if (freeHomes > 0) {
-            dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), freeHomes - 1);
+            dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
             return true;
         }
