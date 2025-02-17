@@ -2,11 +2,14 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
-import me.hasenzahn1.homemanager.homes.PlayerHome;
+import me.hasenzahn1.homemanager.homes.Home;
+import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeCommand extends BaseHomeCommand {
@@ -34,35 +36,44 @@ public class HomeCommand extends BaseHomeCommand {
             return true;
         }
 
+        //Parse Arguments
         PlayerNameGroupArguments arguments = PlayerNameGroupArguments.parseArguments(((Player) commandSender), args);
 
-
-        if (checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.home"))
+        //Check Permissions
+        if (PermissionValidator.checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.home"))
             return true;
 
-        if (checkInvalidPlayerGroupArgs(commandSender, arguments, command))
+        //Check Args
+        if (ArgumentValidator.checkInvalidPlayerGroupArgs(commandSender, arguments, command))
             return true;
-
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, PlayerHome> dbHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
-        PlayerHome requestedHome = dbHomes.get(arguments.getHomeName().toLowerCase());
-
-        if (requestedHome == null) {
-            Language.sendMessage(commandSender, Language.UNKNOWN_HOME, "name", arguments.getHomeName(), "group", arguments.getWorldGroup().getName());
+        //Check if home exists
+        if (!playerHomes.homeExists(arguments.getHomeName())) {
+            sendUnknownHomeMessage(arguments);
             return true;
         }
 
-        arguments.getCmdSender().teleport(requestedHome.getLocation());
+        Home requestedHome = playerHomes.getHome(arguments.getHomeName());
 
-        sendSuccessMessage(arguments, requestedHome.getName());
+        arguments.getCmdSender().teleport(requestedHome.location());
+        sendSuccessMessage(arguments, requestedHome.name());
         return true;
     }
 
-    public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
+    private void sendUnknownHomeMessage(PlayerNameGroupArguments arguments) {
+        if (arguments.isSelf()) {
+            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
+        } else {
+            Language.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName());
+        }
+    }
+
+    private void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {
             Language.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS, "name", homeName);
         } else {

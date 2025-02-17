@@ -2,11 +2,14 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
-import me.hasenzahn1.homemanager.homes.PlayerHome;
+import me.hasenzahn1.homemanager.homes.Home;
+import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.Bukkit;
@@ -17,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
 
 public class HomeListCommand extends BaseHomeCommand {
@@ -36,23 +39,24 @@ public class HomeListCommand extends BaseHomeCommand {
             return true;
         }
 
+        //Parse arguments
         PlayerGroupArguments arguments = PlayerGroupArguments.parseArguments(((Player) commandSender), args);
 
-
-        if (checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.homelist"))
+        //Check for permissions
+        if (PermissionValidator.checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.homelist"))
             return true;
 
-        if (checkInvalidPlayerGroupArgs(commandSender, arguments, command))
+        //Validate Player Args
+        if (ArgumentValidator.checkInvalidPlayerGroupArgs(commandSender, arguments, command))
             return true;
-
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         //No Homes Message
-        if (playerHomes.isEmpty()) {
+        if (!playerHomes.hasHomes()) {
             sendNoHomesMessage(arguments);
             return true;
         }
@@ -62,11 +66,12 @@ public class HomeListCommand extends BaseHomeCommand {
         OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID());
 
         int currentHomeIndex = 0;
-        int maxhomes = playerHomes.size();
+        int maxhomes = playerHomes.getHomeAmount();
+        List<Home> homes = playerHomes.getHomes().stream().sorted(Comparator.comparing(Home::name)).toList();
 
-        for (PlayerHome home : playerHomes.values()) {
-            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.getName()));
-            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + home.getName() + " -g " + arguments.getWorldGroup().getName()));
+        for (Home home : homes) {
+            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.name()));
+            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
             display = display.append(currentHome);
 
             if (currentHomeIndex < maxhomes - 1)

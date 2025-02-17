@@ -3,7 +3,8 @@ package me.hasenzahn1.homemanager.commands.tabcompletion;
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
-import me.hasenzahn1.homemanager.homes.PlayerHome;
+import me.hasenzahn1.homemanager.homes.Home;
+import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,7 +38,7 @@ public class CompletionsHelper {
         OfflinePlayer playerToGetHomesFrom = !playerHomesToList.isEmpty() ? Bukkit.getOfflinePlayerIfCached(playerHomesToList) : null;
         if (playerToGetHomesFrom == null) return List.of();
 
-        if (cachedHomesInvalid(playerToGetHomesFrom.getUniqueId(), group)) {
+        if (isCachedHomesInvalid(playerToGetHomesFrom.getUniqueId(), group)) {
             revalidateCaches(playerToGetHomesFrom.getUniqueId(), group);
         }
 
@@ -46,7 +47,7 @@ public class CompletionsHelper {
     }
 
 
-    private boolean cachedHomesInvalid(UUID uuid, WorldGroup group) {
+    private boolean isCachedHomesInvalid(UUID uuid, WorldGroup group) {
         if (!cachedHomes.containsKey(uuid)) return true;
         if (cachedHomes.get(uuid).isEmpty()) return true;
 
@@ -59,18 +60,16 @@ public class CompletionsHelper {
     private void revalidateCaches(UUID uuid, WorldGroup group) {
         if (!cachedHomes.containsKey(uuid)) cachedHomes.put(uuid, new ArrayList<>());
         DatabaseAccessor session = DatabaseAccessor.openSession();
-        List<HomesCache> homes = session.getHomesFromPlayer(uuid, group.getName()).values().stream()
-                .map(PlayerHome::getName)
-                .map(h -> new HomesCache(uuid, h, group)).toList();
-
-        for (int i = cachedHomes.get(uuid).size() - 1; i >= 0; i--) {
-            if (cachedHomes.get(uuid).get(i).isInWorldGroup(group)) cachedHomes.get(uuid).remove(i);
-        }
+        PlayerHomes playerHomes = session.getHomesFromPlayer(uuid, group.getName());
+        List<HomesCache> homes = playerHomes.getHomesInWorldGroup(group).stream()
+                .map(Home::name)
+                .map(homeName -> new HomesCache(uuid, homeName, group)).toList();
 
         cachedHomes.get(uuid).addAll(homes);
+        session.destroy();
     }
 
-    public void invalidateHomes(UUID player) {
+    public void invalidatePlayerHomes(UUID player) {
         cachedHomes.remove(player);
     }
 }

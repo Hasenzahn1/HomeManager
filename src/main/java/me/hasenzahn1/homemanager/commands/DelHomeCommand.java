@@ -2,11 +2,14 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
-import me.hasenzahn1.homemanager.homes.PlayerHome;
+import me.hasenzahn1.homemanager.homes.Home;
+import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class DelHomeCommand extends BaseHomeCommand {
@@ -36,36 +38,38 @@ public class DelHomeCommand extends BaseHomeCommand {
         //Parse arguments
         PlayerNameGroupArguments arguments = PlayerNameGroupArguments.parseArguments(((Player) commandSender), args);
 
-
-        if (checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.delhome"))
+        //Validate Permissions
+        if (PermissionValidator.checkInvalidPermissionsWithGroup(commandSender, arguments, "homemanager.commands.delhome"))
             return true;
 
-        if (checkInvalidPlayerGroupArgs(commandSender, arguments, command))
+        //Validate Arguments
+        if (ArgumentValidator.checkInvalidPlayerGroupArgs(commandSender, arguments, command))
             return true;
-
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        HashMap<String, PlayerHome> playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
 
         //Check if home exists
-        if (!playerHomes.containsKey(arguments.getHomeName().toLowerCase())) {
+        if (!playerHomes.homeExists(arguments.getHomeName())) {
             sendUnknownHomeMessage(arguments);
             dbSession.destroy();
             return true;
         }
 
-        PlayerHome home = playerHomes.get(arguments.getHomeName().toLowerCase());
+        //Get Valid Home
+        Home home = playerHomes.getHome(arguments.getHomeName());
+
+        //Delete home
+        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
 
         //Grant free home
         int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.saveFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName(), freeHomes + 1);
-
-        //Delete home
-        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.getName(), arguments.getWorldGroup().getName());
         dbSession.destroy();
-        sendSuccessMessage(arguments, home.getName());
-        completionsHelper.invalidateHomes(arguments.getActionPlayerUUID());
+
+        sendSuccessMessage(arguments, home.name());
+        completionsHelper.invalidatePlayerHomes(arguments.getActionPlayerUUID());
         return true;
     }
 

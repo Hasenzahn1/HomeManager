@@ -4,11 +4,11 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
-import me.hasenzahn1.homemanager.homes.PlayerHome;
+import me.hasenzahn1.homemanager.homes.Home;
+import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
 
 import java.sql.Connection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class DatabaseAccessor {
         return new DatabaseAccessor(HomeManager.getInstance().getDatabase());
     }
 
-    public HashMap<String, PlayerHome> getHomesFromPlayer(UUID uuid, String group) {
+    public PlayerHomes getHomesFromPlayer(UUID uuid, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid, group);
     }
@@ -37,7 +37,7 @@ public class DatabaseAccessor {
         return database.getTable(HomesTable.class).getHomeCountFromPlayer(connection, uuid, group);
     }
 
-    public void saveHomeToDatabase(UUID player, PlayerHome home) {
+    public void saveHomeToDatabase(UUID player, Home home) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).saveHomeToDatabase(connection, player, home);
     }

@@ -16,7 +16,7 @@ public class PlayerNameArguments extends PlayerArguments {
         return homeName;
     }
 
-    public boolean isInvalidHomeName() {
+    public boolean isValidHomeName() {
         return homeName.matches("[!-~]{0,30}");
     }
 
