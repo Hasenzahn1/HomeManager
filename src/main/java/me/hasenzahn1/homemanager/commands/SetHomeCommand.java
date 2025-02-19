@@ -158,16 +158,22 @@ public class SetHomeCommand extends BaseHomeCommand {
         //Define Completion Cases
         if (strings[0].isEmpty()) return nameArgCompletions;
 
-        //No Other permission
-        if (!playerHasOtherPermission && strings.length == 1) return nameArgCompletions;
-        if (!playerHasOtherPermission && strings.length == 2) return List.of();
+        //Define Completions for first argument
+        if (strings.length == 1) {
+            //Check for other permission: /sethome (player)
+            if (playerHasOtherPermission && otherPlayerArgMightBeSet) return offlinePlayers;
 
-        //With other permission
-        if (playerHasOtherPermission && strings.length == 1 && !otherPlayerArgMightBeSet) return nameArgCompletions;
-        if (playerHasOtherPermission && strings.length == 1 && otherPlayerArgMightBeSet) return offlinePlayers;
-        if (playerHasOtherPermission && strings.length == 2 && !otherPlayerArgMightBeSet) return List.of();
-        if (playerHasOtherPermission && strings.length == 2 && otherPlayerArgMightBeSet) return nameArgCompletions;
+            //Display name args
+            return nameArgCompletions;
+        }
 
+        if (strings.length == 2) {
+            //Check for name arg: /sethome (player) name
+            if (playerHasOtherPermission && otherPlayerArgMightBeSet) return nameArgCompletions;
+
+            //No other arg needed
+            return List.of();
+        }
         return List.of();
     }
 }
