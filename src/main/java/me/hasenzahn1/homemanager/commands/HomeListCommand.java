@@ -98,36 +98,70 @@ public class HomeListCommand extends BaseHomeCommand {
 
     // /homes (player) (--group groupname)
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        //No TabCompletion for non player command executors
         if (!(commandSender instanceof Player player)) return List.of();
 
+        //No Completion if command is too long
+        if (args.length >= 4) return List.of();
+
+        //Get World group
         WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(player.getWorld());
 
-        List<String> offlinePlayers = commandSender.hasPermission("homemanager.commands.homelist.other." + worldGroup.getName()) ? completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), strings[0]) : List.of();
+        //Check permissions
+        boolean playerHasOtherPermission = commandSender.hasPermission("homemanager.commands.homelist.other." + worldGroup.getName());
+        boolean playerHasGroupPermission = commandSender.hasPermission("homemanager.commands.homelist.group." + worldGroup.getName());
+
+        //Define Completions
+        List<String> offlinePlayers = completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), args[0]);
         List<String> groupPrefix = List.of("-g", "-group");
-        List<String> groups = commandSender.hasPermission("homemanager.commands.homelist.group." + worldGroup.getName()) ? completionsHelper.getWorldGroups(commandSender, "homemanager.commands.homelist.groups") : List.of();
+        List<String> groups = completionsHelper.getWorldGroups(commandSender, "homemanager.commands.homelist.groups");
+        boolean otherPlayerArgMightBeSet = !offlinePlayers.isEmpty();
 
+        //Define Completions for first argument
+        if (args.length == 1) {
+            //Check Other Player Arg: /homes (player)
+            if (playerHasOtherPermission && otherPlayerArgMightBeSet) return offlinePlayers;
 
-        if (strings.length == 1) {
-            if (!offlinePlayers.isEmpty()) return offlinePlayers;
-            if (!completionsHelper.matchAndSort(groupPrefix, strings[0]).isEmpty() && !groups.isEmpty())
-                return completionsHelper.matchAndSort(groupPrefix, strings[0]);
-            return List.of();
-        }
-        if (strings.length == 2) {
-            if (groups.isEmpty()) return List.of();
-            if (!completionsHelper.matchAndSort(groupPrefix, strings[0]).isEmpty())
-                return completionsHelper.matchAndSort(groups, strings[1]);
-            if (strings[0].startsWith("-")) return List.of();
-            return completionsHelper.matchAndSort(groupPrefix, strings[1]);
-        }
-        if (strings.length == 3) {
-            if (!completionsHelper.matchAndSort(groupPrefix, strings[1]).isEmpty())
-                return completionsHelper.matchAndSort(groups, strings[2]);
+            //Check Prefixes: /homes -g
+            List<String> prefixMatches = completionsHelper.matchAndSort(groupPrefix, args[0]);
+            if (playerHasGroupPermission && !prefixMatches.isEmpty())
+                return completionsHelper.matchAndSort(groupPrefix, args[0]);
+
+            //No arguments
             return List.of();
         }
 
+        //Define completions for second argument
+        if (args.length == 2) {
+            //Check if the player has no group permission: /homes <player>
+            if (!playerHasGroupPermission) return List.of();
 
+            List<String> prefixMatchesInFirstArg = completionsHelper.matchAndSort(groupPrefix, args[0]);
+            List<String> prefixMatchesInSecondArg = completionsHelper.matchAndSort(groupPrefix, args[1]);
+            List<String> groupMatchesInSecondArg = completionsHelper.matchAndSort(groups, args[1]);
+
+            //Display group: /homes -g <group>
+            if (!prefixMatchesInFirstArg.isEmpty()) return groupMatchesInSecondArg;
+
+            //Display Prefix: /homes <player> -g
+            if (!offlinePlayers.isEmpty() && !prefixMatchesInSecondArg.isEmpty()) return prefixMatchesInSecondArg;
+
+            return List.of();
+        }
+
+        //Define completions for third arg
+        if (args.length == 3) {
+            if (!playerHasGroupPermission) return List.of();
+
+            List<String> prefixMatchesInSecondArg = completionsHelper.matchAndSort(groupPrefix, args[1]);
+            List<String> groupMatchesInThirdArg = completionsHelper.matchAndSort(groups, args[2]);
+
+            // Display Group: /homes <player> -g <group>
+            if (!offlinePlayers.isEmpty() && !prefixMatchesInSecondArg.isEmpty()) return groupMatchesInThirdArg;
+
+            return List.of();
+        }
         return List.of();
     }
 }

@@ -138,25 +138,36 @@ public class SetHomeCommand extends BaseHomeCommand {
         }
     }
 
+    // /sethome (player) <name>
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        // No TabCompletions for non player command executors
         if (!(commandSender instanceof Player player)) return List.of();
 
-        List<String> arg1Completions = List.of("<homename>");
+        //No Completion if command is too long
         if (strings.length >= 3) return List.of();
 
+        // Check Permissions
         boolean playerHasOtherPermission = player.hasPermission("homemanager.commands.sethome.other." + HomeManager.getInstance().getWorldGroupManager().getWorldGroup(player.getWorld()).getName());
 
-        List<String> offlinePlayers = playerHasOtherPermission ? completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), strings[0]) : List.of();
+        // Define Completions
+        List<String> nameArgCompletions = List.of("<homename>");
+        List<String> offlinePlayers = completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), strings[0]);
+        boolean otherPlayerArgMightBeSet = !offlinePlayers.isEmpty();
 
-        if (strings[0].isEmpty()) return arg1Completions;
-        if (strings.length == 1 && offlinePlayers.isEmpty()) return arg1Completions;
-        if (strings.length == 1 && playerHasOtherPermission) return offlinePlayers;
+        //Define Completion Cases
+        if (strings[0].isEmpty()) return nameArgCompletions;
 
+        //No Other permission
+        if (!playerHasOtherPermission && strings.length == 1) return nameArgCompletions;
+        if (!playerHasOtherPermission && strings.length == 2) return List.of();
 
-        if (offlinePlayers.isEmpty()) return List.of();
+        //With other permission
+        if (playerHasOtherPermission && strings.length == 1 && !otherPlayerArgMightBeSet) return nameArgCompletions;
+        if (playerHasOtherPermission && strings.length == 1 && otherPlayerArgMightBeSet) return offlinePlayers;
+        if (playerHasOtherPermission && strings.length == 2 && !otherPlayerArgMightBeSet) return List.of();
+        if (playerHasOtherPermission && strings.length == 2 && otherPlayerArgMightBeSet) return nameArgCompletions;
 
-
-        return arg1Completions;
+        return List.of();
     }
 }
