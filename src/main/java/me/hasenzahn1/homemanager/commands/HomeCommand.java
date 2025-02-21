@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
@@ -32,7 +33,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Check player
         if (!(commandSender instanceof Player)) {
-            Language.sendMessage(commandSender, Language.NO_PLAYER);
+            MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -54,7 +55,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Check if home exists
         if (!playerHomes.homeExists(arguments.getHomeName())) {
-            Language.sendUnknownHomeMessage(arguments);
+            MessageManager.sendUnknownHomeMessage(arguments);
             return true;
         }
 
@@ -69,9 +70,9 @@ public class HomeCommand extends BaseHomeCommand {
 
     private void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {
-            Language.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS, "name", homeName);
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS, "name", homeName);
         } else {
-            Language.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
         }
     }
 

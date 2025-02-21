@@ -32,7 +32,7 @@ public class WorldGroup {
         this.name = name.toLowerCase();
         this.worlds = new ArrayList<>();
 
-        settings = new WorldGroupSettings(null);
+        settings = WorldGroupSettings.DEFAULT;
     }
 
     public String getName() {

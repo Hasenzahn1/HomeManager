@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
@@ -31,7 +32,7 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Check player
         if (!(commandSender instanceof Player)) {
-            Language.sendMessage(commandSender, Language.NO_PLAYER);
+            MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -52,7 +53,7 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Check if home exists
         if (!playerHomes.homeExists(arguments.getHomeName())) {
-            Language.sendUnknownHomeMessage(arguments);
+            MessageManager.sendUnknownHomeMessage(arguments);
             dbSession.destroy();
             return true;
         }
@@ -64,7 +65,8 @@ public class DelHomeCommand extends BaseHomeCommand {
         dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
 
         //Grant free home
-        dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        if (arguments.getWorldGroup().getSettings().isHomeDeletionGrantsFreeHome())
+            dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
         sendSuccessMessage(arguments, home.name());
@@ -72,14 +74,14 @@ public class DelHomeCommand extends BaseHomeCommand {
         return true;
     }
 
-
     public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
         if (arguments.isSelf()) {
-            Language.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", homeName);
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", homeName);
         } else {
-            Language.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
         }
     }
+
 
     // /delhome (player) homename (--group groupname)
     @Override

@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.permission;
 
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import org.bukkit.command.CommandSender;
@@ -10,13 +11,13 @@ public class PermissionValidator {
     public static boolean checkInvalidPermissions(CommandSender sender, PlayerNameArguments arguments, String basePerm) {
         //Check base sethome permission
         if (!arguments.senderHasBasePermission(basePerm)) {
-            Language.sendMessage(sender, Language.NO_PERMISSION);
+            MessageManager.sendMessage(sender, Language.NO_PERMISSION);
             return true;
         }
 
         //Check other Permission (no permission and players differ)
         if (!arguments.senderHasOtherPermission(basePerm)) {
-            Language.sendMessage(sender, Language.NO_PERMISSION_OTHER);
+            MessageManager.sendMessage(sender, Language.NO_PERMISSION_OTHER);
             return true;
         }
         return false;
@@ -28,7 +29,7 @@ public class PermissionValidator {
 
         //Check if the player has the required .group.<group> permission if requested
         if (!arguments.senderHasGroupPermission(basePerm)) {
-            Language.sendMessage(sender, Language.NO_PERMISSION_GROUP);
+            MessageManager.sendMessage(sender, Language.NO_PERMISSION_GROUP);
             return true;
         }
 

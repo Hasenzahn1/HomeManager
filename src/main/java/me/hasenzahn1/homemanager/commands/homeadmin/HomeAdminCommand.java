@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.commands.homeadmin;
 
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.migration.BasicHomesMigrator;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
 import org.bukkit.command.Command;
@@ -16,17 +17,17 @@ public class HomeAdminCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (!(commandSender instanceof Player executor)) {
-            Language.sendMessage(commandSender, Language.NO_PLAYER);
+            MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
         if (!commandSender.hasPermission("homemanager.commands.homeadmin")) {
-            Language.sendMessage(commandSender, Language.NO_PERMISSION);
+            MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
             return true;
         }
 
         if (args.length == 0) {
-            Language.sendMessage(commandSender, Language.INVALID_COMMAND, "command", "/homeadmin <migrate>");
+            MessageManager.sendMessage(commandSender, Language.INVALID_COMMAND, "command", "/homeadmin <migrate>");
             return true;
         }
 
@@ -35,7 +36,7 @@ public class HomeAdminCommand implements CommandExecutor {
                 handleMigrateCommand(executor, Arrays.copyOfRange(args, 1, args.length));
                 break;
             default:
-                Language.sendMessage(commandSender, Language.INVALID_COMMAND, "command", "/homeadmin <migrate>");
+                MessageManager.sendMessage(commandSender, Language.INVALID_COMMAND, "command", "/homeadmin <migrate>");
         }
 
         return true;
@@ -43,7 +44,7 @@ public class HomeAdminCommand implements CommandExecutor {
 
     public void handleMigrateCommand(Player executor, String[] args) {
         if (args.length == 0) { //
-            Language.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate <all/world>");
+            MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate <all/world>");
             return;
         }
 
@@ -53,7 +54,7 @@ public class HomeAdminCommand implements CommandExecutor {
                 break;
             case "world":
                 if (args.length == 1) {
-                    Language.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate world <world>");
+                    MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate world <world>");
                     return;
                 }
 
@@ -61,7 +62,7 @@ public class HomeAdminCommand implements CommandExecutor {
                 PluginMigrator.startMigrationWorld(executor, new BasicHomesMigrator(), worldName);
                 break;
             default:
-                Language.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate world <world>");
+                MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin migrate world <world>");
         }
     }
 

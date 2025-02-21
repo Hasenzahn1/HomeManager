@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerGroupArguments;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
@@ -36,7 +37,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //Check player
         if (!(commandSender instanceof Player)) {
-            Language.sendMessage(commandSender, Language.NO_PLAYER);
+            MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
             return true;
         }
 
@@ -58,7 +59,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //No Homes Message
         if (!playerHomes.hasHomes()) {
-            sendNoHomesMessage(arguments);
+            MessageManager.sendNoHomesMessage(arguments);
             return true;
         }
 
@@ -88,13 +89,6 @@ public class HomeListCommand extends BaseHomeCommand {
         return display;
     }
 
-    private void sendNoHomesMessage(PlayerGroupArguments arguments) {
-        if (arguments.isSelf()) {
-            Language.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES);
-        } else {
-            Language.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
-        }
-    }
 
     // /homes (player) (--group groupname)
     @Override

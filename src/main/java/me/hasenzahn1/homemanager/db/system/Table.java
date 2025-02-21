@@ -2,7 +2,6 @@ package me.hasenzahn1.homemanager.db.system;
 
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public abstract class Table {
 

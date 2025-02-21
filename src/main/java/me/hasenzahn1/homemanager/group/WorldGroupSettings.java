@@ -2,57 +2,142 @@ package me.hasenzahn1.homemanager.group;
 
 import me.hasenzahn1.homemanager.util.ExpressionEvaluator;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class WorldGroupSettings {
 
-    private boolean setHomeRequiresExperience;
-    private boolean setHomeExperienceForEachHome;
-    private String setHomeExperienceFormula;
-    private List<Integer> experienceTable;
+    public static WorldGroupSettings DEFAULT = new WorldGroupSettings();
+
+    //new
+    private boolean setHomeExperienceActive = false;
+    private boolean homeDeletionGrantsFreeHome = true;
+    private String experienceFormula = "";
+    private List<Integer> experiencePerHome = List.of();
+
+    private boolean homeTeleportExperienceActive = false;
+    private int homeTeleportExperienceAmount = 1;
+
+    private boolean delayActive = false;
+    private double delayDurationInSeconds = 5;
+    private List<EntityDamageEvent.DamageCause> delayInterruptCauses = List.of();
+
+    private boolean timeoutActive = false;
+    private double timeoutDurationInSeconds = 5;
+    private List<EntityDamageEvent.DamageCause> timoutCause = List.of();
+
+    private boolean playerHasToBeOnGroundForTeleport = false;
+
+    private boolean obstructedHomeWarning = false;
+    private boolean worldDoesNotExistWarning = false;
+
 
     public WorldGroupSettings(ConfigurationSection section) {
-        if (section == null) {
-            initializeDefaultSettings();
-        } else {
-            parseFromSettings(section);
-        }
+        setHomeExperienceActive = section.getBoolean("setHomeExperience.active", setHomeExperienceActive);
+        homeDeletionGrantsFreeHome = section.getBoolean("setHomeExperience.homeDeletionGrantsFreeHome", homeDeletionGrantsFreeHome);
+        experienceFormula = section.getString("setHomeExperience.experienceFormula", experienceFormula);
+        experiencePerHome = section.getIntegerList("setHomeExperience.experiencePerHome");
 
+        homeTeleportExperienceActive = section.getBoolean("homeTeleportExperience.active", homeTeleportExperienceActive);
+        homeTeleportExperienceAmount = section.getInt("homeTeleportExperience.amount", homeTeleportExperienceAmount);
+
+        delayActive = section.getBoolean("delay.active", delayActive);
+        delayDurationInSeconds = section.getDouble("delay.duration", delayDurationInSeconds);
+        delayInterruptCauses = section.getStringList("delay.interruptCauses").stream().map(c -> {
+            try {
+                return EntityDamageEvent.DamageCause.valueOf(c);
+            } catch (Exception e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).toList();
+
+        timeoutActive = section.getBoolean("timeout.active", timeoutActive);
+        timeoutDurationInSeconds = section.getDouble("timeout.duration", timeoutDurationInSeconds);
+        timoutCause = section.getStringList("timeout.causes").stream().map(c -> {
+            try {
+                return EntityDamageEvent.DamageCause.valueOf(c);
+            } catch (Exception e) {
+                return null;
+            }
+        }).filter(Objects::nonNull).toList();
+
+        playerHasToBeOnGroundForTeleport = section.getBoolean("misc.playerHasToBeOnGroundForTeleport", playerHasToBeOnGroundForTeleport);
+
+        obstructedHomeWarning = section.getBoolean("warnings.obstructedHome", obstructedHomeWarning);
+        worldDoesNotExistWarning = section.getBoolean("warnings.worldDoesNotExist", worldDoesNotExistWarning);
     }
 
-    private void parseFromSettings(ConfigurationSection section) {
-        setHomeExperienceForEachHome = section.getBoolean("sethome.experienceForEveryHome", false);
-        setHomeExperienceFormula = section.getString("sethome.experienceFormula", "");
-        experienceTable = section.getIntegerList("sethome.experienceTable");
-        setHomeRequiresExperience = section.getBoolean("sethome.requiresExperience", false);
-    }
 
-    private void initializeDefaultSettings() {
-        setHomeRequiresExperience = false;
-        setHomeExperienceForEachHome = false;
-        setHomeExperienceFormula = "";
-        experienceTable = new ArrayList<>();
-    }
-
-    public boolean isSetHomeExperienceForEachHome() {
-        return setHomeExperienceForEachHome;
-    }
-
-    public String getSetHomeExperienceFormula() {
-        return setHomeExperienceFormula;
-    }
-
-    public boolean isSetHomeRequiresExperience() {
-        return setHomeRequiresExperience;
+    private WorldGroupSettings() {
     }
 
     public int getRequiredExperience(int currentHomes) {
-        if (experienceTable.size() > currentHomes) return experienceTable.get(currentHomes);
-        if (!setHomeExperienceFormula.isEmpty())
-            return (int) ExpressionEvaluator.eval(setHomeExperienceFormula.replace("amount", String.valueOf(currentHomes)));
-        if (!experienceTable.isEmpty()) return experienceTable.get(experienceTable.size() - 1);
+        if (experiencePerHome.size() > currentHomes) return experiencePerHome.get(currentHomes);
+        if (!experienceFormula.isEmpty())
+            return (int) ExpressionEvaluator.eval(experienceFormula.replace("amount", String.valueOf(currentHomes)));
+        if (!experiencePerHome.isEmpty()) return experiencePerHome.get(experiencePerHome.size() - 1);
         return 0;
+    }
+
+    public boolean isSetHomeExperienceActive() {
+        return setHomeExperienceActive;
+    }
+
+    public boolean isHomeDeletionGrantsFreeHome() {
+        return homeDeletionGrantsFreeHome;
+    }
+
+    public String getExperienceFormula() {
+        return experienceFormula;
+    }
+
+    public List<Integer> getExperiencePerHome() {
+        return experiencePerHome;
+    }
+
+    public boolean isHomeTeleportExperienceActive() {
+        return homeTeleportExperienceActive;
+    }
+
+    public int getHomeTeleportExperienceAmount() {
+        return homeTeleportExperienceAmount;
+    }
+
+    public boolean isDelayActive() {
+        return delayActive;
+    }
+
+    public double getDelayDurationInSeconds() {
+        return delayDurationInSeconds;
+    }
+
+    public List<EntityDamageEvent.DamageCause> getDelayInterruptCauses() {
+        return delayInterruptCauses;
+    }
+
+    public boolean isTimeoutActive() {
+        return timeoutActive;
+    }
+
+    public double getTimeoutDurationInSeconds() {
+        return timeoutDurationInSeconds;
+    }
+
+    public List<EntityDamageEvent.DamageCause> getTimoutCause() {
+        return timoutCause;
+    }
+
+    public boolean isPlayerHasToBeOnGroundForTeleport() {
+        return playerHasToBeOnGroundForTeleport;
+    }
+
+    public boolean isObstructedHomeWarning() {
+        return obstructedHomeWarning;
+    }
+
+    public boolean isWorldDoesNotExistWarning() {
+        return worldDoesNotExistWarning;
     }
 }

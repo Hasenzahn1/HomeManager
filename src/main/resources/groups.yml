@@ -3,11 +3,45 @@ Survival:
     - world
     - world_nether
     - world_the_end
-  sethome:
-    requiresExperience: true
-    experienceForEveryHome: false
+
+  setHomeExperience:
+    active: true
     experienceFormula: 2*amount+100
-    experienceTable: [ 0, 5, 10, 15, 25, 40, 65, 105, 170, 275, 445 ]
+    experiencePerHome: [ 0, 5, 10, 15, 25, 40, 65, 105, 170, 275, 445 ]
+    homeDeletionGrantsFreeHome: true
+
+  homeTeleportExperience:
+    active: true
+    amount: 2
+
+  delay:
+    active: true
+    duration: 10
+    interruptCauses:
+      - ENTITY_ATTACK
+      - ENTITY_SWEEP_ATTACK
+      - PROJECTILE
+      - SONIC_BOOM
+      - THORNS
+      - VOID
+
+  timeout:
+    active: true
+    duration: 10
+    cause:
+      - ENTITY_ATTACK
+      - ENTITY_SWEEP_ATTACK
+      - PROJECTILE
+      - SONIC_BOOM
+      - THORNS
+      - VOID
+
+  misc:
+    playerHasToBeOnGroundForTeleport: true
+
+  warnings:
+    obstructedHome: true
+    worldDoesNotExist: true
 
 Skyblock:
   worlds:
