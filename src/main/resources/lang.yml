@@ -28,13 +28,22 @@ commands:
     success: "&aSuccessfully teleported to home &6%name%"
     successActionbar: "&aTeleported to home &6%name%"
     successOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"
+    noExp: "&cYou don't have the required levels to teleport (&6%levels%&c)"
+    notOnGround: "&cYou have to be on the ground to be teleported"
+    timeout: "&cYou can't teleport while in combat. Please wait &6%seconds% &cseconds"
   homeList:
     noHomes: "&cYou have no homes to list"
     noHomesOther: "&cThe player &6%player% &chas no homes to list"
     header: "%prefix%&7Homes: "
     home: "&7%name%"
     separator: "&7, "
-
+  
   homeadmin:
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams"
+
+warnings:
+  worldDoesNotExist:
+    message: "&cThe home you are trying to teleport to is in a world that does not exist. Do you want to delete it?"
+    deleteMessage: "&a[Delete]"
+  homeObstructed: "&cThe home you are teleporting to is obstructed. If you want to continue retype the command in the next &65 &cseconds or click this message"

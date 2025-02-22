@@ -6,6 +6,8 @@ import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
+import me.hasenzahn1.homemanager.listener.TimeoutListener;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class HomeManager extends JavaPlugin {
@@ -19,6 +21,8 @@ public final class HomeManager extends JavaPlugin {
     private DefaultConfig config;
 
     private CompletionsHelper completionsHelper;
+
+    private TimeoutListener timeoutListener;
 
     @Override
     public void onEnable() {
@@ -38,7 +42,12 @@ public final class HomeManager extends JavaPlugin {
         database = new HomesDatabase();
         database.init();
 
+        //Completions
         completionsHelper = new CompletionsHelper();
+
+        //Register Listeners
+        timeoutListener = new TimeoutListener(this);
+        Bukkit.getPluginManager().registerEvents(timeoutListener, this);
 
         //Initialize commands
         registerCommand("sethome", new SetHomeCommand(completionsHelper));
@@ -70,4 +79,7 @@ public final class HomeManager extends JavaPlugin {
         return instance;
     }
 
+    public TimeoutListener getTimeoutListener() {
+        return timeoutListener;
+    }
 }

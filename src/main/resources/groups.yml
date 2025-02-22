@@ -28,20 +28,21 @@ Survival:
   timeout:
     active: true
     duration: 10
-    cause:
+    causes:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
       - PROJECTILE
       - SONIC_BOOM
       - THORNS
       - VOID
+      - BLOCK_EXPLOSION
+      - ENTITY_EXPLOSION
+      - CAMPFIRE
 
-  misc:
-    playerHasToBeOnGroundForTeleport: true
+  homeTeleport:
+    groundCheck: true
+    obstructedHomeCheck: true
 
-  warnings:
-    obstructedHome: true
-    worldDoesNotExist: true
 
 Skyblock:
   worlds:

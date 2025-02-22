@@ -28,12 +28,19 @@ public class Language {
 
     public static final String HOME_SUCCESS = "commands.home.success";
     public static final String HOME_SUCCESS_OTHER = "commands.home.successOther";
+    public static final String HOME_NO_EXP = "commands.home.noExp";
+    public static final String HOME_NOT_ON_GROUND = "commands.home.notOnGround";
+    public static final String HOME_TIMEOUT = "commands.home.timeout";
 
     public static final String HOME_LIST_NO_HOMES = "commands.homeList.noHomes";
     public static final String HOME_LIST_NO_HOMES_OTHER = "commands.homeList.noHomesOther";
     public static final String HOME_LIST_HEADER = "commands.homeList.header";
     public static final String HOME_LIST_HOME = "commands.homeList.home";
     public static final String HOME_LIST_SEPARATOR = "commands.homeList.separator";
+
+    public static final String WARNING_WORLD_NOT_EXISTING_BASE_TEXT = "warnings.worldDoesNotExist.message";
+    public static final String WARNING_WORLD_NOT_EXISTING_DELETE_TEXT = "warnings.worldDoesNotExist.deleteMessage";
+    public static final String WARNING_HOME_OBSTRUCTED = "warnings.homeObstructed";
 
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
 

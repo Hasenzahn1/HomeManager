@@ -23,7 +23,7 @@ public class WorldGroup {
             if (Bukkit.getWorld(worldName) != null)
                 worlds.add(Bukkit.getWorld(worldName));
         }
-
+        
         settings = new WorldGroupSettings(section);
     }
 

@@ -28,10 +28,9 @@ public class WorldGroupSettings {
     private double timeoutDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> timoutCause = List.of();
 
-    private boolean playerHasToBeOnGroundForTeleport = false;
+    private boolean homeTeleportGroundCheck = false;
 
-    private boolean obstructedHomeWarning = false;
-    private boolean worldDoesNotExistWarning = false;
+    private boolean homeTeleportObstructedHomeCheck = true;
 
 
     public WorldGroupSettings(ConfigurationSection section) {
@@ -63,10 +62,8 @@ public class WorldGroupSettings {
             }
         }).filter(Objects::nonNull).toList();
 
-        playerHasToBeOnGroundForTeleport = section.getBoolean("misc.playerHasToBeOnGroundForTeleport", playerHasToBeOnGroundForTeleport);
-
-        obstructedHomeWarning = section.getBoolean("warnings.obstructedHome", obstructedHomeWarning);
-        worldDoesNotExistWarning = section.getBoolean("warnings.worldDoesNotExist", worldDoesNotExistWarning);
+        homeTeleportGroundCheck = section.getBoolean("homeTeleport.groundCheck", homeTeleportGroundCheck);
+        homeTeleportObstructedHomeCheck = section.getBoolean("homeTeleport.obstructedHomeCheck", homeTeleportObstructedHomeCheck);
     }
 
 
@@ -125,19 +122,16 @@ public class WorldGroupSettings {
         return timeoutDurationInSeconds;
     }
 
-    public List<EntityDamageEvent.DamageCause> getTimoutCause() {
+    public List<EntityDamageEvent.DamageCause> getTimoutCauses() {
         return timoutCause;
     }
 
-    public boolean isPlayerHasToBeOnGroundForTeleport() {
-        return playerHasToBeOnGroundForTeleport;
+    public boolean isHomeTeleportGroundCheck() {
+        return homeTeleportGroundCheck;
     }
 
-    public boolean isObstructedHomeWarning() {
-        return obstructedHomeWarning;
+    public boolean isHomeTeleportObstructedHomeCheck() {
+        return homeTeleportObstructedHomeCheck;
     }
 
-    public boolean isWorldDoesNotExistWarning() {
-        return worldDoesNotExistWarning;
-    }
 }
