@@ -10,4 +10,17 @@ public record Home(String name, Location location) {
         player.teleport(location);
     }
 
+    public boolean isObstructed() {
+        if (!location.isChunkLoaded()) location.getChunk().load();
+
+        if (!location.getBlock().isCollidable()) return true;
+        if (!location.clone().add(0, 1, 0).getBlock().isCollidable()) return true;
+        if (!location.clone().add(0, 1, 0).getBlock().isCollidable()) return true;
+        //if (!location.getBlock().isPassable()) return true;
+        //if (!location.clone().add(0, 1, 0).getBlock().isPassable()) return true;
+        //if (!location.clone().add(0, eyeLocation, 0).getBlock().isPassable()) return true;
+
+        return false;
+    }
+
 }

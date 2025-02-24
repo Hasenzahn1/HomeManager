@@ -5,6 +5,7 @@ import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
+import me.hasenzahn1.homemanager.commands.checks.HomeExperienceCheck;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
@@ -23,8 +24,17 @@ import java.util.UUID;
 
 public class SetHomeCommand extends BaseHomeCommand {
 
+    private final HomeExperienceCheck homeExperienceCheck;
+
     public SetHomeCommand(CompletionsHelper completionsHelper) {
         super(completionsHelper);
+
+        homeExperienceCheck = new HomeExperienceCheck() {
+            @Override
+            public int getRequiredExperience(PlayerNameArguments arguments, int currentHomes) {
+                return arguments.getWorldGroup().getSettings().getRequiredExperience(currentHomes);
+            }
+        };
     }
 
     // /sethome (player) \<name>
@@ -80,7 +90,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
-        boolean hasToPayExperience = arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable();
+        boolean hasToPayExperience = homeExperienceCheck.hasToPayExperience(arguments);
 
         //No Experience Required
         if (!hasToPayExperience || !arguments.getWorldGroup().getSettings().isSetHomeExperienceActive()) {
@@ -100,11 +110,9 @@ public class SetHomeCommand extends BaseHomeCommand {
             return true;
         }
 
-        //Calculate Experience
-        int requiredLevels = arguments.getWorldGroup().getSettings().getRequiredExperience(playerHomes.getHomeAmount());
-
         //You don't have enough experience, but you have to pay experience
-        if (arguments.getCmdSender().getLevel() < requiredLevels) {
+        int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount());
+        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount())) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();
             return true;

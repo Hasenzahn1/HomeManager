@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.listener;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.group.WorldGroup;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -29,7 +30,7 @@ public class TimeoutListener implements Listener {
         damageTimestamps.put(event.getEntity().getUniqueId(), System.currentTimeMillis());
     }
 
-    public HashMap<UUID, Long> getDamageTimestamps() {
-        return damageTimestamps;
+    public long getLastTimestamp(Player player) {
+        return damageTimestamps.getOrDefault(player.getUniqueId(), 0L);
     }
 }

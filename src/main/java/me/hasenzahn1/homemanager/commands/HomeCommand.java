@@ -4,7 +4,11 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
+import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
+import me.hasenzahn1.homemanager.commands.checks.HomeExperienceCheck;
+import me.hasenzahn1.homemanager.commands.checks.ObstructionCheck;
+import me.hasenzahn1.homemanager.commands.checks.TimeoutCheck;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
@@ -20,23 +24,25 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class HomeCommand extends BaseHomeCommand {
 
-    private static final int OBSTRUCTED_HOME_RETRY_DURATION = 5000;
-
-    private final HashMap<UUID, String> lastHomes;
-    private final HashMap<UUID, Long> obstructedTimestamps;
-
+    private final TimeoutCheck timeoutCheck;
+    private final ObstructionCheck obstructionCheck;
+    private final HomeExperienceCheck homeExperienceCheck;
 
     public HomeCommand(CompletionsHelper completionsHelper) {
         super(completionsHelper);
 
-        lastHomes = new HashMap<>();
-        obstructedTimestamps = new HashMap<>();
+        timeoutCheck = new TimeoutCheck();
+        obstructionCheck = new ObstructionCheck();
+        homeExperienceCheck = new HomeExperienceCheck() {
+            @Override
+            public int getRequiredExperience(PlayerNameArguments arguments, int homes) {
+                return arguments.getWorldGroup().getSettings().getHomeTeleportExperienceAmount();
+            }
+        };
     }
 
     // /home (player) homename (--group groupname)
@@ -83,37 +89,24 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Check if player is in Timeout
-        if (arguments.getWorldGroup().getSettings().isTimeoutActive() && System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getDamageTimestamps().getOrDefault(arguments.getCmdSender().getUniqueId(), 0L) < arguments.getWorldGroup().getSettings().getTimeoutDurationInSeconds() * 1000) {
-            double durationInMillis = arguments.getWorldGroup().getSettings().getTimeoutDurationInSeconds() * 1000 - (System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getDamageTimestamps().get(arguments.getCmdSender().getUniqueId()));
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_TIMEOUT, "seconds", String.valueOf(Math.round(durationInMillis / 1000.0)));
+        boolean timeoutActive = arguments.getWorldGroup().getSettings().isTimeoutActive();
+        if (timeoutActive && timeoutCheck.isInTimeout(arguments.getCmdSender(), arguments.getWorldGroup())) {
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_TIMEOUT, "seconds", String.valueOf(timeoutCheck.getRemainingSeconds(arguments)));
             return true;
         }
 
-        //Check if the command is retried
-        boolean sameHome = lastHomes.getOrDefault(arguments.getCmdSender().getUniqueId(), "").equalsIgnoreCase(requestedHome.name());
-        boolean within5Seconds = System.currentTimeMillis() - obstructedTimestamps.getOrDefault(arguments.getCmdSender().getUniqueId(), 0L) <= OBSTRUCTED_HOME_RETRY_DURATION;
-        boolean retried = sameHome && within5Seconds;
-
-        //Check for home obstruction
-        boolean checkForObstructionActive = arguments.getWorldGroup().getSettings().isHomeTeleportObstructedHomeCheck();
-        if (checkForObstructionActive && !retried && homeIsObstructed(requestedHome, arguments.getCmdSender().getEyeHeight())) {
+        //Check if home is obstructed but command not retried
+        boolean homeObstructionCheck = arguments.getWorldGroup().getSettings().isHomeTeleportObstructedHomeCheck();
+        if (homeObstructionCheck && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
             Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED)).clickEvent(ClickEvent.runCommand("/home " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
             arguments.getCmdSender().sendMessage(component);
-
-            //Save Data for the retry command
-            obstructedTimestamps.put(arguments.getCmdSender().getUniqueId(), System.currentTimeMillis());
-            lastHomes.put(arguments.getCmdSender().getUniqueId(), requestedHome.name());
             return true;
         }
 
-        //Check if experience has to be paid
-        boolean homeTeleportExperienceActive = arguments.getWorldGroup().getSettings().isHomeTeleportExperienceActive();
-        int requiredLevels = arguments.getWorldGroup().getSettings().getHomeTeleportExperienceAmount();
-        boolean hasToPayExperience = arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable();
-
         //Check if experience has to be paid but player has not enough experience
-        if (homeTeleportExperienceActive && hasToPayExperience && arguments.getCmdSender().getLevel() < requiredLevels) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
+        boolean homeTeleportExperienceActive = arguments.getWorldGroup().getSettings().isHomeTeleportExperienceActive();
+        if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0)) {
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(homeExperienceCheck.getRequiredExperience(arguments, 0)));
             return true;
         }
 
@@ -126,8 +119,8 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Pay Experience
-        if (homeTeleportExperienceActive && hasToPayExperience)
-            arguments.getCmdSender().setLevel(arguments.getCmdSender().getLevel() - requiredLevels);
+        if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments))
+            arguments.getCmdSender().setLevel(arguments.getCmdSender().getLevel() - homeExperienceCheck.getRequiredExperience(arguments, 0));
 
         //Teleport to home
         requestedHome.teleport(arguments.getCmdSender());
@@ -135,16 +128,6 @@ public class HomeCommand extends BaseHomeCommand {
         //Send Success Message
         sendSuccessMessage(arguments, requestedHome.name());
         return true;
-    }
-
-    private boolean homeIsObstructed(Home home, double eyeLocation) {
-        if (!home.location().isChunkLoaded()) home.location().getChunk().load();
-
-        if (!home.location().getBlock().isPassable()) return true;
-        if (!home.location().clone().add(0, 1, 0).getBlock().isPassable()) return true;
-        if (!home.location().clone().add(0, eyeLocation, 0).getBlock().isPassable()) return true;
-
-        return false;
     }
 
     private void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
