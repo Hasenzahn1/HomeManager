@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 public class TimeoutCheck {
 
     public boolean isInTimeout(Player player, WorldGroup worldGroup) {
-        return System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getLastTimestamp(player) < worldGroup.getSettings().getTimeoutDurationInSeconds() * 1000;
+        return System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getLastTimestamp(player) < worldGroup.getSettings().getTimeoutDurationInSeconds() * 1000L;
     }
 
     public int getRemainingSeconds(PlayerNameGroupArguments arguments) {
-        double durationInMillis = arguments.getWorldGroup().getSettings().getTimeoutDurationInSeconds() * 1000 - (System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getLastTimestamp(arguments.getCmdSender()));
+        double durationInMillis = arguments.getWorldGroup().getSettings().getTimeoutDurationInSeconds() * 1000L - (System.currentTimeMillis() - HomeManager.getInstance().getTimeoutListener().getLastTimestamp(arguments.getCmdSender()));
         return (int) Math.round(durationInMillis / 1000.0);
     }
 

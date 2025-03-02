@@ -21,16 +21,17 @@ public class WorldGroupSettings {
     private int homeTeleportExperienceAmount = 1;
 
     private boolean delayActive = false;
-    private double delayDurationInSeconds = 5;
+    private int delayDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> delayInterruptCauses = List.of();
 
     private boolean timeoutActive = false;
-    private double timeoutDurationInSeconds = 5;
-    private List<EntityDamageEvent.DamageCause> timoutCause = List.of();
+    private int timeoutDurationInSeconds = 5;
+    private List<EntityDamageEvent.DamageCause> timeoutCauses = List.of();
 
     private boolean homeTeleportGroundCheck = false;
 
     private boolean homeTeleportObstructedHomeCheck = true;
+    private int homeTeleportObstructedHomeRetryDuration = 5;
 
 
     public WorldGroupSettings(ConfigurationSection section) {
@@ -43,7 +44,7 @@ public class WorldGroupSettings {
         homeTeleportExperienceAmount = section.getInt("homeTeleportExperience.amount", homeTeleportExperienceAmount);
 
         delayActive = section.getBoolean("delay.active", delayActive);
-        delayDurationInSeconds = section.getDouble("delay.duration", delayDurationInSeconds);
+        delayDurationInSeconds = section.getInt("delay.duration", delayDurationInSeconds);
         delayInterruptCauses = section.getStringList("delay.interruptCauses").stream().map(c -> {
             try {
                 return EntityDamageEvent.DamageCause.valueOf(c);
@@ -53,8 +54,8 @@ public class WorldGroupSettings {
         }).filter(Objects::nonNull).toList();
 
         timeoutActive = section.getBoolean("timeout.active", timeoutActive);
-        timeoutDurationInSeconds = section.getDouble("timeout.duration", timeoutDurationInSeconds);
-        timoutCause = section.getStringList("timeout.causes").stream().map(c -> {
+        timeoutDurationInSeconds = section.getInt("timeout.duration", timeoutDurationInSeconds);
+        timeoutCauses = section.getStringList("timeout.causes").stream().map(c -> {
             try {
                 return EntityDamageEvent.DamageCause.valueOf(c);
             } catch (Exception e) {
@@ -63,7 +64,8 @@ public class WorldGroupSettings {
         }).filter(Objects::nonNull).toList();
 
         homeTeleportGroundCheck = section.getBoolean("homeTeleport.groundCheck", homeTeleportGroundCheck);
-        homeTeleportObstructedHomeCheck = section.getBoolean("homeTeleport.obstructedHomeCheck", homeTeleportObstructedHomeCheck);
+        homeTeleportObstructedHomeCheck = section.getBoolean("obstructedHomeCheck.active", homeTeleportObstructedHomeCheck);
+        homeTeleportObstructedHomeRetryDuration = section.getInt("obstructedHomeCheck.retryDuration", homeTeleportObstructedHomeRetryDuration);
     }
 
 
@@ -106,7 +108,7 @@ public class WorldGroupSettings {
         return delayActive;
     }
 
-    public double getDelayDurationInSeconds() {
+    public int getDelayDurationInSeconds() {
         return delayDurationInSeconds;
     }
 
@@ -118,12 +120,12 @@ public class WorldGroupSettings {
         return timeoutActive;
     }
 
-    public double getTimeoutDurationInSeconds() {
+    public int getTimeoutDurationInSeconds() {
         return timeoutDurationInSeconds;
     }
 
     public List<EntityDamageEvent.DamageCause> getTimoutCauses() {
-        return timoutCause;
+        return timeoutCauses;
     }
 
     public boolean isHomeTeleportGroundCheck() {
@@ -132,6 +134,10 @@ public class WorldGroupSettings {
 
     public boolean isHomeTeleportObstructedHomeCheck() {
         return homeTeleportObstructedHomeCheck;
+    }
+
+    public int getHomeTeleportObstructedHomeRetryDuration() {
+        return homeTeleportObstructedHomeRetryDuration;
     }
 
 }

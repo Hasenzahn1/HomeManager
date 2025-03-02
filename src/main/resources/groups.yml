@@ -16,7 +16,7 @@ Survival:
 
   delay:
     active: true
-    duration: 10
+    duration: 7
     interruptCauses:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
@@ -24,10 +24,13 @@ Survival:
       - SONIC_BOOM
       - THORNS
       - VOID
+      - BLOCK_EXPLOSION
+      - ENTITY_EXPLOSION
+      - CAMPFIRE
 
   timeout:
     active: true
-    duration: 10
+    duration: 5
     causes:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
@@ -39,9 +42,12 @@ Survival:
       - ENTITY_EXPLOSION
       - CAMPFIRE
 
+  obstructedHomeCheck:
+    active: true
+    retryDuration: 5
+
   homeTeleport:
     groundCheck: true
-    obstructedHomeCheck: true
 
 
 Skyblock:

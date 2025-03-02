@@ -17,7 +17,6 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -98,7 +97,7 @@ public class HomeCommand extends BaseHomeCommand {
         //Check if home is obstructed but command not retried
         boolean homeObstructionCheck = arguments.getWorldGroup().getSettings().isHomeTeleportObstructedHomeCheck();
         if (homeObstructionCheck && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
-            Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED)).clickEvent(ClickEvent.runCommand("/home " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
+            Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED, "seconds", String.valueOf(arguments.getWorldGroup().getSettings().getHomeTeleportObstructedHomeRetryDuration()))).clickEvent(ClickEvent.runCommand("/home " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
             arguments.getCmdSender().sendMessage(component);
             return true;
         }
@@ -119,25 +118,18 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Pay Experience
+        int experienceToBePaid = 0;
         if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments))
-            arguments.getCmdSender().setLevel(arguments.getCmdSender().getLevel() - homeExperienceCheck.getRequiredExperience(arguments, 0));
+            experienceToBePaid = homeExperienceCheck.getRequiredExperience(arguments, 0);
 
-        //Teleport to home
-        requestedHome.teleport(arguments.getCmdSender());
-
-        //Send Success Message
-        sendSuccessMessage(arguments, requestedHome.name());
+        //Start Teleportation
+        if (arguments.getWorldGroup().getSettings().isDelayActive() && arguments.isSelf()) {
+            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, arguments.getWorldGroup().getSettings().getDelayDurationInSeconds(), experienceToBePaid);
+        } else {
+            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, 0, experienceToBePaid);
+        }
         return true;
     }
-
-    private void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
-        if (arguments.isSelf()) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS, "name", homeName);
-        } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
-        }
-    }
-
 
     // /home (player) homename (--group groupname)
     @Override

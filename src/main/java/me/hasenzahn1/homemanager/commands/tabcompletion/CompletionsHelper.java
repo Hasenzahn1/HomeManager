@@ -63,7 +63,8 @@ public class CompletionsHelper {
         PlayerHomes playerHomes = session.getHomesFromPlayer(uuid, group.getName());
         List<HomesCache> homes = playerHomes.getHomesInWorldGroup(group).stream()
                 .map(Home::name)
-                .map(homeName -> new HomesCache(homeName, group)).toList();
+                .map(homeName -> new HomesCache(homeName, group))
+                .toList();
 
         cachedHomes.get(uuid).addAll(homes);
         session.destroy();

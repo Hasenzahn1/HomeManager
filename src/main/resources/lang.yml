@@ -25,9 +25,6 @@ commands:
     success: "&aSuccessfully deleted home &6%name%"
     successOther: "&aSuccessfully deleted home &6%name% &aof player &6%player%"
   home:
-    success: "&aSuccessfully teleported to home &6%name%"
-    successActionbar: "&aTeleported to home &6%name%"
-    successOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"
     noExp: "&cYou don't have the required levels to teleport (&6%levels%&c)"
     notOnGround: "&cYou have to be on the ground to be teleported"
     timeout: "&cYou can't teleport while in combat. Please wait &6%seconds% &cseconds"
@@ -46,4 +43,12 @@ warnings:
   worldDoesNotExist:
     message: "&cThe home you are trying to teleport to is in a world that does not exist. Do you want to delete it?"
     deleteMessage: "&a[Delete]"
-  homeObstructed: "&cThe home you are teleporting to is obstructed. If you want to continue retype the command in the next &65 &cseconds or click this message"
+  homeObstructed: "&cThe home you are teleporting to is obstructed. If you want to continue retype the command in the next &6%seconds% &cseconds or click this message"
+
+teleportationDelay:
+  messageActionbar: "&aTeleportation in &6%seconds%s"
+
+  teleportationCancelled: "&cTeleportation Cancelled"
+  teleportationSuccess: "&aSuccessfully teleported to home &6%name%"
+  teleportationSuccessActionbar: "&aTeleported to home &6%name%"
+  teleportationSuccessOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"

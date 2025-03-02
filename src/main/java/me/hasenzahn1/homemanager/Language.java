@@ -26,8 +26,6 @@ public class Language {
     public static final String DEL_HOME_SUCCESS = "commands.delhome.success";
     public static final String DEL_HOME_SUCCESS_OTHER = "commands.delhome.successOther";
 
-    public static final String HOME_SUCCESS = "commands.home.success";
-    public static final String HOME_SUCCESS_OTHER = "commands.home.successOther";
     public static final String HOME_NO_EXP = "commands.home.noExp";
     public static final String HOME_NOT_ON_GROUND = "commands.home.notOnGround";
     public static final String HOME_TIMEOUT = "commands.home.timeout";
@@ -43,6 +41,11 @@ public class Language {
     public static final String WARNING_HOME_OBSTRUCTED = "warnings.homeObstructed";
 
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
+
+    public static final String TELEPORTATION_DELAY_MESSAGE = "teleportationDelay.message";
+    public static final String TELEPORTATION_CANCELLED = "teleportationDelay.teleportationCancelled";
+    public static final String TELEPORTATION_SUCCESS = "teleportationDelay.teleportationSuccess";
+    public static final String TELEPORTATION_SUCCESS_OTHER = "teleportationDelay.teleportationSuccessOther";
 
     private static LanguageConfig languageConfig;
 
