@@ -88,20 +88,15 @@ player)
 
 Admin commands:
 
-- Purge: (/remove all)
+- Purge (world): (/remove all)
     - Clears all homes on the server
     - Prompts the user again to confirm
 - Reload:
     - Reloads the configs/groups from the disk
 - Cleanup:
     - Deletes all homes in worlds that don't exist anymore
-- Remove (world):
-    - Removes all Homes in the specified world if no world with the specified name is found a group with that name is
-      searched.
-- Export:
-    - Exports the Database to a yaml file for easy debugging
-- Import:
-    - Imports a yaml file to the database
+- Migrate:
+    - Migrates BasicHomes homes
 
 ## Migration
 

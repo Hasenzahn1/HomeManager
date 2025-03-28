@@ -2,7 +2,6 @@ package me.hasenzahn1.homemanager;
 
 import me.hasenzahn1.homemanager.commands.*;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
-import me.hasenzahn1.homemanager.commands.homeadmin.HomeAdminCommand;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.HomesDatabase;
@@ -12,6 +11,8 @@ import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -69,10 +70,10 @@ public final class HomeManager extends JavaPlugin {
         registerCommand("home", new HomeCommand(completionsHelper));
         registerCommand("homes", new HomeListCommand(completionsHelper));
 
-        getCommand("homeadmin").setExecutor(new HomeAdminCommand());
+        registerCommand("homeadmin", new HomeAdminCommand());
     }
 
-    private void registerCommand(String name, BaseHomeCommand command) {
+    private <T extends CommandExecutor & TabCompleter> void registerCommand(String name, T command) {
         getCommand(name).setExecutor(command);
         getCommand(name).setTabCompleter(command);
     }
@@ -91,6 +92,14 @@ public final class HomeManager extends JavaPlugin {
 
     public TimeoutListener getTimeoutListener() {
         return timeoutListener;
+    }
+
+    public CompletionsHelper getCompletionsHelper() {
+        return completionsHelper;
+    }
+
+    public void reloadConfig() {
+        config.reload();
     }
 
     public static HomeManager getInstance() {

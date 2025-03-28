@@ -1,4 +1,4 @@
-package me.hasenzahn1.homemanager.commands;
+package me.hasenzahn1.homemanager.commands.system;
 
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import org.bukkit.command.CommandExecutor;

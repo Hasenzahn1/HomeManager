@@ -9,6 +9,7 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,6 +40,38 @@ public class HomesTable extends Table {
                 "worldgroup VARCHAR(30) NOT NULL," +
                 "PRIMARY KEY (uuid, name, worldgroup)" +
                 ");";
+    }
+
+    public int purgeHomesInWorld(Connection con, World world) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE world LIKE '" + world.getName() + "'")) {
+            int count = statement.executeUpdate();
+            Logger.DEBUG.log("Successfully purged " + count + " homes from database from world " + world.getName());
+
+            return count;
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error purging homes from database in world " + world.getName());
+            Logger.ERROR.log(e.getMessage());
+        }
+        return 0;
+    }
+
+    public int cleanupHomes(Connection con, List<World> worlds) {
+        StringBuilder sql = new StringBuilder("DELETE FROM " + getTableName() + " WHERE");
+        for (World world : worlds) {
+            sql.append(" world NOT LIKE '").append(world.getName()).append("'").append(" AND");
+        }
+        sql.delete(sql.length() - 4, sql.length());
+        try (PreparedStatement statement = con.prepareStatement(sql.toString())) {
+            int rowCount = statement.executeUpdate();
+            Logger.DEBUG.log("Successfully cleaned " + rowCount + " homes from database not in worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
+
+            return rowCount;
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error cleaning homes from database with worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
+            Logger.ERROR.log(e.getMessage());
+        }
+
+        return 0;
     }
 
     public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, String group) {
@@ -101,7 +134,6 @@ public class HomesTable extends Table {
             Logger.ERROR.log(e.getMessage());
         }
     }
-
 
     public void removeHomeFromDatabase(Connection con, UUID player, String name, String group) {
         try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + name + "' AND worldgroup LIKE '" + group + "'")) {

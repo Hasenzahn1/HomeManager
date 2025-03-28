@@ -1,11 +1,8 @@
 package me.hasenzahn1.homemanager.migration;
 
 import me.hasenzahn1.homemanager.HomeManager;
-import me.hasenzahn1.homemanager.Language;
-import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -25,17 +22,17 @@ public abstract class PluginMigrator {
         }
     }
 
-    public static void startMigrationAll(Player player, PluginMigrator migrator) {
+    public static Duration startMigrationAll(PluginMigrator migrator) {
         Instant start = Instant.now();
         migrator.migrateAll();
         Instant end = Instant.now();
-        MessageManager.sendMessage(player, Language.HOME_ADMIN_MIGRATE_SUCCESS, "millis", String.valueOf(Duration.between(start, end).toMillis()));
+        return Duration.between(start, end);
     }
 
-    public static void startMigrationWorld(Player player, PluginMigrator migrator, String world) {
+    public static Duration startMigrationWorld(PluginMigrator migrator, String world) {
         Instant start = Instant.now();
         migrator.migrate(world);
         Instant end = Instant.now();
-        MessageManager.sendMessage(player, Language.HOME_ADMIN_MIGRATE_SUCCESS, "millis", String.valueOf(Duration.between(start, end).toMillis()));
+        return Duration.between(start, end);
     }
 }

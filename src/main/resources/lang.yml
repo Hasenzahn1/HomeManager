@@ -36,6 +36,15 @@ commands:
     separator: "&7, "
   
   homeadmin:
+    cleanup:
+      message: "&aThis command will delete every home in all worlds that don't exist on the server. To confirm this action rerun this command within &6%seconds% &aseconds"
+      success: "&aSuccessfully cleaned &6%amount% &ahomes from the database"
+    purge:
+      message: "&aThis command will delete every home in the specified world. To confirm this action rerun this command within &6%seconds% &aseconds"
+      success: "&aSuccessfully purged &6%amount% &ahomes from the database"
+      invalidWorld: "&cUnknown world with name &6%world%"
+    reload:
+      success: "&aSuccessfully reloaded config &6%config%"
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams"
 

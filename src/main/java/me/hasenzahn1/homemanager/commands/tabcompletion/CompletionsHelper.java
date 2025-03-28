@@ -73,4 +73,8 @@ public class CompletionsHelper {
     public void invalidatePlayerHomes(UUID player) {
         cachedHomes.remove(player);
     }
+
+    public void invalidateAll() {
+        cachedHomes.clear();
+    }
 }

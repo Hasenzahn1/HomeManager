@@ -3,8 +3,6 @@ package me.hasenzahn1.homemanager.config;
 import me.hasenzahn1.homemanager.HomeManager;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.HashMap;
-
 public class DefaultConfig extends CustomConfig {
 
     public static boolean DEBUG_LOGGING = false;
@@ -12,16 +10,13 @@ public class DefaultConfig extends CustomConfig {
 
     public static int TAB_COMPLETION_CACHE_EXPIRE_DURATION = 100000;
 
-    public static HashMap<String, Boolean> MESSAGES_AS_ACTIONBAR;
-
     public DefaultConfig() {
         super(HomeManager.getInstance(), "config.yml");
         load();
     }
 
-    @Override
-    public void reloadConfig() {
-        super.reloadConfig();
+    public void reload() {
+        load();
     }
 
     public void load() {

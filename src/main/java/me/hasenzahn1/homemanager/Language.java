@@ -40,6 +40,12 @@ public class Language {
     public static final String WARNING_WORLD_NOT_EXISTING_DELETE_TEXT = "warnings.worldDoesNotExist.deleteMessage";
     public static final String WARNING_HOME_OBSTRUCTED = "warnings.homeObstructed";
 
+    public static final String HOME_ADMIN_CLEANUP_MESSAGE = "commands.homeadmin.cleanup.message";
+    public static final String HOME_ADMIN_CLEANUP_SUCCESS = "commands.homeadmin.cleanup.success";
+    public static final String HOME_ADMIN_PURGE_MESSAGE = "commands.homeadmin.purge.message";
+    public static final String HOME_ADMIN_PURGE_SUCCESS = "commands.homeadmin.purge.success";
+    public static final String HOME_ADMIN_PURGE_INVALID_WORLD = "commands.homeadmin.purge.invalidWorld";
+    public static final String HOME_ADMIN_RELOAD_SUCCESS = "commands.homeadmin.reload.success";
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
 
     public static final String TELEPORTATION_DELAY_MESSAGE = "teleportationDelay.message";
@@ -65,5 +71,9 @@ public class Language {
 
     public static boolean containsLang(String key) {
         return languageConfig.getConfig().contains(key);
+    }
+
+    public static void reload() {
+        languageConfig.reloadConfig();
     }
 }
