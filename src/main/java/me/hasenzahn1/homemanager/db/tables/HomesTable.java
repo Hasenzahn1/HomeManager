@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -40,6 +41,39 @@ public class HomesTable extends Table {
                 "worldgroup VARCHAR(30) NOT NULL," +
                 "PRIMARY KEY (uuid, name, worldgroup)" +
                 ");";
+    }
+
+    public List<Home> getHomesInRadius(Connection con, Location center, int radius) {
+        System.out.println("getHomesInRadius");
+        List<Home> homes = new ArrayList<>();
+        String sql = "SELECT * FROM " + getTableName() + " WHERE world LIKE '%world%' AND (x%x%)*(x%x%)+(z%z%)*(z%z%)<%radius%*%radius%"
+                .replace("%world%", center.getWorld().getName())
+                .replace("%x%", String.format("%+d", -center.getBlockX()))
+                .replace("%z%", String.format("%+d", -center.getBlockZ()))
+                .replace("%radius%", String.valueOf(radius));
+
+        System.out.println(sql);
+        try (PreparedStatement statement = con.prepareStatement(sql)) {
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                UUID uuid = UUID.fromString(result.getString("uuid"));
+                String name = result.getString("name");
+                String world = result.getString("world");
+                double x = result.getDouble("x");
+                double y = result.getDouble("y");
+                double z = result.getDouble("z");
+                float yaw = result.getFloat("yaw");
+                float pitch = result.getFloat("pitch");
+
+                Location location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+
+                homes.add(new Home(uuid, name, location));
+            }
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error retrieving homes from database at location " + center + " with radius " + radius);
+            Logger.ERROR.log(e.getMessage());
+        }
+        return homes;
     }
 
     public int purgeHomesInWorld(Connection con, World world) {
@@ -79,6 +113,7 @@ public class HomesTable extends Table {
         try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = '" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {
+                UUID homeUUID = UUID.fromString(result.getString("uuid"));
                 String name = result.getString("name");
                 String world = result.getString("world");
                 double x = result.getDouble("x");
@@ -89,7 +124,7 @@ public class HomesTable extends Table {
 
                 Location location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
-                homes.put(name.toLowerCase(), new Home(name, location));
+                homes.put(name.toLowerCase(), new Home(homeUUID, name, location));
             }
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving homes from database for player " + uuid + " in group " + group);

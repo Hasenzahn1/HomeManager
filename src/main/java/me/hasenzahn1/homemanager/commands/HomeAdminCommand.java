@@ -52,6 +52,11 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
         for (ISubCommand subCommand : subCommands) {
             if (!subCommand.getName().equalsIgnoreCase(args[0])) continue;
 
+            if (!commandSender.hasPermission("homeadmin.commands.homeadmin." + subCommand.getName())) {
+                MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
+                return true;
+            }
+
             subCommand.onCommand(executor, Arrays.copyOfRange(args, 1, args.length));
             return true;
         }
@@ -62,12 +67,16 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1) {
-            return subCommands.stream().map(ISubCommand::getName).filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase())).sorted().toList();
+            return subCommands.stream().map(ISubCommand::getName).filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase())).filter(name -> commandSender.hasPermission("homeadmin.commands.homeadmin." + name)).sorted().toList();
         }
 
         if (args.length >= 2) {
             for (ISubCommand subCommand : subCommands) {
                 if (!subCommand.getName().equalsIgnoreCase(args[0])) continue;
+
+                if (!commandSender.hasPermission("homeadmin.commands.homeadmin." + subCommand.getName())) {
+                    return List.of();
+                }
 
                 return subCommand.onTabComplete(commandSender, Arrays.copyOfRange(args, 1, args.length));
             }

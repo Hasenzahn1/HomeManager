@@ -98,7 +98,9 @@ public class HomeCommand extends BaseHomeCommand {
         //Check if home is obstructed but command not retried
         boolean homeObstructionCheck = arguments.getWorldGroup().getSettings().isHomeTeleportObstructedHomeCheck();
         if (homeObstructionCheck && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
-            Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED, "seconds", String.valueOf(arguments.getWorldGroup().getSettings().getHomeTeleportObstructedHomeRetryDuration()))).clickEvent(ClickEvent.runCommand("/home " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
+            Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED,
+                    "seconds", String.valueOf(arguments.getWorldGroup().getSettings().getHomeTeleportObstructedHomeRetryDuration()))
+            ).clickEvent(ClickEvent.runCommand("/home " + requestedHome.getOwnersName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
             arguments.getCmdSender().sendMessage(component);
             return true;
         }
@@ -213,5 +215,10 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         return List.of();
+    }
+
+    public static String getCommandFromHome(Home home) {
+        WorldGroup group = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(home.location().getWorld());
+        return "/home " + home.getOwnersName() + " " + home.name() + " -g " + group.getName();
     }
 }

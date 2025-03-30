@@ -5,7 +5,6 @@ import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,7 +31,7 @@ public class MessageManager {
         if (arguments.isSelf()) {
             sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
         } else {
-            sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName(), "name", arguments.getHomeName());
+            sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", arguments.getOptionalPlayerName(), "name", arguments.getHomeName());
         }
     }
 
@@ -59,7 +58,7 @@ public class MessageManager {
         if (arguments.isSelf()) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES);
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES_OTHER, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_LIST_NO_HOMES_OTHER, "player", arguments.getOptionalPlayerName());
         }
     }
 
@@ -67,7 +66,7 @@ public class MessageManager {
         if (arguments.isSelf()) {
             MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME, "name", arguments.getHomeName());
         } else {
-            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", arguments.getOptionalPlayerName());
         }
     }
 

@@ -5,7 +5,6 @@ import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -73,7 +72,7 @@ public class PlayerTeleportation {
         if (arguments.isSelf()) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS, "name", home.name());
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS_OTHER, "name", home.name(), "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS_OTHER, "name", home.name(), "player", arguments.getOptionalPlayerName());
         }
     }
 

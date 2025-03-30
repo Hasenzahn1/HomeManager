@@ -14,8 +14,6 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -72,7 +70,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
     private Component createHomeListText(PlayerGroupArguments arguments, PlayerHomes playerHomes) {
         Component display = Component.text(Language.getLang(Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX));
-        OfflinePlayer player = Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID());
+        String player = playerHomes.getHomes().get(0).getOwnersName();
 
         List<Home> homes = playerHomes.getHomes().stream().sorted(Comparator.comparing(Home::name)).toList();
         List<Component> components = new ArrayList<>();
@@ -80,7 +78,7 @@ public class HomeListCommand extends BaseHomeCommand {
         //Create Components
         for (Home home : homes) {
             Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.name()));
-            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player.getName() + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
+            currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
             components.add(currentHome);
             components.add(Component.text(Language.getLang(Language.HOME_LIST_SEPARATOR)));
         }

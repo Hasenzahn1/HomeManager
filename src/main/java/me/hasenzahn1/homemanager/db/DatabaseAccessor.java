@@ -7,6 +7,7 @@ import me.hasenzahn1.homemanager.db.tables.HomesTable;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
+import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.sql.Connection;
@@ -81,6 +82,11 @@ public class DatabaseAccessor {
     public int purgeHomeInWorld(World world) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).purgeHomesInWorld(connection, world);
+    }
+
+    public List<Home> getHomesInRadius(Location center, int radius) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(HomesTable.class).getHomesInRadius(connection, center, radius);
     }
 
     public void destroy() {

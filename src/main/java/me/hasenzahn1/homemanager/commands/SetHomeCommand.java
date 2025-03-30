@@ -13,7 +13,6 @@ import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -87,7 +86,7 @@ public class SetHomeCommand extends BaseHomeCommand {
         }
 
         //Create the home
-        Home requestedHome = new Home(arguments.getHomeName(), arguments.getCmdSender().getLocation());
+        Home requestedHome = new Home(arguments.getActionPlayerUUID(), arguments.getHomeName(), arguments.getCmdSender().getLocation());
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
@@ -126,17 +125,17 @@ public class SetHomeCommand extends BaseHomeCommand {
     }
 
     private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, Home home) {
-        sendSuccessMessage(((Player) cmdSender), player, home.name());
+        sendSuccessMessage(((Player) cmdSender), player, home);
         session.saveHomeToDatabase(player, home);
         completionsHelper.invalidatePlayerHomes(player);
         session.destroy();
     }
 
-    private void sendSuccessMessage(Player sender, UUID player, String homeName) {
+    private void sendSuccessMessage(Player sender, UUID player, Home home) {
         if (sender.getUniqueId().equals(player)) {
-            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS, "name", homeName);
+            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS, "name", home.name());
         } else {
-            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(player).getName());
+            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS_OTHER, "name", home.name(), "player", home.getOwnersName());
         }
     }
 

@@ -3,6 +3,7 @@ package me.hasenzahn1.homemanager.commands.args;
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -26,11 +27,34 @@ public class PlayerArguments {
         this.incorrectNumberOfArguments = incorrectNumberOfArguments;
 
         cmdSenderUUID = cmdSender.getUniqueId();
-        if (!optionalPlayerArg.isEmpty() && Bukkit.getOfflinePlayerIfCached(optionalPlayerArg) != null)
-            optionalPlayerUUID = Bukkit.getOfflinePlayerIfCached(optionalPlayerArg).getUniqueId();
-        else optionalPlayerUUID = null;
+        optionalPlayerUUID = getOptionalPlayerUUIDFromString(optionalPlayerArg);
 
         cmdSenderWorldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(cmdSender.getWorld());
+    }
+
+    private UUID getOptionalPlayerUUIDFromString(String arg) {
+        if (arg.isEmpty()) return null;
+
+        UUID fromUUID = tryParseUUID(optionalPlayerArg);
+        if (fromUUID != null) return fromUUID;
+
+        OfflinePlayer fromName = Bukkit.getOfflinePlayerIfCached(optionalPlayerArg);
+        if (fromName != null) return fromName.getUniqueId();
+
+        return null;
+    }
+
+    public String getOptionalPlayerName() {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(optionalPlayerUUID);
+        return player.getName() == null ? optionalPlayerUUID.toString() : player.getName();
+    }
+
+    private UUID tryParseUUID(String arg) {
+        try {
+            return UUID.fromString(arg);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public boolean invalidArguments() {

@@ -71,6 +71,7 @@ public final class HomeManager extends JavaPlugin {
         registerCommand("homes", new HomeListCommand(completionsHelper));
 
         registerCommand("homeadmin", new HomeAdminCommand());
+        registerCommand("homesearch", new HomeSearchCommand());
     }
 
     private <T extends CommandExecutor & TabCompleter> void registerCommand(String name, T command) {
@@ -88,6 +89,7 @@ public final class HomeManager extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        HomeSearchCommand.destroy();
     }
 
     public TimeoutListener getTimeoutListener() {
@@ -107,6 +109,7 @@ public final class HomeManager extends JavaPlugin {
     }
 
     public void createHomeTeleportation(PlayerNameArguments arguments, Home home, int delay, int experience) {
+        System.out.println(home.name() + " " + delay + " " + experience);
         if (teleportations.containsKey(arguments.getCmdSender().getUniqueId())) {
             teleportations.get(arguments.getCmdSender().getUniqueId()).cancel();
         }

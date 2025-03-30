@@ -12,7 +12,6 @@ import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -70,16 +69,16 @@ public class DelHomeCommand extends BaseHomeCommand {
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 
-        sendSuccessMessage(arguments, home.name());
+        sendSuccessMessage(arguments, home);
         completionsHelper.invalidatePlayerHomes(arguments.getActionPlayerUUID());
         return true;
     }
 
-    public void sendSuccessMessage(PlayerNameGroupArguments arguments, String homeName) {
+    public void sendSuccessMessage(PlayerNameGroupArguments arguments, Home home) {
         if (arguments.isSelf()) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", homeName);
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", home.name());
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", homeName, "player", Bukkit.getOfflinePlayer(arguments.getActionPlayerUUID()).getName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", home.name(), "player", home.getOwnersName());
         }
     }
 
@@ -165,5 +164,10 @@ public class DelHomeCommand extends BaseHomeCommand {
         }
 
         return List.of();
+    }
+
+    public static String getCommandFromHome(Home home) {
+        WorldGroup group = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(home.location().getWorld());
+        return "/delhome " + home.getOwnersName() + " " + home.name() + " -g " + group.getName();
     }
 }

@@ -20,4 +20,7 @@ commands:
     usage: /homes (player) (-g/-group <groupname>)
   homeadmin:
     description: Admin command for the home plugin
-    usage: /homeadmin <migrate>
+    usage: /homeadmin <cleanup/purge/migrate/reload>
+  homesearch:
+    description: Searches homes within a radius
+    usage: /homesearch <radius>

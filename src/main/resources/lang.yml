@@ -48,6 +48,14 @@ commands:
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams"
 
+  homesearch:
+    noHomesFound: "&cNo homes found with radius &6%radius% &cat position &7(%x%, %y%, %z%)"
+    display:
+      header: "%prefix%&aFound &6%amount% &ahomes at &7(%x%, %y%, %z%) &awith radius &6%radius%"
+      playerLine: "%player%:"
+      homeLine: " &7- &6%name% &7[%x%, %y%, %z%]"
+      deleteBtn: "&c[x]"
+
 warnings:
   worldDoesNotExist:
     message: "&cThe home you are trying to teleport to is in a world that does not exist. Do you want to delete it?"

@@ -53,6 +53,12 @@ public class Language {
     public static final String TELEPORTATION_SUCCESS = "teleportationDelay.teleportationSuccess";
     public static final String TELEPORTATION_SUCCESS_OTHER = "teleportationDelay.teleportationSuccessOther";
 
+    public static final String HOME_SEARCH_NO_HOMES_FOUND = "commands.homesearch.noHomesFound";
+    public static final String HOME_SEARCH_HEADER = "commands.homesearch.display.header";
+    public static final String HOME_SEARCH_PLAYER_LINE = "commands.homesearch.display.playerLine";
+    public static final String HOME_SEARCH_HOME_LINE = "commands.homesearch.display.homeLine";
+    public static final String HOME_SEARCH_DELETE_BTN = "commands.homesearch.display.deleteBtn";
+
     private static LanguageConfig languageConfig;
 
     public static void initialize() {
