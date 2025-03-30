@@ -44,7 +44,6 @@ public class HomesTable extends Table {
     }
 
     public List<Home> getHomesInRadius(Connection con, Location center, int radius) {
-        System.out.println("getHomesInRadius");
         List<Home> homes = new ArrayList<>();
         String sql = "SELECT * FROM " + getTableName() + " WHERE world LIKE '%world%' AND (x%x%)*(x%x%)+(z%z%)*(z%z%)<%radius%*%radius%"
                 .replace("%world%", center.getWorld().getName())
@@ -52,7 +51,6 @@ public class HomesTable extends Table {
                 .replace("%z%", String.format("%+d", -center.getBlockZ()))
                 .replace("%radius%", String.valueOf(radius));
 
-        System.out.println(sql);
         try (PreparedStatement statement = con.prepareStatement(sql)) {
             ResultSet result = statement.executeQuery();
             while (result.next()) {

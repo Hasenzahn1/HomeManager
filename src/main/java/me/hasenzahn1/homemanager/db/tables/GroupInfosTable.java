@@ -25,16 +25,16 @@ public class GroupInfosTable extends Table {
                 "PRIMARY KEY (uuid, worldgroup));";
     }
 
-    public void saveFreeHomes(Connection con, UUID uuid, String group, int maxHomes) {
+    public void saveFreeHomes(Connection con, UUID uuid, String group, int freeHomes) {
         try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, worldgroup, freehomes) VALUES (?, ?, ?)")) {
             statement.setString(1, uuid.toString());
             statement.setString(2, group);
-            statement.setInt(3, maxHomes);
+            statement.setInt(3, freeHomes);
 
             statement.executeUpdate();
-            Logger.DEBUG.log("Successfully saved free home to database for player " + uuid + " in group " + group + " with homes " + maxHomes);
+            Logger.DEBUG.log("Successfully saved free home to database for player " + uuid + " in group " + group + " with homes " + freeHomes);
         } catch (SQLException e) {
-            Logger.ERROR.log("Error saving free homes to database for player " + uuid + " in group " + group + " with homes " + maxHomes);
+            Logger.ERROR.log("Error saving free homes to database for player " + uuid + " in group " + group + " with homes " + freeHomes);
             Logger.ERROR.log(e.getMessage());
         }
     }

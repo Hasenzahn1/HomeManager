@@ -1,8 +1,7 @@
 package me.hasenzahn1.homemanager.homes;
 
-import org.bukkit.Bukkit;
+import me.hasenzahn1.homemanager.util.PlayerNameUtils;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -24,9 +23,7 @@ public record Home(UUID uuid, String name, Location location) {
     }
 
     public String getOwnersName() {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-        if (player.getName() == null) return uuid.toString();
-        return player.getName();
+        return PlayerNameUtils.getPlayerNameFromUUID(uuid);
     }
 
 }

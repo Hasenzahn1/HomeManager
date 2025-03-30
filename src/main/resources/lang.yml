@@ -47,6 +47,11 @@ commands:
       success: "&aSuccessfully reloaded config &6%config%"
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams"
+    freehomes:
+      addSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
+      removeSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
+      setSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
+      getSuccess: "&aThe player &6%name% &ahas &6%amount% &afree homes in worldgroup &6%group%"
 
   homesearch:
     noHomesFound: "&cNo homes found with radius &6%radius% &cat position &7(%x%, %y%, %z%)"

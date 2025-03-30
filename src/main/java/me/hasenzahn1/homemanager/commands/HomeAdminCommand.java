@@ -2,10 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
-import me.hasenzahn1.homemanager.commands.homeadmin.CleanupSubCommand;
-import me.hasenzahn1.homemanager.commands.homeadmin.MigrateSubCommand;
-import me.hasenzahn1.homemanager.commands.homeadmin.PurgeSubCommand;
-import me.hasenzahn1.homemanager.commands.homeadmin.ReloadSubCommand;
+import me.hasenzahn1.homemanager.commands.homeadmin.*;
 import me.hasenzahn1.homemanager.commands.system.ISubCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,6 +27,7 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
         subCommands.add(new MigrateSubCommand());
         subCommands.add(new PurgeSubCommand());
         subCommands.add(new ReloadSubCommand());
+        subCommands.add(new FreeHomesSubCommand());
     }
 
     @Override

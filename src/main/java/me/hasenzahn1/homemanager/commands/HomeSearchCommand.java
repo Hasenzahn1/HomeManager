@@ -25,7 +25,6 @@ import java.util.UUID;
 
 public class HomeSearchCommand implements CommandExecutor, TabCompleter {
 
-    private static int COLOR_COUNTER = 0;
     private static final HashMap<UUID, List<HomeDisplay>> HOME_DISPLAYS = new HashMap<>();
 
     @Override

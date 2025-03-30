@@ -47,6 +47,10 @@ public class Language {
     public static final String HOME_ADMIN_PURGE_INVALID_WORLD = "commands.homeadmin.purge.invalidWorld";
     public static final String HOME_ADMIN_RELOAD_SUCCESS = "commands.homeadmin.reload.success";
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
+    public static final String HOME_ADMIN_FREE_HOME_GET_SUCCESS = "commands.homeadmin.freehomes.getSuccess";
+    public static final String HOME_ADMIN_FREE_HOME_SET_SUCCESS = "commands.homeadmin.freehomes.setSuccess";
+    public static final String HOME_ADMIN_FREE_HOME_REMOVE_SUCCESS = "commands.homeadmin.freehomes.removeSuccess";
+    public static final String HOME_ADMIN_FREE_HOME_ADD_SUCCESS = "commands.homeadmin.freehomes.addSuccess";
 
     public static final String TELEPORTATION_DELAY_MESSAGE = "teleportationDelay.message";
     public static final String TELEPORTATION_CANCELLED = "teleportationDelay.teleportationCancelled";

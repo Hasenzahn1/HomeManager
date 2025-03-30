@@ -44,10 +44,6 @@ public class MigrateSubCommand implements ISubCommand {
         return List.of();
     }
 
-    public void handleMigrateCommand(Player executor, String[] args) {
-
-    }
-
     @Override
     public String getName() {
         return "migrate";
