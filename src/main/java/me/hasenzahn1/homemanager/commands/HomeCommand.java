@@ -13,6 +13,7 @@ import me.hasenzahn1.homemanager.commands.system.BaseHomeCommand;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
+import me.hasenzahn1.homemanager.group.WorldGroupSettings;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
@@ -79,6 +80,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Get Home
         Home requestedHome = playerHomes.getHome(arguments.getHomeName());
+        WorldGroupSettings settings = arguments.getWorldGroup().getSettings();
 
         //Check if world exists
         if (!requestedHome.location().isWorldLoaded()) {
@@ -89,32 +91,32 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Check if player is in Timeout
-        boolean timeoutActive = arguments.getWorldGroup().getSettings().isTimeoutActive();
-        if (timeoutActive && timeoutCheck.isInTimeout(arguments.getCmdSender(), arguments.getWorldGroup())) {
+        boolean timeoutActive = settings.isTimeoutActive();
+        if (timeoutActive && timeoutCheck.isInTimeout(arguments.getCmdSender(), arguments.getWorldGroup()) && !PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup())) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_TIMEOUT, "seconds", String.valueOf(timeoutCheck.getRemainingSeconds(arguments)));
             return true;
         }
 
         //Check if home is obstructed but command not retried
-        boolean homeObstructionCheck = arguments.getWorldGroup().getSettings().isHomeTeleportObstructedHomeCheck();
+        boolean homeObstructionCheck = settings.isHomeTeleportObstructedHomeCheck();
         if (homeObstructionCheck && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
             Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED,
-                    "seconds", String.valueOf(arguments.getWorldGroup().getSettings().getHomeTeleportObstructedHomeRetryDuration()))
+                    "seconds", String.valueOf(settings.getHomeTeleportObstructedHomeRetryDuration()))
             ).clickEvent(ClickEvent.runCommand("/home " + requestedHome.getOwnersName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
             arguments.getCmdSender().sendMessage(component);
             return true;
         }
 
         //Check if experience has to be paid but player has not enough experience
-        boolean homeTeleportExperienceActive = arguments.getWorldGroup().getSettings().isHomeTeleportExperienceActive();
+        boolean homeTeleportExperienceActive = settings.isHomeTeleportExperienceActive();
         if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0)) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(homeExperienceCheck.getRequiredExperience(arguments, 0)));
             return true;
         }
 
         //Check if player is on ground
-        boolean playerHasToBeOnGround = arguments.getWorldGroup().getSettings().isHomeTeleportGroundCheck();
-        boolean hasGroundBypass = arguments.isSelf() || arguments.getCmdSender().getGameMode().isInvulnerable();
+        boolean playerHasToBeOnGround = settings.isHomeTeleportGroundCheck();
+        boolean hasGroundBypass = arguments.isSelf() || (settings.isHomeTeleportObstructionDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
         if (playerHasToBeOnGround && !arguments.getCmdSender().isOnGround() && !hasGroundBypass) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NOT_ON_GROUND);
             return true;
@@ -125,12 +127,16 @@ public class HomeCommand extends BaseHomeCommand {
         if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments))
             experienceToBePaid = homeExperienceCheck.getRequiredExperience(arguments, 0);
 
-        //Start Teleportation
-        if (arguments.getWorldGroup().getSettings().isDelayActive() && arguments.isSelf()) {
-            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, arguments.getWorldGroup().getSettings().getDelayDurationInSeconds(), experienceToBePaid);
-        } else {
-            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, 0, experienceToBePaid);
+        //Teleportation delay
+        boolean delayActive = settings.isDelayActive();
+        boolean hasDelayBypass = arguments.isSelf() || (settings.isDelayDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
+        if (delayActive && !hasDelayBypass) {
+            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, settings.getDelayDurationInSeconds(), experienceToBePaid);
+            return true;
         }
+
+        //Teleport without delay
+        HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, 0, experienceToBePaid);
         return true;
     }
 

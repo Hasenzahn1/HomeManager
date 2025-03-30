@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.commands.checks;
 
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
+import me.hasenzahn1.homemanager.permission.PermissionValidator;
 
 public abstract class HomeExperienceCheck {
 
@@ -14,7 +15,7 @@ public abstract class HomeExperienceCheck {
     }
 
     public boolean hasToPayExperience(PlayerNameArguments arguments) {
-        return arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable();
+        return arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable() && !PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
     }
 
 }

@@ -21,6 +21,7 @@ public class WorldGroupSettings {
     private int homeTeleportExperienceAmount = 1;
 
     private boolean delayActive = false;
+    private boolean delayDisableInCreative = true;
     private int delayDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> delayInterruptCauses = List.of();
 
@@ -31,6 +32,7 @@ public class WorldGroupSettings {
     private boolean homeTeleportGroundCheck = false;
 
     private boolean homeTeleportObstructedHomeCheck = true;
+    private boolean homeTeleportObstructionDisableInCreative = true;
     private int homeTeleportObstructedHomeRetryDuration = 5;
 
 
@@ -44,6 +46,7 @@ public class WorldGroupSettings {
         homeTeleportExperienceAmount = section.getInt("homeTeleportExperience.amount", homeTeleportExperienceAmount);
 
         delayActive = section.getBoolean("delay.active", delayActive);
+        delayDisableInCreative = section.getBoolean("delay.disableInCreative", delayDisableInCreative);
         delayDurationInSeconds = section.getInt("delay.duration", delayDurationInSeconds);
         delayInterruptCauses = section.getStringList("delay.interruptCauses").stream().map(c -> {
             try {
@@ -65,6 +68,7 @@ public class WorldGroupSettings {
 
         homeTeleportGroundCheck = section.getBoolean("homeTeleport.groundCheck", homeTeleportGroundCheck);
         homeTeleportObstructedHomeCheck = section.getBoolean("obstructedHomeCheck.active", homeTeleportObstructedHomeCheck);
+        homeTeleportObstructionDisableInCreative = section.getBoolean("obstructedHomeCheck.disableInCreative", homeTeleportObstructionDisableInCreative);
         homeTeleportObstructedHomeRetryDuration = section.getInt("obstructedHomeCheck.retryDuration", homeTeleportObstructedHomeRetryDuration);
     }
 
@@ -108,6 +112,10 @@ public class WorldGroupSettings {
         return delayActive;
     }
 
+    public boolean isDelayDisableInCreative() {
+        return delayDisableInCreative;
+    }
+
     public int getDelayDurationInSeconds() {
         return delayDurationInSeconds;
     }
@@ -134,6 +142,10 @@ public class WorldGroupSettings {
 
     public boolean isHomeTeleportObstructedHomeCheck() {
         return homeTeleportObstructedHomeCheck;
+    }
+
+    public boolean isHomeTeleportObstructionDisableInCreative() {
+        return homeTeleportObstructionDisableInCreative;
     }
 
     public int getHomeTeleportObstructedHomeRetryDuration() {

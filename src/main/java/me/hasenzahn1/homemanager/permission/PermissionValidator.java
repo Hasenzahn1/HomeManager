@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
+import me.hasenzahn1.homemanager.group.WorldGroup;
 import org.bukkit.command.CommandSender;
 
 public class PermissionValidator {
@@ -34,6 +35,12 @@ public class PermissionValidator {
         }
 
         return false;
+    }
+
+    public static boolean hasBypassPermission(CommandSender sender, WorldGroup worldGroup) {
+        boolean permission = sender.hasPermission("homemanager.bypass." + worldGroup.getName());
+        System.out.println(permission);
+        return permission;
     }
 
 }

@@ -16,6 +16,7 @@ Survival:
 
   delay:
     active: true
+    disableInCreative: true
     duration: 7
     interruptCauses:
       - ENTITY_ATTACK
@@ -44,6 +45,7 @@ Survival:
 
   obstructedHomeCheck:
     active: true
+    disableInCreative: true
     retryDuration: 5
 
   homeTeleport:
