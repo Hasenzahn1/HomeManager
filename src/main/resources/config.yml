@@ -4,3 +4,5 @@ debug:
 
 # Duration is ms (100000ms => 100s)
 tabCompletionCacheExpireDuration: 100000
+
+homeSearchDurationInSeconds: 30

@@ -11,6 +11,7 @@ import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
+import me.hasenzahn1.homemanager.papi.PlaceholderHomeExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
@@ -74,6 +75,11 @@ public final class HomeManager extends JavaPlugin {
 
         registerCommand("homeadmin", new HomeAdminCommand());
         registerCommand("homesearch", new HomeSearchCommand());
+
+        //Initialize External Plugins
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
+            new PlaceholderHomeExpansion().register(); //
+        }
     }
 
     private <T extends CommandExecutor & TabCompleter> void registerCommand(String name, T command) {
@@ -92,6 +98,8 @@ public final class HomeManager extends JavaPlugin {
     @Override
     public void onDisable() {
         HomeSearchCommand.destroy();
+
+        PlaceholderHomeExpansion.closeSession();
     }
 
     public TimeoutListener getTimeoutListener() {

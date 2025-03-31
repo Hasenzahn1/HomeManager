@@ -3,6 +3,7 @@ package me.hasenzahn1.homemanager.commands;
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.MessageManager;
+import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.HomeDisplay;
@@ -88,7 +89,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
                 HOME_DISPLAYS.remove(player.getUniqueId());
                 System.out.println(HOME_DISPLAYS);
             }
-        }.runTaskLater(HomeManager.getInstance(), 30 * 20);
+        }.runTaskLater(HomeManager.getInstance(), DefaultConfig.HOME_SEARCH_DURATION_IN_SECONDS * 20);
     }
 
     private void displayHomes(Player player, int radius, List<Home> homes) {

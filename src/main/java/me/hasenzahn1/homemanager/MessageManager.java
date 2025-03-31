@@ -1,10 +1,12 @@
 package me.hasenzahn1.homemanager;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.hasenzahn1.homemanager.commands.args.PlayerGroupArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import net.kyori.adventure.text.Component;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,16 +24,15 @@ public class MessageManager {
         if (hasOtherPermission) cmdSyntax += "(player) ";
         if (displayHomeNameArg) cmdSyntax += "<homename> ";
         if (hasGroupPermission) cmdSyntax += "(-g group) ";
-        String basetext = Language.getLang(Language.INVALID_COMMAND, "command", cmdSyntax);
 
-        player.sendMessage(Component.text(HomeManager.PREFIX + basetext));
+        MessageManager.sendMessage(player, Language.INVALID_COMMAND, "command", cmdSyntax);
     }
 
     public static void sendUnknownHomeMessage(PlayerNameGroupArguments arguments) {
         if (arguments.isSelf()) {
-            sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
         } else {
-            sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", arguments.getOptionalPlayerName(), "name", arguments.getHomeName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", arguments.getOptionalPlayerName(), "name", arguments.getHomeName());
         }
     }
 
@@ -42,7 +43,10 @@ public class MessageManager {
         }
 
         if (Language.containsLang(languageKey) || !messageHasBeenSent) {
-            player.sendMessage(Component.text(HomeManager.PREFIX + Language.getLang(languageKey, replacements)));
+            String message = Language.getLang(languageKey, replacements);
+            if (player instanceof OfflinePlayer)
+                message = PlaceholderAPI.setPlaceholders(((Player) player).getPlayer(), message);
+            player.sendMessage(Component.text(HomeManager.PREFIX + message));
         }
     }
 
@@ -50,6 +54,7 @@ public class MessageManager {
         if (!(player instanceof Player)) return false;
 
         String message = Language.getLang(languageKey, replacements);
+        message = PlaceholderAPI.setPlaceholders(((OfflinePlayer) player), message);
         player.sendActionBar(Component.text(message));
         return true;
     }

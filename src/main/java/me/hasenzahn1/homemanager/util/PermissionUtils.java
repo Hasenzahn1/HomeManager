@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.util;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import org.bukkit.command.CommandSender;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import java.util.ArrayList;
@@ -11,14 +12,13 @@ public class PermissionUtils {
 
     /**
      * Bsp. homemanager.maxhomes.*.(amount)<p>
-     * homemanager.maxhomes.world.*
-     * homemanager
+     * homemanager.maxhomes.global.*
      *
      * @param sender
      * @param group
      * @return
      */
-    public static int getMaxHomesFromPermission(CommandSender sender, String group) {
+    public static int getMaxHomesFromPermission(Permissible sender, String group) {
         if (sender == null) return 0;
         int maxhomes = 0;
         for (PermissionAttachmentInfo info : sender.getEffectivePermissions()) {
@@ -57,7 +57,7 @@ public class PermissionUtils {
             if (sender.hasPermission(permissionStub + "." + group))
                 groups.add(group);
         }
-        
+
         return groups; //TODO return default group max homes
     }
 

@@ -22,7 +22,6 @@ public class DatabaseAccessor {
     private DatabaseAccessor(Database database) {
         this.database = database;
         this.connection = database.getSQLConnection();
-
     }
 
     public static DatabaseAccessor openSession() {
