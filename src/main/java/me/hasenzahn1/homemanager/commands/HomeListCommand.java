@@ -77,7 +77,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //Create Components
         for (Home home : homes) {
-            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "name", home.name()));
+            Component currentHome = Component.text(Language.getLang(Language.HOME_LIST_HOME, "homename", home.name()));
             currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
             components.add(currentHome);
             components.add(Component.text(Language.getLang(Language.HOME_LIST_SEPARATOR)));

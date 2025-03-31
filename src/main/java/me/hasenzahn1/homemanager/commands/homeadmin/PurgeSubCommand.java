@@ -33,7 +33,7 @@ public class PurgeSubCommand implements ISubCommand {
         String worldName = args[0];
         World world = Bukkit.getWorld(worldName);
         if (world == null) {
-            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_INVALID_WORLD, "world", worldName);
+            MessageManager.sendMessage(executor, Language.INVALID_WORLD, "world", worldName);
             return;
         }
 

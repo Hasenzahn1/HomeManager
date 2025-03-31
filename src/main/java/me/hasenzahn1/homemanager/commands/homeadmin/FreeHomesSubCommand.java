@@ -29,7 +29,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         //Validate player input
         UUID playerUUID = PlayerNameUtils.getUUIDFromString(args[1]);
         if (playerUUID == null) {
-            MessageManager.sendMessage(executor, Language.UNKNOWN_PLAYER, "name", args[1]);
+            MessageManager.sendMessage(executor, Language.UNKNOWN_PLAYER, "player", args[1]);
             return;
         }
 
@@ -50,7 +50,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         if (args.length == 4) {
             worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(args[3]);
             if (worldGroup == null) {
-                MessageManager.sendMessage(executor, Language.UNKNOWN_GROUP, "name", args[3]);
+                MessageManager.sendMessage(executor, Language.UNKNOWN_GROUP, "group", args[3]);
                 return;
             }
         }
@@ -77,7 +77,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), freeHomes + amount);
 
-        MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_ADD_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(freeHomes + amount));
+        MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_ADD_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(freeHomes + amount), "add", String.valueOf(amount));
     }
 
     private void handleRemove(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
@@ -85,7 +85,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), Math.max(0, freeHomes - amount));
 
-        MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_REMOVE_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(Math.max(0, freeHomes - amount)));
+        MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_REMOVE_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(Math.max(0, freeHomes - amount)), "remove", String.valueOf(amount));
     }
 
     private void handleSet(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
@@ -106,7 +106,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         if (args.length == 3) {
             worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(args[2]);
             if (worldGroup == null) {
-                MessageManager.sendMessage(executor, Language.UNKNOWN_GROUP, "name", args[2]);
+                MessageManager.sendMessage(executor, Language.UNKNOWN_GROUP, "group", args[2]);
                 return;
             }
         }
@@ -115,8 +115,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         int amount = session.getFreeHomes(uuid, worldGroup.getName());
         session.destroy();
 
-        MessageManager.sendMessage(executor, Language.HOME_ADMIN_FREE_HOME_GET_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(amount), "group", worldGroup.getName());
-        return;
+        MessageManager.sendMessage(executor, Language.HOME_ADMIN_FREE_HOME_GET_SUCCESS, "player", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(amount), "group", worldGroup.getName());
     }
 
     private boolean isInt(String value) {

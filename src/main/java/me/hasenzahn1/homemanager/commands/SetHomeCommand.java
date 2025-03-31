@@ -70,7 +70,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Check for Invalid Characters in homeName
         if (!arguments.isValidHomeName()) {
-            MessageManager.sendMessage(commandSender, Language.SET_HOME_INVALID_NAME, "name", arguments.getHomeName());
+            MessageManager.sendMessage(commandSender, Language.SET_HOME_INVALID_NAME, "homename", arguments.getHomeName());
             dbSession.destroy();
             return true;
         }
@@ -134,9 +134,9 @@ public class SetHomeCommand extends BaseHomeCommand {
 
     private void sendSuccessMessage(Player sender, UUID player, Home home) {
         if (sender.getUniqueId().equals(player)) {
-            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS, "name", home.name());
+            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS, "homename", home.name());
         } else {
-            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS_OTHER, "name", home.name(), "player", home.getOwnersName());
+            MessageManager.sendMessage(sender, Language.SET_HOME_SUCCESS_OTHER, "homename", home.name(), "player", home.getOwnersName());
         }
     }
 

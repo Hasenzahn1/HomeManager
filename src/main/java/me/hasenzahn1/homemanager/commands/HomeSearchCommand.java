@@ -117,14 +117,14 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
 
             for (Home home : playerHomes.get(key)) {
                 Component homeLine = Component.text(Language.getLang(Language.HOME_SEARCH_HOME_LINE,
-                        "name", home.name(),
+                        "homename", home.name(),
                         "x", String.valueOf(home.location().getBlockX()),
                         "y", String.valueOf(home.location().getBlockY()),
                         "z", String.valueOf(home.location().getBlockZ())));
                 homeLine = homeLine.hoverEvent(HoverEvent.showText(Component.text(HomeCommand.getCommandFromHome(home))))
                         .clickEvent(ClickEvent.runCommand(HomeCommand.getCommandFromHome(home)));
 
-                Component deleteBtn = Component.text(Language.getLang(Language.HOME_SEARCH_DELETE_BTN))
+                Component deleteBtn = Component.text(Language.getLang(Language.HOME_SEARCH_DELETE_BUTTON))
                         .clickEvent(ClickEvent.runCommand(DelHomeCommand.getCommandFromHome(home)))
                         .hoverEvent(Component.text(DelHomeCommand.getCommandFromHome(home)));
 

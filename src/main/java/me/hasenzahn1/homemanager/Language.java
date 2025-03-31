@@ -8,6 +8,7 @@ public class Language {
     public static final String NO_PLAYER = "commands.noPlayer";
     public static final String INVALID_COMMAND = "commands.invalidCommand";
     public static final String UNKNOWN_PLAYER = "commands.unknownPlayer";
+    public static final String INVALID_WORLD = "commands.invalidWorld";
     public static final String NO_PERMISSION = "commands.noPermission";
     public static final String NO_PERMISSION_OTHER = "commands.noPermissionOther";
     public static final String NO_PERMISSION_GROUP = "commands.noPermissionGroup";
@@ -44,7 +45,6 @@ public class Language {
     public static final String HOME_ADMIN_CLEANUP_SUCCESS = "commands.homeadmin.cleanup.success";
     public static final String HOME_ADMIN_PURGE_MESSAGE = "commands.homeadmin.purge.message";
     public static final String HOME_ADMIN_PURGE_SUCCESS = "commands.homeadmin.purge.success";
-    public static final String HOME_ADMIN_PURGE_INVALID_WORLD = "commands.homeadmin.purge.invalidWorld";
     public static final String HOME_ADMIN_RELOAD_SUCCESS = "commands.homeadmin.reload.success";
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
     public static final String HOME_ADMIN_FREE_HOME_GET_SUCCESS = "commands.homeadmin.freehomes.getSuccess";
@@ -61,7 +61,7 @@ public class Language {
     public static final String HOME_SEARCH_HEADER = "commands.homesearch.display.header";
     public static final String HOME_SEARCH_PLAYER_LINE = "commands.homesearch.display.playerLine";
     public static final String HOME_SEARCH_HOME_LINE = "commands.homesearch.display.homeLine";
-    public static final String HOME_SEARCH_DELETE_BTN = "commands.homesearch.display.deleteBtn";
+    public static final String HOME_SEARCH_DELETE_BUTTON = "commands.homesearch.display.deleteButton";
 
     private static LanguageConfig languageConfig;
 

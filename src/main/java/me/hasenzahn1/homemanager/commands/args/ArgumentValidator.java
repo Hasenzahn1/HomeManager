@@ -15,7 +15,7 @@ public class ArgumentValidator {
 
         //No valid set player
         if (arguments.playerArgInvalid()) {
-            MessageManager.sendMessage(sender, Language.UNKNOWN_PLAYER, "name", arguments.getOptionalPlayerArg());
+            MessageManager.sendMessage(sender, Language.UNKNOWN_PLAYER, "player", arguments.getOptionalPlayerArg());
             return true;
         }
         return false;
@@ -30,7 +30,7 @@ public class ArgumentValidator {
         }
 
         if (arguments.groupInvalid()) {
-            MessageManager.sendMessage(sender, Language.UNKNOWN_GROUP, "name", arguments.getGroupName());
+            MessageManager.sendMessage(sender, Language.UNKNOWN_GROUP, "group", arguments.getGroupName());
             return true;
         }
         return false;

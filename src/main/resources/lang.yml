@@ -3,74 +3,76 @@ prefix: "&7[&bHomeManager&7] "
 # Add an Actionbar behind the message to send the message to the players actionbar
 
 commands:
-  noPlayer: "&cYou have to be a player to use this command"
-  invalidCommand: "&cInvalid command please use &6%command%"
-  unknownPlayer: "&cUnknown player with name &6%name%"
-  noPermission: "&cYou don't have permission to use this command"
-  noPermissionOther: "&cYou don't have permission to use this command for other players"
-  noPermissionGroup: "&cYou don't have permission to use this command in the specified worldgroup"
-  unknownGroup: "&cUnknown Group with name &6%name%"
-  unknownHome: "&cThere is no home with name &6%name%"
-  unknownHomeOther: "&cThe player &6%player% &chas no home with name &6%name%"
+  noPlayer: "&cThis command can only be used by players."
+  invalidCommand: "&cInvalid command. Please use: &6%command%"
+  unknownPlayer: "&cNo player found with the name &6%player%."
+  invalidWorld: "&cNo world found with the name &6%world%."
+  noPermission: "&cYou do not have permission to use this command."
+  noPermissionOther: "&cYou do not have permission to execute this command for other players."
+  noPermissionGroup: "&cYou do not have permission to use this command in the specified world group."
+  unknownGroup: "&cNo world group found with the name &6%group%."
+  unknownHome: "&cNo home found with the name &6%homename%."
+  unknownHomeOther: "&cPlayer &6%player% &chas no home named &6%homename%."
 
   sethome:
-    maxHomes: "&cYou have reached the maximum number of homes (&6%amount%&c)"
-    duplicateHome: "&cYou already have a home with the name &6%name%"
-    duplicateHomeOther: "&cThe player &6%player% &calready has a home with the name &6%name%"
-    noExp: "&cYou don't have the required levels to set a home (&6%levels%&c)"
-    success: "&aSuccessfully set home point &6%name%"
-    successOther: "&aSuccessfully set home point &6%name% &aof player &6%player%"
-    invalidName: "&cInvalid home name &6%name%"
+    maxHomes: "&cYou have reached the maximum limit of &6%amount% &chomes."
+    duplicateHome: "&cA home with the name &6%homename% &calready exists."
+    duplicateHomeOther: "&cPlayer &6%player% &calready has a home named &6%homename%."
+    noExp: "&cYou need at least &6%levels% &clevels to set a home."
+    success: "&aHome &6%homename% &asuccessfully set."
+    successOther: "&aHome &6%homename% &asuccessfully set for player &6%player%."
+    invalidName: "&cInvalid home name: &6%homename%."
+
   delhome:
-    success: "&aSuccessfully deleted home &6%name%"
-    successOther: "&aSuccessfully deleted home &6%name% &aof player &6%player%"
+    success: "&aSuccessfully deleted home &6%homename%."
+    successOther: "&aSuccessfully deleted home &6%homename% &afor player &6%player%."
+
   home:
-    noExp: "&cYou don't have the required levels to teleport (&6%levels%&c)"
-    notOnGround: "&cYou have to be on the ground to be teleported"
-    timeout: "&cYou can't teleport while in combat. Please wait &6%seconds% &cseconds"
+    noExp: "&cYou need at least &6%levels% &clevels to teleport."
+    notOnGround: "&cYou must be on the ground to teleport."
+    timeout: "&cYou cannot teleport while in combat. Please wait &6%seconds% &cseconds."
+
   homeList:
-    noHomes: "&cYou have no homes to list"
-    noHomesOther: "&cThe player &6%player% &chas no homes to list"
-    header: "%prefix%&7Homes: "
-    home: "&7%name%"
+    noHomes: "&cYou have not set any homes."
+    noHomesOther: "&cPlayer &6%player% &chas not set any homes."
+    header: "%prefix%&7Your Homes: "
+    home: "&7%homename%"
     separator: "&7, "
-  
+
   homeadmin:
     cleanup:
-      message: "&aThis command will delete every home in all worlds that don't exist on the server. To confirm this action rerun this command within &6%seconds% &aseconds"
-      success: "&aSuccessfully cleaned &6%amount% &ahomes from the database"
+      message: "&aThis command will remove all homes in nonexistent worlds. To confirm, run this command again within &6%seconds% &aseconds."
+      success: "&aSuccessfully removed &6%amount% &ahomes from the database."
     purge:
-      message: "&aThis command will delete every home in the specified world. To confirm this action rerun this command within &6%seconds% &aseconds"
-      success: "&aSuccessfully purged &6%amount% &ahomes from the database"
-      invalidWorld: "&cUnknown world with name &6%world%"
+      message: "&aThis command will delete all homes in the specified world. To confirm, run this command again within &6%seconds% &aseconds."
+      success: "&aSuccessfully deleted &6%amount% &ahomes from the database."
     reload:
-      success: "&aSuccessfully reloaded config &6%config%"
+      success: "&aConfiguration &6%config% &asuccessfully reloaded."
     migrate:
-      success: "&aSuccessfully migrated homes in &6%millis% &ams"
+      success: "&aSuccessfully migrated homes in &6%millis% &ams."
     freehomes:
-      addSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
-      removeSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
-      setSuccess: "&aSuccessfully set the free homes to &6%amount% &afor player &6%name%"
-      getSuccess: "&aThe player &6%name% &ahas &6%amount% &afree homes in worldgroup &6%group%"
+      addSuccess: "&aSuccessfully granted &6%add% &afree homes to player &6%name%. &aNow at &6%amount%."
+      removeSuccess: "&aSuccessfully removed &6%remove% &afree homes from player &6%name%. &aNow at &6%amount%."
+      setSuccess: "&aSuccessfully set free homes to &6%amount% &afor player &6%name%."
+      getSuccess: "&aPlayer &6%player% &ahas &6%amount% &afree homes in world group &6%group%."
 
   homesearch:
-    noHomesFound: "&cNo homes found with radius &6%radius% &cat position &7(%x%, %y%, %z%)"
+    noHomesFound: "&cNo homes found within a radius of &6%radius% &cat coordinates &7(%x%, %y%, %z%)."
     display:
-      header: "%prefix%&aFound &6%amount% &ahomes at &7(%x%, %y%, %z%) &awith radius &6%radius%"
+      header: "%prefix%&aFound &6%amount% &ahomes near &7(%x%, %y%, %z%) &awithin a radius of &6%radius%."
       playerLine: "%player%:"
-      homeLine: " &7- &6%name% &7[%x%, %y%, %z%]"
-      deleteBtn: "&c[x]"
+      homeLine: " &7- &6%homename% &7[%x%, %y%, %z%]"
+      deleteButton: "&c[x]"
 
 warnings:
   worldDoesNotExist:
-    message: "&cThe home you are trying to teleport to is in a world that does not exist. Do you want to delete it?"
+    message: "&cThe home you are trying to teleport to is in a nonexistent world. Do you want to delete it?"
     deleteMessage: "&a[Delete]"
-  homeObstructed: "&cThe home you are teleporting to is obstructed. If you want to continue retype the command in the next &6%seconds% &cseconds or click this message"
+  homeObstructed: "&cYour home location is obstructed. To proceed, retype the command within &6%seconds% &cseconds or click this message."
 
 teleportationDelay:
-  messageActionbar: "&aTeleportation in &6%seconds%s"
-
-  teleportationCancelled: "&cTeleportation Cancelled"
-  teleportationSuccess: "&aSuccessfully teleported to home &6%name%"
-  teleportationSuccessActionbar: "&aTeleported to home &6%name%"
-  teleportationSuccessOther: "&aSuccessfully teleported to home &6%name% &aof player &6%player%"
+  messageActionbar: "&aTeleporting in &6%seconds%s"
+  teleportationCancelled: "&cTeleportation cancelled."
+  teleportationSuccess: "&aSuccessfully teleported to home &6%homename%."
+  teleportationSuccessActionbar: "&aTeleported to home &6%homename%."
+  teleportationSuccessOther: "&aSuccessfully teleported to home &6%homename% &aof player &6%player%."

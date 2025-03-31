@@ -70,9 +70,9 @@ public class PlayerTeleportation {
     private void sendSuccessMessage() {
         arguments.getCmdSender().sendActionBar(Component.text(" "));
         if (arguments.isSelf()) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS, "name", home.name());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS, "homename", home.name());
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS_OTHER, "name", home.name(), "player", arguments.getOptionalPlayerName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.TELEPORTATION_SUCCESS_OTHER, "homename", home.name(), "player", arguments.getOptionalPlayerName());
         }
     }
 

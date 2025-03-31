@@ -76,9 +76,9 @@ public class DelHomeCommand extends BaseHomeCommand {
 
     public void sendSuccessMessage(PlayerNameGroupArguments arguments, Home home) {
         if (arguments.isSelf()) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "name", home.name());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS, "homename", home.name());
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "name", home.name(), "player", home.getOwnersName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.DEL_HOME_SUCCESS_OTHER, "homename", home.name(), "player", home.getOwnersName());
         }
     }
 

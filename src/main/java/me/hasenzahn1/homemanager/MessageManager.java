@@ -30,9 +30,9 @@ public class MessageManager {
 
     public static void sendUnknownHomeMessage(PlayerNameGroupArguments arguments) {
         if (arguments.isSelf()) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "name", arguments.getHomeName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME, "homename", arguments.getHomeName());
         } else {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", arguments.getOptionalPlayerName(), "name", arguments.getHomeName());
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.UNKNOWN_HOME_OTHER, "player", arguments.getOptionalPlayerName(), "homename", arguments.getHomeName());
         }
     }
 
@@ -69,9 +69,9 @@ public class MessageManager {
 
     public static void sendDuplicateHomesMessage(CommandSender sender, PlayerNameArguments arguments) {
         if (arguments.isSelf()) {
-            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME, "name", arguments.getHomeName());
+            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME, "homename", arguments.getHomeName());
         } else {
-            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME_OTHER, "name", arguments.getHomeName(), "player", arguments.getOptionalPlayerName());
+            MessageManager.sendMessage(sender, Language.SET_HOME_DUPLICATE_HOME_OTHER, "homename", arguments.getHomeName(), "player", arguments.getOptionalPlayerName());
         }
     }
 
