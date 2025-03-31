@@ -112,6 +112,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //You don't have enough experience, but you have to pay experience
         int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount());
+        System.out.println(requiredLevels);
         if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount())) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();

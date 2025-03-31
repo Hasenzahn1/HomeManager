@@ -9,6 +9,7 @@ import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
 import me.hasenzahn1.homemanager.listener.DelayListener;
+import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -60,6 +61,7 @@ public final class HomeManager extends JavaPlugin {
         timeoutListener = new TimeoutListener(this);
         Bukkit.getPluginManager().registerEvents(timeoutListener, this);
         Bukkit.getPluginManager().registerEvents(new DelayListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new HomeDisplayRemover(), this);
 
         //Teleportations
         teleportations = new HashMap<>();
@@ -109,7 +111,6 @@ public final class HomeManager extends JavaPlugin {
     }
 
     public void createHomeTeleportation(PlayerNameArguments arguments, Home home, int delay, int experience) {
-        System.out.println(home.name() + " " + delay + " " + experience);
         if (teleportations.containsKey(arguments.getCmdSender().getUniqueId())) {
             teleportations.get(arguments.getCmdSender().getUniqueId()).cancel();
         }

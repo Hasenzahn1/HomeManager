@@ -60,7 +60,6 @@ public class BasicHomesMigrator extends PluginMigrator {
 
         if (homeWorld != null)
             return new HomeData(uuid, home, homeWorld, homeX, homeY, homeZ, (float) homeYaw, (float) homePitch);
-        System.out.println("Null Data for home " + home + " of player " + uuid);
         return null;
     }
 

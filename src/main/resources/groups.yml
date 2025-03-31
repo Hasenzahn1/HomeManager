@@ -48,8 +48,9 @@ Survival:
     disableInCreative: true
     retryDuration: 5
 
-  homeTeleport:
-    groundCheck: true
+  homeTeleportOnGroundCheck:
+    active: true
+    disableInCreative: true
 
 
 Skyblock:

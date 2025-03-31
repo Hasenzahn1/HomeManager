@@ -38,9 +38,7 @@ public class PermissionValidator {
     }
 
     public static boolean hasBypassPermission(CommandSender sender, WorldGroup worldGroup) {
-        boolean permission = sender.hasPermission("homemanager.bypass." + worldGroup.getName());
-        System.out.println(permission);
-        return permission;
+        return sender.hasPermission("homemanager.bypass." + worldGroup.getName());
     }
 
 }

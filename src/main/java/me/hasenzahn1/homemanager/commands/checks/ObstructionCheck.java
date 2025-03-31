@@ -20,7 +20,7 @@ public class ObstructionCheck {
 
     public boolean checkForObstruction(PlayerNameGroupArguments arguments, Home requestedHome) {
         boolean sameHome = lastHomes.getOrDefault(arguments.getCmdSender().getUniqueId(), "").equalsIgnoreCase(requestedHome.name());
-        boolean within5Seconds = System.currentTimeMillis() - obstructedTimestamps.getOrDefault(arguments.getCmdSender().getUniqueId(), 0L) <= arguments.getWorldGroup().getSettings().getHomeTeleportObstructedHomeRetryDuration() * SECONDS_TO_MILLIS;
+        boolean within5Seconds = System.currentTimeMillis() - obstructedTimestamps.getOrDefault(arguments.getCmdSender().getUniqueId(), 0L) <= arguments.getWorldGroup().getSettings().getObstructedHomeCheckRetryDurationInSeconds() * SECONDS_TO_MILLIS;
         boolean retried = sameHome && within5Seconds;
 
         //Check for home obstruction
@@ -28,6 +28,11 @@ public class ObstructionCheck {
             obstructedTimestamps.put(arguments.getCmdSender().getUniqueId(), System.currentTimeMillis());
             lastHomes.put(arguments.getCmdSender().getUniqueId(), requestedHome.name());
             return true;
+        }
+
+        if (retried) {
+            obstructedTimestamps.remove(arguments.getCmdSender().getUniqueId());
+            lastHomes.remove(arguments.getCmdSender().getUniqueId());
         }
         return false;
     }

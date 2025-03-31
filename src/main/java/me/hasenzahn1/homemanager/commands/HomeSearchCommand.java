@@ -85,7 +85,8 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
             @Override
             public void run() {
                 displays.forEach(HomeDisplay::destroy);
-                HOME_DISPLAYS.get(player.getUniqueId()).removeAll(displays);
+                HOME_DISPLAYS.remove(player.getUniqueId());
+                System.out.println(HOME_DISPLAYS);
             }
         }.runTaskLater(HomeManager.getInstance(), 30 * 20);
     }

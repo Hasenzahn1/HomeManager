@@ -65,7 +65,7 @@ public class DelHomeCommand extends BaseHomeCommand {
         dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
 
         //Grant free home
-        if (arguments.getWorldGroup().getSettings().isHomeDeletionGrantsFreeHome())
+        if (arguments.getWorldGroup().getSettings().isSetHomeHomeDeletionGrantsFreeHome())
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
         dbSession.destroy();
 

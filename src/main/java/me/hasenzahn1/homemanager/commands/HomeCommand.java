@@ -19,6 +19,7 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -98,11 +99,13 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Check if home is obstructed but command not retried
-        boolean homeObstructionCheck = settings.isHomeTeleportObstructedHomeCheck();
-        if (homeObstructionCheck && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
+        boolean homeObstructionCheck = settings.isObstructedHomeCheckActive();
+        boolean hasObstructionCheckBypass = (settings.isObstructedHomeCheckDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable());
+        if (homeObstructionCheck && !hasObstructionCheckBypass && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
             Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED,
-                    "seconds", String.valueOf(settings.getHomeTeleportObstructedHomeRetryDuration()))
-            ).clickEvent(ClickEvent.runCommand("/home " + requestedHome.getOwnersName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
+                            "seconds", String.valueOf(settings.getObstructedHomeCheckRetryDurationInSeconds()))
+                    ).clickEvent(ClickEvent.runCommand(getCommandFromHome(requestedHome)))
+                    .hoverEvent(HoverEvent.showText(Component.text(getCommandFromHome(requestedHome))));
             arguments.getCmdSender().sendMessage(component);
             return true;
         }
@@ -115,8 +118,8 @@ public class HomeCommand extends BaseHomeCommand {
         }
 
         //Check if player is on ground
-        boolean playerHasToBeOnGround = settings.isHomeTeleportGroundCheck();
-        boolean hasGroundBypass = arguments.isSelf() || (settings.isHomeTeleportObstructionDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
+        boolean playerHasToBeOnGround = settings.isHomeTeleportOnGroundCheckActive();
+        boolean hasGroundBypass = !arguments.isSelf() || (settings.isHomeTeleportOnGroundCheckDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
         if (playerHasToBeOnGround && !arguments.getCmdSender().isOnGround() && !hasGroundBypass) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NOT_ON_GROUND);
             return true;
@@ -129,7 +132,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Teleportation delay
         boolean delayActive = settings.isDelayActive();
-        boolean hasDelayBypass = arguments.isSelf() || (settings.isDelayDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
+        boolean hasDelayBypass = !arguments.isSelf() || (settings.isDelayDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
         if (delayActive && !hasDelayBypass) {
             HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, settings.getDelayDurationInSeconds(), experienceToBePaid);
             return true;

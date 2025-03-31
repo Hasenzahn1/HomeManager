@@ -13,9 +13,9 @@ public class WorldGroupSettings {
 
     //new
     private boolean setHomeExperienceActive = false;
-    private boolean homeDeletionGrantsFreeHome = true;
-    private String experienceFormula = "";
-    private List<Integer> experiencePerHome = List.of();
+    private boolean setHomeHomeDeletionGrantsFreeHome = true;
+    private String setHomeExperienceFormula = "";
+    private List<Integer> setHomeExperiencePerHome = List.of();
 
     private boolean homeTeleportExperienceActive = false;
     private int homeTeleportExperienceAmount = 1;
@@ -29,18 +29,19 @@ public class WorldGroupSettings {
     private int timeoutDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> timeoutCauses = List.of();
 
-    private boolean homeTeleportGroundCheck = false;
+    private boolean obstructedHomeCheckActive = true;
+    private boolean obstructedHomeCheckDisableInCreative = true;
+    private int obstructedHomeCheckRetryDurationInSeconds = 5;
 
-    private boolean homeTeleportObstructedHomeCheck = true;
-    private boolean homeTeleportObstructionDisableInCreative = true;
-    private int homeTeleportObstructedHomeRetryDuration = 5;
+    private boolean homeTeleportOnGroundCheckActive = false;
+    private boolean homeTeleportOnGroundCheckDisableInCreative = true;
 
 
     public WorldGroupSettings(ConfigurationSection section) {
         setHomeExperienceActive = section.getBoolean("setHomeExperience.active", setHomeExperienceActive);
-        homeDeletionGrantsFreeHome = section.getBoolean("setHomeExperience.homeDeletionGrantsFreeHome", homeDeletionGrantsFreeHome);
-        experienceFormula = section.getString("setHomeExperience.experienceFormula", experienceFormula);
-        experiencePerHome = section.getIntegerList("setHomeExperience.experiencePerHome");
+        setHomeExperienceFormula = section.getString("setHomeExperience.experienceFormula", setHomeExperienceFormula);
+        setHomeExperiencePerHome = section.getIntegerList("setHomeExperience.experiencePerHome");
+        setHomeHomeDeletionGrantsFreeHome = section.getBoolean("setHomeExperience.homeDeletionGrantsFreeHome", setHomeHomeDeletionGrantsFreeHome);
 
         homeTeleportExperienceActive = section.getBoolean("homeTeleportExperience.active", homeTeleportExperienceActive);
         homeTeleportExperienceAmount = section.getInt("homeTeleportExperience.amount", homeTeleportExperienceAmount);
@@ -66,10 +67,13 @@ public class WorldGroupSettings {
             }
         }).filter(Objects::nonNull).toList();
 
-        homeTeleportGroundCheck = section.getBoolean("homeTeleport.groundCheck", homeTeleportGroundCheck);
-        homeTeleportObstructedHomeCheck = section.getBoolean("obstructedHomeCheck.active", homeTeleportObstructedHomeCheck);
-        homeTeleportObstructionDisableInCreative = section.getBoolean("obstructedHomeCheck.disableInCreative", homeTeleportObstructionDisableInCreative);
-        homeTeleportObstructedHomeRetryDuration = section.getInt("obstructedHomeCheck.retryDuration", homeTeleportObstructedHomeRetryDuration);
+        obstructedHomeCheckActive = section.getBoolean("obstructedHomeCheck.active", obstructedHomeCheckActive);
+        obstructedHomeCheckDisableInCreative = section.getBoolean("obstructedHomeCheck.disableInCreative", obstructedHomeCheckDisableInCreative);
+        obstructedHomeCheckRetryDurationInSeconds = section.getInt("obstructedHomeCheck.retryDuration", obstructedHomeCheckRetryDurationInSeconds);
+
+        homeTeleportOnGroundCheckActive = section.getBoolean("homeTeleportOnGroundCheck.active", homeTeleportOnGroundCheckActive);
+        homeTeleportOnGroundCheckDisableInCreative = section.getBoolean("homeTeleportOnGroundCheck.disableInCreative", homeTeleportOnGroundCheckDisableInCreative);
+
     }
 
 
@@ -77,10 +81,11 @@ public class WorldGroupSettings {
     }
 
     public int getRequiredExperience(int currentHomes) {
-        if (experiencePerHome.size() > currentHomes) return experiencePerHome.get(currentHomes);
-        if (!experienceFormula.isEmpty())
-            return (int) ExpressionEvaluator.eval(experienceFormula.replace("amount", String.valueOf(currentHomes)));
-        if (!experiencePerHome.isEmpty()) return experiencePerHome.get(experiencePerHome.size() - 1);
+        if (setHomeExperiencePerHome.size() > currentHomes) return setHomeExperiencePerHome.get(currentHomes);
+        if (!setHomeExperienceFormula.isEmpty())
+            return (int) ExpressionEvaluator.eval(setHomeExperienceFormula.replace("amount", String.valueOf(currentHomes)));
+        if (!setHomeExperiencePerHome.isEmpty())
+            return setHomeExperiencePerHome.get(setHomeExperiencePerHome.size() - 1);
         return 0;
     }
 
@@ -88,16 +93,8 @@ public class WorldGroupSettings {
         return setHomeExperienceActive;
     }
 
-    public boolean isHomeDeletionGrantsFreeHome() {
-        return homeDeletionGrantsFreeHome;
-    }
-
-    public String getExperienceFormula() {
-        return experienceFormula;
-    }
-
-    public List<Integer> getExperiencePerHome() {
-        return experiencePerHome;
+    public boolean isSetHomeHomeDeletionGrantsFreeHome() {
+        return setHomeHomeDeletionGrantsFreeHome;
     }
 
     public boolean isHomeTeleportExperienceActive() {
@@ -136,20 +133,23 @@ public class WorldGroupSettings {
         return timeoutCauses;
     }
 
-    public boolean isHomeTeleportGroundCheck() {
-        return homeTeleportGroundCheck;
+    public boolean isHomeTeleportOnGroundCheckActive() {
+        return homeTeleportOnGroundCheckActive;
     }
 
-    public boolean isHomeTeleportObstructedHomeCheck() {
-        return homeTeleportObstructedHomeCheck;
+    public boolean isObstructedHomeCheckActive() {
+        return obstructedHomeCheckActive;
     }
 
-    public boolean isHomeTeleportObstructionDisableInCreative() {
-        return homeTeleportObstructionDisableInCreative;
+    public boolean isObstructedHomeCheckDisableInCreative() {
+        return obstructedHomeCheckDisableInCreative;
     }
 
-    public int getHomeTeleportObstructedHomeRetryDuration() {
-        return homeTeleportObstructedHomeRetryDuration;
+    public int getObstructedHomeCheckRetryDurationInSeconds() {
+        return obstructedHomeCheckRetryDurationInSeconds;
     }
 
+    public boolean isHomeTeleportOnGroundCheckDisableInCreative() {
+        return homeTeleportOnGroundCheckDisableInCreative;
+    }
 }
