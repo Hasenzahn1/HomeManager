@@ -35,7 +35,7 @@ public class GroupInfosTable extends Table {
             Logger.DEBUG.log("Successfully saved free home to database for player " + uuid + " in group " + group + " with homes " + freeHomes);
         } catch (SQLException e) {
             Logger.ERROR.log("Error saving free homes to database for player " + uuid + " in group " + group + " with homes " + freeHomes);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
     }
 
@@ -47,7 +47,7 @@ public class GroupInfosTable extends Table {
             }
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving free homes from database for player " + uuid + " in group " + group);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
         return 0;
     }
@@ -57,7 +57,8 @@ public class GroupInfosTable extends Table {
             statement.executeUpdate();
             Logger.DEBUG.log("Successfully incremented free homes for player " + uuid + " in group " + group);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logger.ERROR.log("Error incrementing free homes from database for player " + uuid + " in group " + group);
+            Logger.ERROR.logException(e);
         }
     }
 
@@ -66,7 +67,8 @@ public class GroupInfosTable extends Table {
             statement.executeUpdate();
             Logger.DEBUG.log("Successfully decremented free homes for player " + uuid + " in group " + group);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logger.ERROR.log("Error decrementing free homes from database for player " + uuid + " in group " + group);
+            Logger.ERROR.logException(e);
         }
     }
 }

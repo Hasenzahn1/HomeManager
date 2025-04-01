@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameGroupArguments;
@@ -29,6 +30,7 @@ public class DelHomeCommand extends BaseHomeCommand {
     // /delhome (player) homename (--group groupname)
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
 
         //Check player
         if (!(commandSender instanceof Player)) {
@@ -63,10 +65,13 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Delete home
         dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
+        Logger.DEBUG.log("Deleted home " + home.name() + " of player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
 
         //Grant free home
-        if (arguments.getWorldGroup().getSettings().isSetHomeHomeDeletionGrantsFreeHome())
+        if (arguments.getWorldGroup().getSettings().isSetHomeHomeDeletionGrantsFreeHome()) {
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+            Logger.DEBUG.log("Granted freehome for player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
+        }
         dbSession.destroy();
 
         sendSuccessMessage(arguments, home);

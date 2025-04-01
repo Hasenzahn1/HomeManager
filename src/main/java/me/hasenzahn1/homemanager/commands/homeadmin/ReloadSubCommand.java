@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands.homeadmin;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.system.ISubCommand;
 import org.bukkit.command.CommandSender;
@@ -21,13 +22,16 @@ public class ReloadSubCommand implements ISubCommand {
         switch (args[0].toLowerCase()) {
             case "config":
                 HomeManager.getInstance().reloadConfig();
+                Logger.DEBUG.log("Reloaded config.yml from disk");
                 break;
             case "groups":
                 HomeManager.getInstance().getCompletionsHelper().invalidateAll();
                 HomeManager.getInstance().getWorldGroupManager().reloadFromDisk();
+                Logger.DEBUG.log("Reloaded groups.yml from disk");
                 break;
             case "lang":
                 Language.reload();
+                Logger.DEBUG.log("Reloaded lang.yml from disk");
                 break;
         }
 

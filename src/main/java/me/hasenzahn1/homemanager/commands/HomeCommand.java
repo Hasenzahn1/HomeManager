@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
@@ -50,7 +51,7 @@ public class HomeCommand extends BaseHomeCommand {
     // /home (player) homename (--group groupname)
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-
+        Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
         //Check player
         if (!(commandSender instanceof Player)) {
             MessageManager.sendMessage(commandSender, Language.NO_PLAYER);

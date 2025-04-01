@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
@@ -30,6 +31,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
         if (!commandSender.hasPermission("homeadmin.commands.homesearch")) {
             MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
             return true;
@@ -76,9 +78,12 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
 
     private void spawnDisplays(Player player, List<Home> homes) {
         HOME_DISPLAYS.getOrDefault(player.getUniqueId(), new ArrayList<>()).forEach(HomeDisplay::destroy);
-
+        HOME_DISPLAYS.put(player.getUniqueId(), new ArrayList<>());
         // Create displays
         List<HomeDisplay> displays = homes.stream().map(h -> new HomeDisplay(player, h)).toList();
+
+        long spawned = displays.stream().filter(HomeDisplay::hasBeenSpawned).count();
+        Logger.DEBUG.log("Homesearch spawned " + spawned + " homes (" + (displays.size() - spawned) + " in unloaded chunks) for player " + player.getName());
 
         HOME_DISPLAYS.put(player.getUniqueId(), new ArrayList<>(displays));
         new BukkitRunnable() {
@@ -87,7 +92,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
             public void run() {
                 displays.forEach(HomeDisplay::destroy);
                 HOME_DISPLAYS.remove(player.getUniqueId());
-                System.out.println(HOME_DISPLAYS);
+                Logger.DEBUG.log("Homesearch removed displays for player " + player.getName());
             }
         }.runTaskLater(HomeManager.getInstance(), DefaultConfig.HOME_SEARCH_DURATION_IN_SECONDS * 20);
     }

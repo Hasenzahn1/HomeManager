@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.homes;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import net.kyori.adventure.text.Component;
@@ -55,6 +56,7 @@ public class PlayerTeleportation {
         player.setLevel(Math.max(player.getLevel() - experienceToBePaid, 0));
         sendSuccessMessage();
         HomeManager.getInstance().removeTeleportation(player);
+        Logger.DEBUG.log("Teleported player " + player.getName() + " to home " + home.name() + " at location (" + home.location().getBlockX() + ", " + home.location().getBlockY() + ", " + home.location().getBlockZ() + ")");
     }
 
     public void cancel() {
@@ -65,6 +67,7 @@ public class PlayerTeleportation {
             timerTask = null;
         }
         HomeManager.getInstance().removeTeleportation(player);
+        Logger.DEBUG.log("Cancelled teleportation of player " + player.getName() + " to home " + home.name());
     }
 
     private void sendSuccessMessage() {

@@ -79,6 +79,7 @@ public final class HomeManager extends JavaPlugin {
         //Initialize External Plugins
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
             new PlaceholderHomeExpansion().register(); //
+            Logger.DEBUG.log("Registered PlaceholderAPI Expansion");
         }
     }
 

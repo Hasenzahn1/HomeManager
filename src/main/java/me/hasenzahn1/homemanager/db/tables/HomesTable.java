@@ -69,20 +69,17 @@ public class HomesTable extends Table {
             }
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving homes from database at location " + center + " with radius " + radius);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
         return homes;
     }
 
     public int purgeHomesInWorld(Connection con, World world) {
         try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE world LIKE '" + world.getName() + "'")) {
-            int count = statement.executeUpdate();
-            Logger.DEBUG.log("Successfully purged " + count + " homes from database from world " + world.getName());
-
-            return count;
+            return statement.executeUpdate();
         } catch (SQLException e) {
             Logger.ERROR.log("Error purging homes from database in world " + world.getName());
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
         return 0;
     }
@@ -94,13 +91,10 @@ public class HomesTable extends Table {
         }
         sql.delete(sql.length() - 4, sql.length());
         try (PreparedStatement statement = con.prepareStatement(sql.toString())) {
-            int rowCount = statement.executeUpdate();
-            Logger.DEBUG.log("Successfully cleaned " + rowCount + " homes from database not in worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
-
-            return rowCount;
+            return statement.executeUpdate();
         } catch (SQLException e) {
             Logger.ERROR.log("Error cleaning homes from database with worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
 
         return 0;
@@ -126,7 +120,7 @@ public class HomesTable extends Table {
             }
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving homes from database for player " + uuid + " in group " + group);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
         return new PlayerHomes(homes);
     }
@@ -142,7 +136,7 @@ public class HomesTable extends Table {
 
         } catch (SQLException e) {
             Logger.ERROR.log("Error retrieving home count for player " + player + " in group " + group);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
         return count;
     }
@@ -160,21 +154,18 @@ public class HomesTable extends Table {
             statement.setString(9, HomeManager.getInstance().getWorldGroupManager().getWorldGroup(home.location().getWorld()).getName());
 
             statement.executeUpdate();
-            Logger.DEBUG.log("Added home of player " + player + " to the database with name " + home.name());
-
         } catch (SQLException e) {
             Logger.ERROR.log("Error saving home to database for player " + player + " with name " + home.name() + " at " + home.location());
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
     }
 
     public void removeHomeFromDatabase(Connection con, UUID player, String name, String group) {
         try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + name + "' AND worldgroup LIKE '" + group + "'")) {
             statement.executeUpdate();
-            Logger.DEBUG.log("Successfully deleted home of player " + player + " to the database with name " + name + " in group " + group);
         } catch (SQLException e) {
             Logger.ERROR.log("Error deleting home from database for player " + player + " with name " + name + " in group " + group);
-            Logger.ERROR.log(e.getMessage());
+            Logger.ERROR.logException(e);
         }
     }
 
@@ -197,7 +188,8 @@ public class HomesTable extends Table {
             con.commit();
             con.setAutoCommit(true);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            Logger.ERROR.log("Error bulk adding " + data.size() + " homes.");
+            Logger.ERROR.logException(e);
         }
     }
 }

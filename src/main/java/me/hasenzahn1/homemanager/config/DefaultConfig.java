@@ -11,6 +11,8 @@ public class DefaultConfig extends CustomConfig {
     public static int TAB_COMPLETION_CACHE_EXPIRE_DURATION = 100000;
     public static long HOME_SEARCH_DURATION_IN_SECONDS = 30;
 
+    public static long HOME_ADMIN_CONFIRMATION_DURATION = 10;
+
     public DefaultConfig() {
         super(HomeManager.getInstance(), "config.yml");
         load();
@@ -37,5 +39,6 @@ public class DefaultConfig extends CustomConfig {
         DEBUG_LOGGING = config.getBoolean("debug.logging", false);
         TAB_COMPLETION_CACHE_EXPIRE_DURATION = config.getInt("tabCompletionCacheExpireDuration", 100000);
         HOME_SEARCH_DURATION_IN_SECONDS = config.getLong("homeSearchDurationInSeconds", 30);
+        HOME_ADMIN_CONFIRMATION_DURATION = config.getLong("homeAdminConfirmationDuration", 30);
     }
 }

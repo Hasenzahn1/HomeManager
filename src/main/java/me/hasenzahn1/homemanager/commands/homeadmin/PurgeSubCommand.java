@@ -1,8 +1,10 @@
 package me.hasenzahn1.homemanager.commands.homeadmin;
 
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.system.ISubCommand;
+import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -14,8 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PurgeSubCommand implements ISubCommand {
-
-    public static final int CONFIRMATION_DURATION = 10;
 
     private final HashMap<Player, Long> executionTimestamps;
 
@@ -37,9 +37,9 @@ public class PurgeSubCommand implements ISubCommand {
             return;
         }
 
-        if (executionTimestamps.getOrDefault(executor, 0L) < System.currentTimeMillis() - CONFIRMATION_DURATION * 1000) {
+        if (executionTimestamps.getOrDefault(executor, 0L) < System.currentTimeMillis() - DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION * 1000) {
             executionTimestamps.put(executor, System.currentTimeMillis());
-            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_MESSAGE, "seconds", String.valueOf(CONFIRMATION_DURATION));
+            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION));
             return;
         }
 
@@ -47,6 +47,7 @@ public class PurgeSubCommand implements ISubCommand {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         int rowCount = session.purgeHomeInWorld(world);
         MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_SUCCESS, "amount", String.valueOf(rowCount));
+        Logger.INFO.log("Purged " + rowCount + " homes from the database");
         session.destroy();
     }
 

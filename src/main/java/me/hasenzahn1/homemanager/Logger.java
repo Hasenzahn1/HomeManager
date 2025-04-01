@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
@@ -44,5 +46,13 @@ public enum Logger {
                 ERROR.log("Error writing to log file " + e.getLocalizedMessage());
             }
         }
+    }
+
+    public void logException(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+
+        log(sw.toString());
     }
 }

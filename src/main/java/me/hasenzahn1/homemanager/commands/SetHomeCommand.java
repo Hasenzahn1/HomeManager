@@ -2,6 +2,7 @@ package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
@@ -40,6 +41,7 @@ public class SetHomeCommand extends BaseHomeCommand {
     // /sethome (player) \<name>
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
         //Check player
         if (!(commandSender instanceof Player)) {
             MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
@@ -130,6 +132,8 @@ public class SetHomeCommand extends BaseHomeCommand {
         session.saveHomeToDatabase(player, home);
         completionsHelper.invalidatePlayerHomes(player);
         session.destroy();
+
+        Logger.DEBUG.log(cmdSender.getName() + " created home " + home.name() + " at location (" + home.location().getBlockX() + ", " + home.location().getBlockY() + ", " + home.location().getBlockZ() + ")" + " for player " + player);
     }
 
     private void sendSuccessMessage(Player sender, UUID player, Home home) {

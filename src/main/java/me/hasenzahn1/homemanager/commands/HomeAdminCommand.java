@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.commands;
 
 import me.hasenzahn1.homemanager.Language;
+import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.homeadmin.*;
 import me.hasenzahn1.homemanager.commands.system.ISubCommand;
@@ -32,6 +33,8 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
+        
         if (!(commandSender instanceof Player executor)) {
             MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
             return true;

@@ -6,3 +6,5 @@ debug:
 tabCompletionCacheExpireDuration: 100000
 
 homeSearchDurationInSeconds: 30
+
+homeAdminConfirmationDuration: 10

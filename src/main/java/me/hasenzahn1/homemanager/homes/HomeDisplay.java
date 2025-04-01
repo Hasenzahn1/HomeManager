@@ -28,7 +28,6 @@ public class HomeDisplay {
     private Slime slime;
     private TextDisplay textDisplay;
 
-
     public HomeDisplay(Player initiator, Home home) {
         this.initiator = initiator;
         this.home = home;
@@ -94,5 +93,9 @@ public class HomeDisplay {
             slime.remove();
         }
         if (textDisplay != null) textDisplay.remove();
+    }
+
+    public boolean hasBeenSpawned() {
+        return textDisplay != null;
     }
 }
