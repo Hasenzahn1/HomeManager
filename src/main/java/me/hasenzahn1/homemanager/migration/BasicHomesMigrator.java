@@ -1,38 +1,39 @@
 package me.hasenzahn1.homemanager.migration;
 
 import me.hasenzahn1.homemanager.HomeManager;
-import me.hasenzahn1.homemanager.db.DatabaseAccessor;
+import me.hasenzahn1.homemanager.Logger;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class BasicHomesMigrator extends PluginMigrator {
+public class BasicHomesMigrator extends BaseHomeMigrator {
 
     @Override
-    public void migrateAll() {
-        ArrayList<HomeData> data = getDataFromMigrationFolder();
-        DatabaseAccessor session = DatabaseAccessor.openSession();
-        session.bulkAddHomeFromMigration(data);
-        session.destroy();
+    public List<HomeMigrator.HomeData> migrateAll() {
+        return getDataFromMigrationFolder();
     }
 
     @Override
-    public void migrate(String world) {
-        ArrayList<HomeData> data = getDataFromMigrationFolder();
-        DatabaseAccessor session = DatabaseAccessor.openSession();
-        session.bulkAddHomeFromMigration(data.stream().filter(d -> d.world().equalsIgnoreCase(world)).toList());
-        session.destroy();
+    public List<HomeMigrator.HomeData> migrate(String world) {
+        ArrayList<HomeMigrator.HomeData> data = getDataFromMigrationFolder();
+        return data.stream().filter(d -> d.world().equalsIgnoreCase(world)).toList();
     }
 
-    private ArrayList<HomeData> getDataFromMigrationFolder() {
+    @Override
+    public String getName() {
+        return "basichomes";
+    }
+
+    private ArrayList<HomeMigrator.HomeData> getDataFromMigrationFolder() {
         File importFolder = new File(HomeManager.getInstance().getDataFolder(), "migrate");
         if (!importFolder.exists()) importFolder.mkdirs();
 
-        ArrayList<HomeData> datas = new ArrayList<>();
+        ArrayList<HomeMigrator.HomeData> datas = new ArrayList<>();
         for (File file : importFolder.listFiles()) {
             YamlConfiguration config = getYamlFromFile(file);
 
@@ -42,7 +43,10 @@ public class BasicHomesMigrator extends PluginMigrator {
             if (section == null) continue;
 
             for (String home : section.getKeys(false)) {
-                HomeData data = parseHomeEntry(player, section, home);
+                HomeMigrator.HomeData data = parseHomeEntry(player, section, home);
+
+                if (data == null) Logger.WARN.log("Could not parse home key " + home + " from file " + file.getName());
+
                 datas.add(data);
             }
         }
@@ -50,7 +54,7 @@ public class BasicHomesMigrator extends PluginMigrator {
         return datas;
     }
 
-    private HomeData parseHomeEntry(UUID uuid, ConfigurationSection section, String home) {
+    private HomeMigrator.HomeData parseHomeEntry(UUID uuid, ConfigurationSection section, String home) {
         String homeWorld = section.getString(home + ".World");
         double homeX = section.getDouble(home + ".X");
         double homeY = section.getDouble(home + ".Y");
@@ -59,7 +63,7 @@ public class BasicHomesMigrator extends PluginMigrator {
         double homePitch = section.getDouble(home + ".Pitch");
 
         if (homeWorld != null)
-            return new HomeData(uuid, home, homeWorld, homeX, homeY, homeZ, (float) homeYaw, (float) homePitch);
+            return new HomeMigrator.HomeData(uuid, home, homeWorld, homeX, homeY, homeZ, (float) homeYaw, (float) homePitch);
         return null;
     }
 

@@ -50,6 +50,7 @@ commands:
       success: "&aConfiguration &6%config% &asuccessfully reloaded."
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams."
+      invalidMigrator: "&cUnknown migrator with name &6%migrator%"
     freehomes:
       addSuccess: "&aSuccessfully granted &6%add% &afree homes to player &6%name%. &aNow at &6%amount%."
       removeSuccess: "&aSuccessfully removed &6%remove% &afree homes from player &6%name%. &aNow at &6%amount%."

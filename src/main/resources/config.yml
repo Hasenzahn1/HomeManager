@@ -3,7 +3,7 @@ debug:
   regenerateConfigsOnStart: true
 
 # Duration is ms (100000ms => 100s)
-cacheExpireDuration: 100
+cacheExpireDuration: 600
 
 homeSearchDurationInSeconds: 30
 

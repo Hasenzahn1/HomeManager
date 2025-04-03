@@ -7,7 +7,7 @@ import me.hasenzahn1.homemanager.db.system.Table;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
-import me.hasenzahn1.homemanager.migration.PluginMigrator;
+import me.hasenzahn1.homemanager.migration.HomeMigrator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -205,10 +205,10 @@ public class HomesTable extends Table {
         }
     }
 
-    public void bulkAddHomeFromMigration(Connection con, List<PluginMigrator.HomeData> data) {
+    public void bulkAddHomeFromMigration(Connection con, List<HomeMigrator.HomeData> data) {
         try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
             con.setAutoCommit(false);
-            for (PluginMigrator.HomeData homeData : data) {
+            for (HomeMigrator.HomeData homeData : data) {
                 statement.setString(1, homeData.uuid().toString());
                 statement.setString(2, homeData.name());
                 statement.setString(3, homeData.world());

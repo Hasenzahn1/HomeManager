@@ -12,6 +12,8 @@ import me.hasenzahn1.homemanager.homes.caching.HomesCache;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
+import me.hasenzahn1.homemanager.migration.BasicHomesMigrator;
+import me.hasenzahn1.homemanager.migration.HomeMigrator;
 import me.hasenzahn1.homemanager.papi.PlaceholderHomeExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
@@ -34,6 +36,7 @@ public final class HomeManager extends JavaPlugin {
 
     private CompletionsHelper completionsHelper;
     private HomesCache homesCache;
+    private HomeMigrator homeMigrator;
 
     private TimeoutListener timeoutListener;
 
@@ -60,6 +63,10 @@ public final class HomeManager extends JavaPlugin {
         //Completions
         completionsHelper = new CompletionsHelper();
         homesCache = new HomesCache();
+
+        //Register Home Migrators
+        homeMigrator = new HomeMigrator();
+        homeMigrator.registerMigrator(new BasicHomesMigrator());
 
         //Register Listeners
         timeoutListener = new TimeoutListener(this);
@@ -115,6 +122,10 @@ public final class HomeManager extends JavaPlugin {
 
     public HomesCache getHomesCache() {
         return homesCache;
+    }
+
+    public HomeMigrator getHomeMigrator() {
+        return homeMigrator;
     }
 
     public void reloadConfig() {

@@ -7,7 +7,7 @@ import me.hasenzahn1.homemanager.db.tables.HomesTable;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
-import me.hasenzahn1.homemanager.migration.PluginMigrator;
+import me.hasenzahn1.homemanager.migration.HomeMigrator;
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -80,7 +80,7 @@ public class DatabaseAccessor {
         database.getTable(HomesTable.class).removeHomeFromDatabase(connection, player, homeName, group);
     }
 
-    public void bulkAddHomeFromMigration(List<PluginMigrator.HomeData> data) {
+    public void bulkAddHomeFromMigration(List<HomeMigrator.HomeData> data) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).bulkAddHomeFromMigration(connection, data);
     }
