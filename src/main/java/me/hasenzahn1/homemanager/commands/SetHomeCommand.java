@@ -130,7 +130,7 @@ public class SetHomeCommand extends BaseHomeCommand {
     private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, Home home) {
         sendSuccessMessage(((Player) cmdSender), player, home);
         session.saveHomeToDatabase(player, home);
-        completionsHelper.invalidatePlayerHomes(player);
+        HomeManager.getInstance().getHomesCache().invalidateCache(player);
         session.destroy();
 
         Logger.DEBUG.log(cmdSender.getName() + " created home " + home.name() + " at location (" + home.location().getBlockX() + ", " + home.location().getBlockY() + ", " + home.location().getBlockZ() + ")" + " for player " + player);

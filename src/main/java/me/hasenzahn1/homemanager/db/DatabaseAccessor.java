@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
+import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
@@ -11,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +30,11 @@ public class DatabaseAccessor {
         return new DatabaseAccessor(HomeManager.getInstance().getDatabase());
     }
 
+    public HashMap<WorldGroup, List<String>> getAllHomeNamesFromPlayer(UUID uuid) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(HomesTable.class).getAllHomeNamesFromPlayer(connection, uuid);
+    }
+
     public PlayerHomes getHomesFromPlayer(UUID uuid, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid, group);
@@ -43,9 +50,14 @@ public class DatabaseAccessor {
         database.getTable(HomesTable.class).saveHomeToDatabase(connection, player, home);
     }
 
+    public HashMap<WorldGroup, Integer> getAllFreeHomes(UUID player) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(GroupInfosTable.class).getAllFreeHomes(connection, player);
+    }
+
     public int getFreeHomes(UUID player, String group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
-        return database.getTable(GroupInfosTable.class).getFreeHomes(connection, player, group);
+        return database.getTable(GroupInfosTable.class).getAllFreeHomes(connection, player, group);
     }
 
     public void saveFreeHomes(UUID player, String group, int maxSetHomes) {

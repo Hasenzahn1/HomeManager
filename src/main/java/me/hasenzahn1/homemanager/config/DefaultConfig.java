@@ -8,7 +8,7 @@ public class DefaultConfig extends CustomConfig {
     public static boolean DEBUG_LOGGING = false;
     public static boolean DEBUG_REPLACE_CONFIG = false;
 
-    public static int TAB_COMPLETION_CACHE_EXPIRE_DURATION = 100000;
+    public static int CACHE_EXPIRE_DURATION = 100000;
     public static long HOME_SEARCH_DURATION_IN_SECONDS = 30;
 
     public static long HOME_ADMIN_CONFIRMATION_DURATION = 10;
@@ -37,7 +37,7 @@ public class DefaultConfig extends CustomConfig {
         FileConfiguration config = getConfig();
         DEBUG_REPLACE_CONFIG = config.getBoolean("debug.regenerateConfigsOnStart", false);
         DEBUG_LOGGING = config.getBoolean("debug.logging", false);
-        TAB_COMPLETION_CACHE_EXPIRE_DURATION = config.getInt("tabCompletionCacheExpireDuration", 100000);
+        CACHE_EXPIRE_DURATION = config.getInt("cacheExpireDuration", 100000);
         HOME_SEARCH_DURATION_IN_SECONDS = config.getLong("homeSearchDurationInSeconds", 30);
         HOME_ADMIN_CONFIRMATION_DURATION = config.getLong("homeAdminConfirmationDuration", 30);
     }

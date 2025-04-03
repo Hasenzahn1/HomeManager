@@ -3,7 +3,6 @@ package me.hasenzahn1.homemanager.papi;
 import it.unimi.dsi.fastutil.Pair;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.hasenzahn1.homemanager.HomeManager;
-import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.util.PermissionUtils;
 import me.hasenzahn1.homemanager.util.PlayerNameUtils;
@@ -18,8 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 public class PlaceholderHomeExpansion extends PlaceholderExpansion {
-
-    public static DatabaseAccessor SESSION;
 
     private final HomeManager plugin;
 
@@ -81,7 +78,7 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
 
         if (args[0].equalsIgnoreCase("currentgroup")) {
             if (args.length != 1) return null;
-            if (!(requester instanceof Player)) return "";
+            if (!(requester instanceof Player)) return "-";
             return plugin.getWorldGroupManager().getWorldGroup(((Player) requester).getWorld()).getName();
         }
 
@@ -110,47 +107,33 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
 
     private String handleNextExperiencePlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
-        if (parsedArgs.key() == null || parsedArgs.value() == null) return "";
+        if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
-        DatabaseAccessor session = getSession();
-        int homeCount = session.getHomeCountFromPlayer(parsedArgs.key(), parsedArgs.value().getName());
+        int homeCount = plugin.getHomesCache().get(parsedArgs.key()).getHomeCount(parsedArgs.value());
         return String.valueOf(parsedArgs.value().getSettings().getRequiredExperience(homeCount));
     }
 
     private String handleMaxHomesPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
-        if (parsedArgs.key() == null || parsedArgs.value() == null) return "";
+        if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
         Player p = Bukkit.getOfflinePlayer(parsedArgs.key()).getPlayer();
-        if (p == null) return "";
+        if (p == null) return "-";
 
         return String.valueOf(PermissionUtils.getMaxHomesFromPermission(p, parsedArgs.value().getName()));
     }
 
     private String handleHomeCountPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
-        if (parsedArgs.key() == null || parsedArgs.value() == null) return "";
+        if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
-        DatabaseAccessor session = getSession();
-        return String.valueOf(session.getHomeCountFromPlayer(parsedArgs.key(), parsedArgs.value().getName()));
+        return String.valueOf(plugin.getHomesCache().get(parsedArgs.key()).getHomeCount(parsedArgs.value()));
     }
 
     private String handleFreeHomesCountPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
-        if (parsedArgs.key() == null || parsedArgs.value() == null) return "";
+        if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
-        DatabaseAccessor session = getSession();
-        return String.valueOf(session.getFreeHomes(parsedArgs.key(), parsedArgs.value().getName()));
-    }
-
-    public static DatabaseAccessor getSession() {
-        if (SESSION == null) SESSION = DatabaseAccessor.openSession();
-        return SESSION;
-    }
-
-    public static void closeSession() {
-        if (SESSION == null) return;
-        SESSION.destroy();
-        SESSION = null;
+        return String.valueOf(plugin.getHomesCache().get(parsedArgs.key()).getFreeHomes(parsedArgs.value()));
     }
 }

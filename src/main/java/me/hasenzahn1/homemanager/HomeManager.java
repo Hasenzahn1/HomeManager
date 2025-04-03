@@ -8,6 +8,7 @@ import me.hasenzahn1.homemanager.db.HomesDatabase;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
+import me.hasenzahn1.homemanager.homes.caching.HomesCache;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
@@ -32,6 +33,7 @@ public final class HomeManager extends JavaPlugin {
     private DefaultConfig config;
 
     private CompletionsHelper completionsHelper;
+    private HomesCache homesCache;
 
     private TimeoutListener timeoutListener;
 
@@ -57,6 +59,7 @@ public final class HomeManager extends JavaPlugin {
 
         //Completions
         completionsHelper = new CompletionsHelper();
+        homesCache = new HomesCache();
 
         //Register Listeners
         timeoutListener = new TimeoutListener(this);
@@ -98,9 +101,8 @@ public final class HomeManager extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        homesCache.destroy();
         HomeSearchCommand.destroy();
-
-        PlaceholderHomeExpansion.closeSession();
     }
 
     public TimeoutListener getTimeoutListener() {
@@ -109,6 +111,10 @@ public final class HomeManager extends JavaPlugin {
 
     public CompletionsHelper getCompletionsHelper() {
         return completionsHelper;
+    }
+
+    public HomesCache getHomesCache() {
+        return homesCache;
     }
 
     public void reloadConfig() {

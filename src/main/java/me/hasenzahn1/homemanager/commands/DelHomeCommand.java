@@ -75,7 +75,7 @@ public class DelHomeCommand extends BaseHomeCommand {
         dbSession.destroy();
 
         sendSuccessMessage(arguments, home);
-        completionsHelper.invalidatePlayerHomes(arguments.getActionPlayerUUID());
+        HomeManager.getInstance().getHomesCache().invalidateCache(arguments.getActionPlayerUUID());
         return true;
     }
 

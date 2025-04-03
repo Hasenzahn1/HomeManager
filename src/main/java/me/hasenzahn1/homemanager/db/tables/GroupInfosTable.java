@@ -1,13 +1,16 @@
 package me.hasenzahn1.homemanager.db.tables;
 
+import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
+import me.hasenzahn1.homemanager.group.WorldGroup;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class GroupInfosTable extends Table {
@@ -39,7 +42,29 @@ public class GroupInfosTable extends Table {
         }
     }
 
-    public int getFreeHomes(Connection con, UUID uuid, String group) {
+    public HashMap<WorldGroup, Integer> getAllFreeHomes(Connection con, UUID uuid) {
+        HashMap<WorldGroup, Integer> map = new HashMap<>();
+        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, freehomes FROM " + getTableName() + " WHERE uuid = '" + uuid + "'")) {
+
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                String worldGroupName = result.getString("worldgroup");
+                int count = result.getInt("freehomes");
+
+                WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(worldGroupName);
+                if (worldGroup == null) continue;
+
+                if (!map.containsKey(worldGroup)) map.put(worldGroup, count);
+            }
+
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error getting all freehomes from database for player " + uuid);
+            Logger.ERROR.logException(e);
+        }
+        return map;
+    }
+
+    public int getAllFreeHomes(Connection con, UUID uuid, String group) {
         try (PreparedStatement statement = con.prepareStatement("SELECT freehomes FROM " + getTableName() + " WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {

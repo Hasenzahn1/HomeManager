@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.system.Table;
+import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.migration.PluginMigrator;
@@ -99,6 +100,30 @@ public class HomesTable extends Table {
 
         return 0;
     }
+
+    public HashMap<WorldGroup, List<String>> getAllHomeNamesFromPlayer(Connection con, UUID uuid) {
+        HashMap<WorldGroup, List<String>> map = new HashMap<>();
+        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, name FROM " + getTableName() + " WHERE uuid = '" + uuid + "'")) {
+
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                String worldGroupName = result.getString("worldgroup");
+                String name = result.getString("name");
+
+                WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(worldGroupName);
+                if (worldGroup == null) continue;
+
+                if (!map.containsKey(worldGroup)) map.put(worldGroup, new ArrayList<>());
+                map.get(worldGroup).add(name);
+            }
+
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error getting all homes from database for player " + uuid);
+            Logger.ERROR.logException(e);
+        }
+        return map;
+    }
+
 
     public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, String group) {
         HashMap<String, Home> homes = new HashMap<>();

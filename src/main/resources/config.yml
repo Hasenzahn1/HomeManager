@@ -3,7 +3,7 @@ debug:
   regenerateConfigsOnStart: true
 
 # Duration is ms (100000ms => 100s)
-tabCompletionCacheExpireDuration: 100000
+cacheExpireDuration: 100
 
 homeSearchDurationInSeconds: 30
 
