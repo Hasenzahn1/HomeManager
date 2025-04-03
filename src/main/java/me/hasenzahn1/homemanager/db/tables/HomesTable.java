@@ -76,7 +76,8 @@ public class HomesTable extends Table {
     }
 
     public int purgeHomesInWorld(Connection con, World world) {
-        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE world LIKE '" + world.getName() + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE world LIKE ?")) {
+            statement.setString(1, world.getName());
             return statement.executeUpdate();
         } catch (SQLException e) {
             Logger.ERROR.log("Error purging homes from database in world " + world.getName());
@@ -103,7 +104,8 @@ public class HomesTable extends Table {
 
     public HashMap<WorldGroup, List<String>> getAllHomeNamesFromPlayer(Connection con, UUID uuid) {
         HashMap<WorldGroup, List<String>> map = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, name FROM " + getTableName() + " WHERE uuid = '" + uuid + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, name FROM " + getTableName() + " WHERE uuid = ?")) {
+            statement.setString(1, uuid.toString());
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -127,7 +129,10 @@ public class HomesTable extends Table {
 
     public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, String group) {
         HashMap<String, Home> homes = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = '" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = ? AND worldgroup LIKE ?")) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, group);
+
             ResultSet result = statement.executeQuery();
             while (result.next()) {
                 UUID homeUUID = UUID.fromString(result.getString("uuid"));
@@ -152,7 +157,9 @@ public class HomesTable extends Table {
 
     public int getHomeCountFromPlayer(Connection con, UUID player, String group) {
         int count = 0;
-        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid='" + player + "' AND worldgroup LIKE '" + group + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid=? AND worldgroup LIKE ?")) {
+            statement.setString(1, player.toString());
+            statement.setString(2, group);
 
             ResultSet set = statement.executeQuery();
             if (set.next()) {
@@ -185,11 +192,15 @@ public class HomesTable extends Table {
         }
     }
 
-    public void removeHomeFromDatabase(Connection con, UUID player, String name, String group) {
-        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid='" + player + "' AND name LIKE '" + name + "' AND worldgroup LIKE '" + group + "'")) {
+    public void removeHomeFromDatabase(Connection con, UUID uuid, String name, String group) {
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid=? AND name LIKE ? AND worldgroup LIKE ?")) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, name);
+            statement.setString(3, group);
+
             statement.executeUpdate();
         } catch (SQLException e) {
-            Logger.ERROR.log("Error deleting home from database for player " + player + " with name " + name + " in group " + group);
+            Logger.ERROR.log("Error deleting home from database for player " + uuid + " with name " + name + " in group " + group);
             Logger.ERROR.logException(e);
         }
     }

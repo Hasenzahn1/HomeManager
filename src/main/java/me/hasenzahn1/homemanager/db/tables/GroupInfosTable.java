@@ -44,7 +44,8 @@ public class GroupInfosTable extends Table {
 
     public HashMap<WorldGroup, Integer> getAllFreeHomes(Connection con, UUID uuid) {
         HashMap<WorldGroup, Integer> map = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, freehomes FROM " + getTableName() + " WHERE uuid = '" + uuid + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, freehomes FROM " + getTableName() + " WHERE uuid = ?")) {
+            statement.setString(1, uuid.toString());
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -65,7 +66,10 @@ public class GroupInfosTable extends Table {
     }
 
     public int getAllFreeHomes(Connection con, UUID uuid, String group) {
-        try (PreparedStatement statement = con.prepareStatement("SELECT freehomes FROM " + getTableName() + " WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT freehomes FROM " + getTableName() + " WHERE uuid=? AND worldgroup LIKE ?")) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, group);
+
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
@@ -78,7 +82,10 @@ public class GroupInfosTable extends Table {
     }
 
     public void incrementFreeHomes(Connection con, UUID uuid, String group) {
-        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes + 1 WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "'")) {
+        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes + 1 WHERE uuid=? AND worldgroup LIKE ?")) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, group);
+
             statement.executeUpdate();
             Logger.DEBUG.log("Successfully incremented free homes for player " + uuid + " in group " + group);
         } catch (SQLException e) {
@@ -88,7 +95,9 @@ public class GroupInfosTable extends Table {
     }
 
     public void decrementFreeHomes(Connection con, UUID uuid, String group) {
-        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes - 1 WHERE uuid='" + uuid + "' AND worldgroup LIKE '" + group + "' AND freehomes > 0")) {
+        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes - 1 WHERE uuid=? AND worldgroup LIKE ? AND freehomes > 0")) {
+            statement.setString(1, uuid.toString());
+            statement.setString(2, group);
             statement.executeUpdate();
             Logger.DEBUG.log("Successfully decremented free homes for player " + uuid + " in group " + group);
         } catch (SQLException e) {
