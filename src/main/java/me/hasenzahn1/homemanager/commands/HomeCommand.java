@@ -42,8 +42,8 @@ public class HomeCommand extends BaseHomeCommand {
         obstructionCheck = new ObstructionCheck();
         homeExperienceCheck = new HomeExperienceCheck() {
             @Override
-            public int getRequiredExperience(PlayerNameArguments arguments, int homes) {
-                return arguments.getWorldGroup().getSettings().getHomeTeleportExperienceAmount();
+            public int getRequiredExperience(PlayerNameArguments arguments, int homes, Home requestedHome) {
+                return arguments.getWorldGroup().getSettings().getHomeTeleportExperience(arguments.getCmdSender().getLocation(), requestedHome.location());
             }
         };
     }
@@ -71,7 +71,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup());
         dbSession.destroy();
 
         //Check if home exists
@@ -113,8 +113,8 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Check if experience has to be paid but player has not enough experience
         boolean homeTeleportExperienceActive = settings.isHomeTeleportExperienceActive();
-        if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0)) {
-            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(homeExperienceCheck.getRequiredExperience(arguments, 0)));
+        if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0, requestedHome)) {
+            MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(homeExperienceCheck.getRequiredExperience(arguments, 0, requestedHome)));
             return true;
         }
 
@@ -129,7 +129,7 @@ public class HomeCommand extends BaseHomeCommand {
         //Pay Experience
         int experienceToBePaid = 0;
         if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments))
-            experienceToBePaid = homeExperienceCheck.getRequiredExperience(arguments, 0);
+            experienceToBePaid = homeExperienceCheck.getRequiredExperience(arguments, 0, requestedHome);
 
         //Teleportation delay
         boolean delayActive = settings.isDelayActive();

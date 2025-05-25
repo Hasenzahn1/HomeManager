@@ -32,7 +32,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         homeExperienceCheck = new HomeExperienceCheck() {
             @Override
-            public int getRequiredExperience(PlayerNameArguments arguments, int currentHomes) {
+            public int getRequiredExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome) {
                 return arguments.getWorldGroup().getSettings().getRequiredExperience(currentHomes);
             }
         };
@@ -61,7 +61,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup());
 
         //Check Duplicate Home Name
         if (playerHomes.homeExists(arguments.getHomeName())) {
@@ -113,9 +113,9 @@ public class SetHomeCommand extends BaseHomeCommand {
         }
 
         //You don't have enough experience, but you have to pay experience
-        int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount());
+        int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
         System.out.println(requiredLevels);
-        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount())) {
+        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome)) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();
             return true;

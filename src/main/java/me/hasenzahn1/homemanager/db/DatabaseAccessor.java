@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.db.system.Database;
 import me.hasenzahn1.homemanager.db.tables.GroupInfosTable;
 import me.hasenzahn1.homemanager.db.tables.HomesTable;
+import me.hasenzahn1.homemanager.db.tables.VersionTable;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
@@ -35,12 +36,12 @@ public class DatabaseAccessor {
         return database.getTable(HomesTable.class).getAllHomeNamesFromPlayer(connection, uuid);
     }
 
-    public PlayerHomes getHomesFromPlayer(UUID uuid, String group) {
+    public PlayerHomes getHomesFromPlayer(UUID uuid, WorldGroup group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomesFromPlayer(connection, uuid, group);
     }
 
-    public int getHomeCountFromPlayer(UUID uuid, String group) {
+    public int getHomeCountFromPlayer(UUID uuid, WorldGroup group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomeCountFromPlayer(connection, uuid, group);
     }
@@ -75,7 +76,7 @@ public class DatabaseAccessor {
         database.getTable(GroupInfosTable.class).decrementFreeHomes(connection, player, group);
     }
 
-    public void deleteHomesFromTheDatabase(UUID player, String homeName, String group) {
+    public void deleteHomesFromTheDatabase(UUID player, String homeName, WorldGroup group) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         database.getTable(HomesTable.class).removeHomeFromDatabase(connection, player, homeName, group);
     }
@@ -100,10 +101,23 @@ public class DatabaseAccessor {
         return database.getTable(HomesTable.class).getHomesInRadius(connection, center, radius);
     }
 
+    public int getVersion() {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(VersionTable.class).getVersion(connection);
+    }
+
+    public void setVersion(int version) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        database.getTable(VersionTable.class).setVersion(connection, version);
+    }
+
     public void destroy() {
         database.close(connection);
         connection = null;
         database = null;
     }
 
+    public Connection getConnection() {
+        return connection;
+    }
 }

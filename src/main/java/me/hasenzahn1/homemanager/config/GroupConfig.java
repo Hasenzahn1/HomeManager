@@ -28,13 +28,13 @@ public class GroupConfig extends CustomConfig {
      */
     public HashMap<String, WorldGroup> loadWorldGroups() {
         FileConfiguration config = getConfig();
-        Set<String> worldNames = config.getKeys(false);
+        Set<String> worldGroupNames = config.getKeys(false);
         HashMap<String, WorldGroup> worldGroups = new HashMap<>();
 
         //Load WorldGroups from config
         List<World> groupedWorlds = new ArrayList<>();
-        for (String worldName : worldNames) {
-            WorldGroup worldGroup = new WorldGroup(worldName, config.getConfigurationSection(worldName));
+        for (String groupName : worldGroupNames) {
+            WorldGroup worldGroup = new WorldGroup(groupName, config.getConfigurationSection(groupName));
             worldGroups.put(worldGroup.getName(), worldGroup);
             groupedWorlds.addAll(worldGroup.getWorlds());
             Logger.DEBUG.log("Successfully loaded world group " + worldGroup.getName());

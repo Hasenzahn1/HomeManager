@@ -34,17 +34,15 @@ public enum Logger {
         if (this == DEBUG && !DefaultConfig.DEBUG_LOGGING) {
             return;
         }
-        Bukkit.getConsoleSender().sendMessage(Component.text(prefix + msg));
-        if (this != DEBUG) Bukkit.getConsoleSender().sendMessage(Component.text(prefix + msg));
 
-        if (this == DEBUG) {
-            try {
-                File file = new File(HomeManager.getInstance().getDataFolder(), "/logs/" + LocalDate.now() + ".txt");
-                file.getParentFile().mkdirs();
-                Files.writeString(file.toPath(), formater.format(new Date()) + " | " + msg + System.lineSeparator(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                ERROR.log("Error writing to log file " + e.getLocalizedMessage());
-            }
+        Bukkit.getConsoleSender().sendMessage(Component.text(prefix + msg));
+
+        try {
+            File file = new File(HomeManager.getInstance().getDataFolder(), "/logs/" + LocalDate.now() + ".txt");
+            file.getParentFile().mkdirs();
+            Files.writeString(file.toPath(), formater.format(new Date()) + " | " + msg + System.lineSeparator(), StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            Bukkit.getConsoleSender().sendMessage(Component.text(ERROR.prefix + "Error writing to log file " + e.getLocalizedMessage()));
         }
     }
 

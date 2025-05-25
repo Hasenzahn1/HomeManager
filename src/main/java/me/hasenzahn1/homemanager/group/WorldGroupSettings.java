@@ -1,6 +1,7 @@
 package me.hasenzahn1.homemanager.group;
 
 import me.hasenzahn1.homemanager.util.ExpressionEvaluator;
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.entity.EntityDamageEvent;
 
@@ -13,12 +14,13 @@ public class WorldGroupSettings {
 
     //new
     private boolean setHomeExperienceActive = false;
-    private boolean setHomeHomeDeletionGrantsFreeHome = true;
     private String setHomeExperienceFormula = "";
     private List<Integer> setHomeExperiencePerHome = List.of();
 
+    private boolean freeHomesActive = true;
+
     private boolean homeTeleportExperienceActive = false;
-    private int homeTeleportExperienceAmount = 1;
+    private String homeTeleportExperienceFormula = "";
 
     private boolean delayActive = false;
     private boolean delayDisableInCreative = true;
@@ -29,7 +31,7 @@ public class WorldGroupSettings {
     private int timeoutDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> timeoutCauses = List.of();
 
-    private boolean obstructedHomeCheckActive = true;
+    private boolean obstructedHomeCheckActive = false;
     private boolean obstructedHomeCheckDisableInCreative = true;
     private int obstructedHomeCheckRetryDurationInSeconds = 5;
 
@@ -41,10 +43,11 @@ public class WorldGroupSettings {
         setHomeExperienceActive = section.getBoolean("setHomeExperience.active", setHomeExperienceActive);
         setHomeExperienceFormula = section.getString("setHomeExperience.experienceFormula", setHomeExperienceFormula);
         setHomeExperiencePerHome = section.getIntegerList("setHomeExperience.experiencePerHome");
-        setHomeHomeDeletionGrantsFreeHome = section.getBoolean("setHomeExperience.homeDeletionGrantsFreeHome", setHomeHomeDeletionGrantsFreeHome);
+
+        freeHomesActive = section.getBoolean("freeHomes.active", freeHomesActive);
 
         homeTeleportExperienceActive = section.getBoolean("homeTeleportExperience.active", homeTeleportExperienceActive);
-        homeTeleportExperienceAmount = section.getInt("homeTeleportExperience.amount", homeTeleportExperienceAmount);
+        homeTeleportExperienceFormula = section.getString("homeTeleportExperience.formula", homeTeleportExperienceFormula);
 
         delayActive = section.getBoolean("delay.active", delayActive);
         delayDisableInCreative = section.getBoolean("delay.disableInCreative", delayDisableInCreative);
@@ -93,16 +96,19 @@ public class WorldGroupSettings {
         return setHomeExperienceActive;
     }
 
-    public boolean isSetHomeHomeDeletionGrantsFreeHome() {
-        return setHomeHomeDeletionGrantsFreeHome;
+    public boolean isFreeHomesActive() {
+        return freeHomesActive;
     }
 
     public boolean isHomeTeleportExperienceActive() {
         return homeTeleportExperienceActive;
     }
 
-    public int getHomeTeleportExperienceAmount() {
-        return homeTeleportExperienceAmount;
+    public int getHomeTeleportExperience(Location start, Location end) {
+        if (homeTeleportExperienceFormula.isEmpty()) return 0;
+        double dist = start.toVector().distance(end.toVector());
+        boolean world = start.getWorld().equals(end.getWorld());
+        return (int) ExpressionEvaluator.eval(homeTeleportExperienceFormula.replace("dist", String.valueOf(dist)).replace("worldChange", String.valueOf(world ? 1 : 0)));
     }
 
     public boolean isDelayActive() {

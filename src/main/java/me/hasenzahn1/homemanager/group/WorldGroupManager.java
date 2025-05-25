@@ -52,6 +52,11 @@ public class WorldGroupManager {
         worldGroupsByWorld.clear();
         for (WorldGroup worldGroup : worldGroupsByName.values()) {
             for (World world : worldGroup.getWorlds()) {
+                if (worldGroupsByWorld.containsKey(world)) {
+                    Logger.ERROR.log("Duplicate world " + world.getName() + " in worldgroups. Skipping world for worldgroup " + worldGroup.getName());
+                    continue;
+                }
+
                 worldGroupsByWorld.put(world, worldGroup);
                 Logger.DEBUG.log("Registered world " + world.getName() + " for group " + worldGroup.getName());
             }

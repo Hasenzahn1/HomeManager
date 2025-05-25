@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class HomesTable extends Table {
 
@@ -39,8 +40,7 @@ public class HomesTable extends Table {
                 "z REAL NOT NULL," +
                 "yaw REAL NOT NULL," +
                 "pitch REAL NOT NULL," +
-                "worldgroup VARCHAR(30) NOT NULL," +
-                "PRIMARY KEY (uuid, name, worldgroup)" +
+                "PRIMARY KEY (uuid, name, world)" +
                 ");";
     }
 
@@ -104,15 +104,15 @@ public class HomesTable extends Table {
 
     public HashMap<WorldGroup, List<String>> getAllHomeNamesFromPlayer(Connection con, UUID uuid) {
         HashMap<WorldGroup, List<String>> map = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, name FROM " + getTableName() + " WHERE uuid = ?")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT world, name FROM " + getTableName() + " WHERE uuid = ?")) {
             statement.setString(1, uuid.toString());
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
-                String worldGroupName = result.getString("worldgroup");
+                World world = Bukkit.getWorld(result.getString("world"));
                 String name = result.getString("name");
 
-                WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(worldGroupName);
+                WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(world);
                 if (worldGroup == null) continue;
 
                 if (!map.containsKey(worldGroup)) map.put(worldGroup, new ArrayList<>());
@@ -127,11 +127,16 @@ public class HomesTable extends Table {
     }
 
 
-    public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, String group) {
+    public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, WorldGroup group) {
+        String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
         HashMap<String, Home> homes = new HashMap<>();
-        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = ? AND worldgroup LIKE ?")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " WHERE uuid = ? AND world IN (" + placeHolders + ")")) {
             statement.setString(1, uuid.toString());
-            statement.setString(2, group);
+            int index = 2;
+            for (World w : group.getWorlds()) {
+                statement.setString(index, w.getName());
+                index++;
+            }
 
             ResultSet result = statement.executeQuery();
             while (result.next()) {
@@ -155,11 +160,16 @@ public class HomesTable extends Table {
         return new PlayerHomes(homes);
     }
 
-    public int getHomeCountFromPlayer(Connection con, UUID player, String group) {
+    public int getHomeCountFromPlayer(Connection con, UUID player, WorldGroup group) {
+        String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
         int count = 0;
-        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid=? AND worldgroup LIKE ?")) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM homes WHERE uuid=? AND world IN (" + placeHolders + ")")) {
             statement.setString(1, player.toString());
-            statement.setString(2, group);
+            int index = 2;
+            for (World w : group.getWorlds()) {
+                statement.setString(index, w.getName());
+                index++;
+            }
 
             ResultSet set = statement.executeQuery();
             if (set.next()) {
@@ -174,7 +184,7 @@ public class HomesTable extends Table {
     }
 
     public void saveHomeToDatabase(Connection con, UUID player, Home home) {
-        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)")) {
             statement.setString(1, player.toString());
             statement.setString(2, home.name());
             statement.setString(3, home.location().getWorld().getName());
@@ -183,7 +193,6 @@ public class HomesTable extends Table {
             statement.setDouble(6, home.location().getZ());
             statement.setFloat(7, home.location().getYaw());
             statement.setFloat(8, home.location().getPitch());
-            statement.setString(9, HomeManager.getInstance().getWorldGroupManager().getWorldGroup(home.location().getWorld()).getName());
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -192,11 +201,16 @@ public class HomesTable extends Table {
         }
     }
 
-    public void removeHomeFromDatabase(Connection con, UUID uuid, String name, String group) {
-        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid=? AND name LIKE ? AND worldgroup LIKE ?")) {
+    public void removeHomeFromDatabase(Connection con, UUID uuid, String name, WorldGroup group) {
+        String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
+        try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid=? AND name LIKE ? AND world IN (" + placeHolders + ")")) {
             statement.setString(1, uuid.toString());
             statement.setString(2, name);
-            statement.setString(3, group);
+            int index = 3;
+            for (World w : group.getWorlds()) {
+                statement.setString(index, w.getName());
+                index++;
+            }
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -206,7 +220,7 @@ public class HomesTable extends Table {
     }
 
     public void bulkAddHomeFromMigration(Connection con, List<HomeMigrator.HomeData> data) {
-        try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch, worldgroup) VALUES(?,?,?,?,?,?,?,?,?)")) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)")) {
             con.setAutoCommit(false);
             for (HomeMigrator.HomeData homeData : data) {
                 statement.setString(1, homeData.uuid().toString());
@@ -217,7 +231,6 @@ public class HomesTable extends Table {
                 statement.setDouble(6, homeData.z());
                 statement.setFloat(7, homeData.yaw());
                 statement.setFloat(8, homeData.pitch());
-                statement.setString(9, homeData.getWorldGroup().getName());
 
                 statement.executeUpdate();
             }

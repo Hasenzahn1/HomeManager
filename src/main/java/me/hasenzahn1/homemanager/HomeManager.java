@@ -15,6 +15,7 @@ import me.hasenzahn1.homemanager.listener.TimeoutListener;
 import me.hasenzahn1.homemanager.migration.BasicHomesMigrator;
 import me.hasenzahn1.homemanager.migration.HomeMigrator;
 import me.hasenzahn1.homemanager.papi.PlaceholderHomeExpansion;
+import me.hasenzahn1.homemanager.updates.VersionUpgrader;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabCompleter;
@@ -25,6 +26,9 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public final class HomeManager extends JavaPlugin {
+
+    public static int PLUGIN_VERSION = 1;
+    public static boolean PLACEHOLDER_API_EXISTS;
 
     public static String PREFIX = "[HomeManager]";
     private static HomeManager instance;
@@ -60,6 +64,10 @@ public final class HomeManager extends JavaPlugin {
         database = new HomesDatabase();
         database.init();
 
+        //Upgrade Versions
+        VersionUpgrader versionUpgrader = new VersionUpgrader();
+        versionUpgrader.startUpgrade();
+
         //Completions
         completionsHelper = new CompletionsHelper();
         homesCache = new HomesCache();
@@ -88,6 +96,7 @@ public final class HomeManager extends JavaPlugin {
 
         //Initialize External Plugins
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
+            PLACEHOLDER_API_EXISTS = true;
             new PlaceholderHomeExpansion().register(); //
             Logger.DEBUG.log("Registered PlaceholderAPI Expansion");
         }
@@ -108,7 +117,7 @@ public final class HomeManager extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        homesCache.destroy();
+        if (homesCache != null) homesCache.destroy();
         HomeSearchCommand.destroy();
     }
 

@@ -44,7 +44,7 @@ public class MessageManager {
 
         if (Language.containsLang(languageKey) || !messageHasBeenSent) {
             String message = Language.getLang(languageKey, replacements);
-            if (player instanceof OfflinePlayer)
+            if (player instanceof OfflinePlayer && HomeManager.PLACEHOLDER_API_EXISTS)
                 message = PlaceholderAPI.setPlaceholders(((Player) player).getPlayer(), message);
             player.sendMessage(Component.text(HomeManager.PREFIX + message));
         }
@@ -54,7 +54,8 @@ public class MessageManager {
         if (!(player instanceof Player)) return false;
 
         String message = Language.getLang(languageKey, replacements);
-        message = PlaceholderAPI.setPlaceholders(((OfflinePlayer) player), message);
+        if (HomeManager.PLACEHOLDER_API_EXISTS)
+            message = PlaceholderAPI.setPlaceholders(((OfflinePlayer) player), message);
         player.sendActionBar(Component.text(message));
         return true;
     }

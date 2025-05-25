@@ -35,7 +35,7 @@ public class HomeListCommand extends BaseHomeCommand {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
-        
+
         //Check player
         if (!(commandSender instanceof Player)) {
             MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
@@ -55,7 +55,7 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup());
         dbSession.destroy();
 
         //No Homes Message

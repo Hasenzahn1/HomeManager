@@ -1,23 +1,70 @@
-Survival:
+# WorldGroups are defined in this config.
+# One special "global" worldgroup always exists. You can add your own groups by copying or uncommenting the entries below.
+# All settings are optional unless noted otherwise. If a setting is missing, the default will be used.
+# The only required setting per worldgroup is the list of worlds.
+global:
+
+  # List of all worlds included in this worldgroup.
+  # A world can only belong to one worldgroup.
+  # Any world not listed in any group will automatically be assigned to the global group.
   worlds:
     - world
     - world_nether
     - world_the_end
 
+  # Controls the experience cost behavior for the /sethome command.
   setHomeExperience:
+    # Enables or disables experience costs when setting a home.
+    # Default: false
     active: true
-    experienceFormula: 2*amount+100
+
+    # Defines the experience level cost for each home slot.
+    # If more homes are created than values provided, the last value will be reused unless a formula is defined.
+    # This setting overrides the experienceFormula if both are present.
     experiencePerHome: [ 0, 5, 10, 15, 25, 40, 65, 105, 170, 275, 445 ]
-    homeDeletionGrantsFreeHome: true
 
+    # Formula to calculate experience cost based on the number of homes.
+    # Use "amount" as a placeholder for the current number of homes.
+    # If both experiencePerHome and experienceFormula are set, experiencePerHome takes a higher priority than the experience formula.
+    # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
+    experienceFormula: "2*amount+100"
+
+
+  # Controls whether deleting a home grants a free home slot again.
+  freeHomes:
+    # Enables or disables this feature.
+    # Default: true
+    active: true
+
+
+  # Controls the experience cost behavior for the /home command.
   homeTeleportExperience:
+    # Enables or disables experience cost for teleportation.
+    # Default: false
     active: true
-    amount: 2
 
+    # Formula to calculate the cost based on teleport distance.
+    # Use "dist" for distance and "worldChange" (1 if changing world, 0 otherwise).
+    # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
+    formula: "dist/10"
+
+
+  # Controls the delay before teleporting with /home.
   delay:
+    # Enables or disables the delay.
+    # Default: false
     active: true
+
+    # Delay duration in seconds.
+    # Default: 5
+    duration: 5
+
+    # If enabled, bypasses the delay in creative/spectator mode.
+    # Default: true
     disableInCreative: true
-    duration: 7
+
+    # List of damage causes that cancel the teleportation while delayed.
+    # Valid causes: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
     interruptCauses:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
@@ -29,9 +76,18 @@ Survival:
       - ENTITY_EXPLOSION
       - CAMPFIRE
 
+  # Controls a timeout after taking damage, during which /home cannot be used.
   timeout:
+    # Enables or disables the timeout.
+    # Default: false
     active: true
+
+    # Timeout duration in seconds.
+    # Default: 5
     duration: 5
+
+    # List of damage causes that trigger the timeout.
+    # Valid causes: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
     causes:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
@@ -43,18 +99,38 @@ Survival:
       - ENTITY_EXPLOSION
       - CAMPFIRE
 
+
+  # Controls whether homes are checked for obstructions (e.g. blocks in the way).
+  # This will load the chunk to perform the check.
   obstructedHomeCheck:
+    # Enables or disables the obstruction check.
+    # Default: false
     active: true
+
+    # If enabled, skips the check in creative/spectator mode.
+    # Default: true
     disableInCreative: true
+
+    # Time window (in seconds) in which the command can be reissued after a failed attempt.
+    # Default: 5
     retryDuration: 5
 
+  # Controls whether players must be on the ground to use the /home command.
   homeTeleportOnGroundCheck:
+    # Enables or disables the on-ground check.
+    # Default: false
     active: true
+
+    # If enabled, bypasses the check in creative/spectator mode.
+    # Default: true
     disableInCreative: true
 
 
-Skyblock:
-  worlds:
-    - bskyblock_world
-    - bskyblock_world_nether
-    - bskyblock_world_the_end
+# Skyblock:
+#   worlds:
+#     - bskyblock_world
+#     - bskyblock_world_nether
+#     - bskyblock_world_the_end
+#
+#   freeHomes:
+#     active: true

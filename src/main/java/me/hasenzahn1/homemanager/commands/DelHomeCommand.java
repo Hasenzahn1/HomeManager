@@ -51,7 +51,7 @@ public class DelHomeCommand extends BaseHomeCommand {
 
         //Get Homes from db
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
-        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
+        PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup());
 
         //Check if home exists
         if (!playerHomes.homeExists(arguments.getHomeName())) {
@@ -64,11 +64,11 @@ public class DelHomeCommand extends BaseHomeCommand {
         Home home = playerHomes.getHome(arguments.getHomeName());
 
         //Delete home
-        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup().getName());
+        dbSession.deleteHomesFromTheDatabase(arguments.getActionPlayerUUID(), home.name(), arguments.getWorldGroup());
         Logger.DEBUG.log("Deleted home " + home.name() + " of player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
 
         //Grant free home
-        if (arguments.getWorldGroup().getSettings().isSetHomeHomeDeletionGrantsFreeHome()) {
+        if (arguments.getWorldGroup().getSettings().isFreeHomesActive()) {
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             Logger.DEBUG.log("Granted freehome for player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
         }
