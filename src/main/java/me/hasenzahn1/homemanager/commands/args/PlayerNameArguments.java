@@ -22,7 +22,7 @@ public class PlayerNameArguments extends PlayerArguments {
 
     public static PlayerNameArguments parseArguments(Player cmdSender, String[] args) {
         if (args.length == 0)
-            return new PlayerNameArguments(cmdSender, "", "", true);
+            return new PlayerNameArguments(cmdSender, cmdSender.getName(), "", true);
         if (args.length == 1)
             return new PlayerNameArguments(cmdSender, cmdSender.getName(), args[0], false);
         if (args.length == 2)

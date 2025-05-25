@@ -46,7 +46,7 @@ public class PlayerNameGroupArguments extends PlayerNameArguments {
 
     public static PlayerNameGroupArguments parseArguments(Player cmdSender, String[] args) {
         if (args.length == 0)
-            return new PlayerNameGroupArguments(cmdSender, "", "", "", "", true);
+            return new PlayerNameGroupArguments(cmdSender, cmdSender.getName(), "", "", "", true);
         if (args.length == 1)
             return new PlayerNameGroupArguments(cmdSender, cmdSender.getName(), args[0], "", "", false);
         if (args.length == 2)
