@@ -19,14 +19,14 @@ public class PermissionUtils {
      * @return
      */
     public static int getMaxHomesFromPermission(Permissible sender, String group) {
-        if (sender == null) return 0;
-        int maxhomes = 0;
+        if (sender == null) return -1;
+        int maxHomes = -1;
         for (PermissionAttachmentInfo info : sender.getEffectivePermissions()) {
             if (info.getPermission().startsWith("homemanager.maxhomes.*.")) {
                 String amount = info.getPermission().replace("homemanager.maxhomes.*.", "");
                 if (amount.equalsIgnoreCase("*")) return Integer.MAX_VALUE;
                 if (!isInt(amount)) continue;
-                maxhomes = Math.max(maxhomes, Integer.parseInt(amount));
+                maxHomes = Math.max(maxHomes, Integer.parseInt(amount));
             }
 
             if (info.getPermission().equalsIgnoreCase("homemanager.maxhomes." + group + ".*")) {
@@ -34,10 +34,10 @@ public class PermissionUtils {
             }
 
             if (info.getPermission().startsWith("homemanager.maxhomes." + group)) {
-                maxhomes = Math.max(maxhomes, Integer.parseInt(info.getPermission().replaceAll("homemanager.maxhomes." + group + ".", "")));
+                maxHomes = Math.max(maxHomes, Integer.parseInt(info.getPermission().replaceAll("homemanager.maxhomes." + group + ".", "")));
             }
         }
-        return maxhomes; //TODO return default group max homes
+        return maxHomes;
     }
 
 

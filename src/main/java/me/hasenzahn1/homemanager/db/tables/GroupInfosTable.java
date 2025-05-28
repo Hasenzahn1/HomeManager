@@ -82,7 +82,7 @@ public class GroupInfosTable extends Table {
     }
 
     public void incrementFreeHomes(Connection con, UUID uuid, String group) {
-        try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes + 1 WHERE uuid=? AND worldgroup LIKE ?")) {
+        try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, worldgroup, freehomes) VALUES(?,?,1) ON CONFLICT(uuid, worldgroup) DO UPDATE SET freehomes = freehomes + 1")) {
             statement.setString(1, uuid.toString());
             statement.setString(2, group);
 

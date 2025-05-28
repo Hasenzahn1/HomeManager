@@ -113,7 +113,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Check if experience has to be paid but player has not enough experience
         boolean homeTeleportExperienceActive = settings.isHomeTeleportExperienceActive();
-        if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0, requestedHome)) {
+        if (homeTeleportExperienceActive && homeExperienceCheck.checkForInvalidExperience(arguments, 0, requestedHome, arguments.getWorldGroup().getSettings().isHomeTeleportDisableWithBypassPerm())) {
             MessageManager.sendMessage(arguments.getCmdSender(), Language.HOME_NO_EXP, "levels", String.valueOf(homeExperienceCheck.getRequiredExperience(arguments, 0, requestedHome)));
             return true;
         }
@@ -128,7 +128,7 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Pay Experience
         int experienceToBePaid = 0;
-        if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments))
+        if (homeTeleportExperienceActive && homeExperienceCheck.hasToPayExperience(arguments, arguments.getWorldGroup().getSettings().isHomeTeleportDisableWithBypassPerm()))
             experienceToBePaid = homeExperienceCheck.getRequiredExperience(arguments, 0, requestedHome);
 
         //Teleportation delay

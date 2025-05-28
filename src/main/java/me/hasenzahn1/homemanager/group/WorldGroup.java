@@ -23,8 +23,8 @@ public class WorldGroup {
             if (Bukkit.getWorld(worldName) != null)
                 worlds.add(Bukkit.getWorld(worldName));
         }
-        
-        settings = new WorldGroupSettings(section);
+
+        settings = new WorldGroupSettings(section, this);
     }
 
     //Defines the basic Global Region
@@ -33,6 +33,7 @@ public class WorldGroup {
         this.worlds = new ArrayList<>();
 
         settings = WorldGroupSettings.DEFAULT;
+        settings.setParentWorldGroup(this);
     }
 
     public String getName() {

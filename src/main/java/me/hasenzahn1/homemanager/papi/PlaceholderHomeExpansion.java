@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.Pair;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.group.WorldGroup;
-import me.hasenzahn1.homemanager.util.PermissionUtils;
 import me.hasenzahn1.homemanager.util.PlayerNameUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -119,8 +118,7 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
 
         Player p = Bukkit.getOfflinePlayer(parsedArgs.key()).getPlayer();
         if (p == null) return "-";
-
-        return String.valueOf(PermissionUtils.getMaxHomesFromPermission(p, parsedArgs.value().getName()));
+        return String.valueOf(parsedArgs.value().getSettings().getMaxHomes(p));
     }
 
     private String handleHomeCountPlaceholder(OfflinePlayer requester, String[] args) {

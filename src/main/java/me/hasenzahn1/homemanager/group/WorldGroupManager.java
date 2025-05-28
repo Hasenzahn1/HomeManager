@@ -2,8 +2,8 @@ package me.hasenzahn1.homemanager.group;
 
 import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
-import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.config.GroupConfig;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -16,15 +16,18 @@ public class WorldGroupManager {
 
     public static final String GLOBAL_GROUP = "global";
 
-    private final GroupConfig groupConfig;
     private final HashMap<String, WorldGroup> worldGroupsByName;
     private final HashMap<World, WorldGroup> worldGroupsByWorld;
 
+    private final File groupsFolder;
+
     public WorldGroupManager() {
-        if (DefaultConfig.DEBUG_REPLACE_CONFIG) {
-            new File(HomeManager.getInstance().getDataFolder(), "groups.yml").delete(); //TODO: DEBUG REMOVE
+        groupsFolder = new File(HomeManager.getInstance().getDataFolder(), "/groups/");
+        if (!groupsFolder.exists()) groupsFolder.mkdirs();
+
+        if (HomeManager.DEV_MODE) {
+            new File(groupsFolder, "global.yml").delete();
         }
-        groupConfig = new GroupConfig();
 
         worldGroupsByName = new HashMap<>();
         worldGroupsByWorld = new HashMap<>();
@@ -32,34 +35,67 @@ public class WorldGroupManager {
         new BukkitRunnable() {
             @Override
             public void run() {
-                loadGroupsFromConfig();
+                loadFromDisk();
             }
         }.runTaskLater(HomeManager.getInstance(), 20L);
     }
 
-    public void reloadFromDisk() {
-        Logger.DEBUG.log("Reloading groups from disk.");
-        groupConfig.reloadConfig();
-        loadGroupsFromConfig();
+    private void loadFromDisk() {
+        worldGroupsByWorld.clear();
+        worldGroupsByName.clear();
+
+        if (!new File(groupsFolder, "global.yml").exists()) {
+            HomeManager.getInstance().saveResource("groups/global.yml", false);
+        }
+
+        for (File file : groupsFolder.listFiles()) {
+            if (file.getName().endsWith(".yml")) {
+                GroupConfig groupConfig = new GroupConfig(file);
+                loadGroupsFromConfig(groupConfig);
+            }
+        }
+
+        //Get Global worldgroup
+        WorldGroup globalGroup = worldGroupsByName.get(GLOBAL_GROUP);
+        if (globalGroup == null) globalGroup = new WorldGroup(GLOBAL_GROUP);
+
+        //Find all worlds that are not in a group
+        for (World world : Bukkit.getWorlds()) {
+            if (!worldGroupsByWorld.containsKey(world)) {
+                globalGroup.getWorlds().add(world);
+                worldGroupsByWorld.put(world, globalGroup);
+                Logger.DEBUG.log("Registered world " + world.getName() + " for group " + globalGroup.getName());
+            }
+        }
+
+        worldGroupsByName.put(GLOBAL_GROUP, globalGroup);
     }
 
-    private void loadGroupsFromConfig() {
+    public void reloadFromDisk() {
+        Logger.DEBUG.log("Reloading groups from disk.");
+        loadFromDisk();
+    }
+
+    private void loadGroupsFromConfig(GroupConfig groupConfig) {
         //Load Worlds from config
-        worldGroupsByName.clear();
-        worldGroupsByName.putAll(groupConfig.loadWorldGroups());
+        HashMap<String, WorldGroup> worldGroups = groupConfig.loadWorldGroups(this);
+        worldGroupsByName.putAll(worldGroups);
 
         //Map worlds to their respective worldGroup for easier accessing later
-        worldGroupsByWorld.clear();
-        for (WorldGroup worldGroup : worldGroupsByName.values()) {
-            for (World world : worldGroup.getWorlds()) {
-                if (worldGroupsByWorld.containsKey(world)) {
-                    Logger.ERROR.log("Duplicate world " + world.getName() + " in worldgroups. Skipping world for worldgroup " + worldGroup.getName());
-                    continue;
-                }
+        for (WorldGroup worldGroup : worldGroups.values()) {
+            loadWorldGroup(worldGroup);
+        }
+    }
 
-                worldGroupsByWorld.put(world, worldGroup);
-                Logger.DEBUG.log("Registered world " + world.getName() + " for group " + worldGroup.getName());
+    private void loadWorldGroup(WorldGroup worldGroup) {
+        for (World world : worldGroup.getWorlds()) {
+            if (worldGroupsByWorld.containsKey(world)) {
+                Logger.ERROR.log("Duplicate world " + world.getName() + " in worldgroups. Skipping world for worldgroup " + worldGroup.getName());
+                continue;
             }
+
+            worldGroupsByWorld.put(world, worldGroup);
+            Logger.DEBUG.log("Registered world " + world.getName() + " for group " + worldGroup.getName());
         }
     }
 

@@ -27,7 +27,7 @@ public class ReloadSubCommand implements ISubCommand {
             case "groups":
                 HomeManager.getInstance().getHomesCache().invalidateAll();
                 HomeManager.getInstance().getWorldGroupManager().reloadFromDisk();
-                Logger.DEBUG.log("Reloaded groups.yml from disk");
+                Logger.DEBUG.log("Reloaded global.yml from disk");
                 break;
             case "lang":
                 Language.reload();

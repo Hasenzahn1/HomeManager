@@ -8,15 +8,17 @@ public abstract class HomeExperienceCheck {
 
     public abstract int getRequiredExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome);
 
-    public boolean checkForInvalidExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome) {
+    public boolean checkForInvalidExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome, boolean disableWithBypassPerm) {
         int requiredLevels = getRequiredExperience(arguments, currentHomes, requestedHome);
-        boolean hasToPayExperience = hasToPayExperience(arguments);
+        boolean hasToPayExperience = hasToPayExperience(arguments, disableWithBypassPerm);
 
-        return hasToPayExperience && arguments.getCmdSender().getLevel() < requiredLevels;
+        return hasToPayExperience && (arguments.getCmdSender().getLevel() < requiredLevels);
     }
 
-    public boolean hasToPayExperience(PlayerNameArguments arguments) {
-        return arguments.isSelf() && !arguments.getCmdSender().getGameMode().isInvulnerable() && !PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
+    public boolean hasToPayExperience(PlayerNameArguments arguments, boolean disableWithBypassPermission) {
+        return arguments.isSelf()
+                && !arguments.getCmdSender().getGameMode().isInvulnerable()
+                && (!disableWithBypassPermission || !PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup()));
     }
 
 }

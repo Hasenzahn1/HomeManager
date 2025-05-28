@@ -13,7 +13,6 @@ import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
-import me.hasenzahn1.homemanager.util.PermissionUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -78,7 +77,7 @@ public class SetHomeCommand extends BaseHomeCommand {
         }
 
         //Gather Max Homes from db
-        int maxHomes = PermissionUtils.getMaxHomesFromPermission(commandSender, arguments.getWorldGroup().getName());
+        int maxHomes = arguments.getWorldGroup().getSettings().getMaxHomes(commandSender);
 
         //Check if the player has reached his maxHome Limit
         if (arguments.isSelf() && playerHomes.getHomeAmount() >= maxHomes) {
@@ -92,11 +91,12 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
-        boolean hasToPayExperience = homeExperienceCheck.hasToPayExperience(arguments);
+        boolean hasToPayExperience = homeExperienceCheck.hasToPayExperience(arguments, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm());
+        boolean shouldDecrementFreeHomes = !arguments.isSelf() || (arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
 
         //No Experience Required
         if (!hasToPayExperience || !arguments.getWorldGroup().getSettings().isSetHomeExperienceActive()) {
-            if (arguments.isSelf())
+            if (shouldDecrementFreeHomes)
                 dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
             return true;
@@ -106,7 +106,7 @@ public class SetHomeCommand extends BaseHomeCommand {
         int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
 
         //If the player has free homes use it.
-        if (freeHomes > 0) {
+        if (freeHomes > 0 && shouldDecrementFreeHomes) {
             dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
             return true;
@@ -114,15 +114,14 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //You don't have enough experience, but you have to pay experience
         int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
-        System.out.println(requiredLevels);
-        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome)) {
+        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm())) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();
             return true;
         }
 
         //Reduce experience and save to db
-        arguments.getCmdSender().setLevel(Math.max(0, arguments.getCmdSender().getLevel() - requiredLevels));
+        arguments.getCmdSender().setLevel(Math.max(0, arguments.getCmdSender().getLevel() - Math.max(0, requiredLevels)));
         saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
         return true;
     }

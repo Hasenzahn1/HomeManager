@@ -76,6 +76,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), freeHomes + amount);
+        HomeManager.getInstance().getHomesCache().invalidateCache(uuid);
 
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_ADD_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(freeHomes + amount), "add", String.valueOf(amount));
     }
@@ -84,6 +85,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), Math.max(0, freeHomes - amount));
+        HomeManager.getInstance().getHomesCache().invalidateCache(uuid);
 
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_REMOVE_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(Math.max(0, freeHomes - amount)), "remove", String.valueOf(amount));
     }
@@ -91,6 +93,8 @@ public class FreeHomesSubCommand implements ISubCommand {
     private void handleSet(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         session.saveFreeHomes(uuid, worldGroup.getName(), amount);
+        session.destroy();
+        HomeManager.getInstance().getHomesCache().invalidateCache(uuid);
 
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_SET_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(amount));
     }

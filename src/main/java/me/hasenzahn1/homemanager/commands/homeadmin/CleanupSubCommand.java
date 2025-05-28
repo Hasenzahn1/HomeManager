@@ -1,5 +1,6 @@
 package me.hasenzahn1.homemanager.commands.homeadmin;
 
+import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Language;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
@@ -35,6 +36,7 @@ public class CleanupSubCommand implements ISubCommand {
         DatabaseAccessor database = DatabaseAccessor.openSession();
         int rowCount = database.cleanupHomes(Bukkit.getWorlds());
         database.destroy();
+        HomeManager.getInstance().getHomesCache().invalidateAll();
         MessageManager.sendMessage(executor, Language.HOME_ADMIN_CLEANUP_SUCCESS, "amount", String.valueOf(rowCount));
         Logger.INFO.log("Cleaned " + rowCount + " homes from the database");
     }

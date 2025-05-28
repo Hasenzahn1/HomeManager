@@ -32,6 +32,7 @@ public class MigrateSubCommand implements ISubCommand {
         switch (args[1].toLowerCase()) {
             case "all":
                 Duration durationAll = HomeManager.getInstance().getHomeMigrator().startMigrationAll(migrator);
+                HomeManager.getInstance().getHomesCache().invalidateAll();
                 MessageManager.sendMessage(executor, Language.HOME_ADMIN_MIGRATE_SUCCESS, "millis", String.valueOf(durationAll.toMillis()));
                 break;
             case "world":
@@ -42,6 +43,7 @@ public class MigrateSubCommand implements ISubCommand {
 
                 String worldName = args[1];
                 Duration durationWorld = HomeManager.getInstance().getHomeMigrator().startMigrationWorld(migrator, worldName);
+                HomeManager.getInstance().getHomesCache().invalidateAll();
                 MessageManager.sendMessage(executor, Language.HOME_ADMIN_MIGRATE_SUCCESS, "millis", String.valueOf(durationWorld.toMillis()));
                 break;
             default:

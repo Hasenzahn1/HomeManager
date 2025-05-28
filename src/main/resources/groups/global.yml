@@ -8,9 +8,14 @@ global:
   # A world can only belong to one worldgroup.
   # Any world not listed in any group will automatically be assigned to the global group.
   worlds:
-    - world
     - world_nether
     - world_the_end
+
+  # The maximum number of homes a player can have by default.
+  # This can be overridden using the permission: homemanager.maxhomes.<worldgroup>.<amount>
+  # The permission always takes priority over this config value.
+  # Default: 10
+  maxHomes: 10
 
   # Controls the experience cost behavior for the /sethome command.
   setHomeExperience:
@@ -29,12 +34,21 @@ global:
     # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
     experienceFormula: "2*amount+100"
 
+    # Disables the experience cost when the player has the bypass permission.
+    # Warning: If a player has op you automatically have this permission.
+    # Default: true
+    disableWithBypassPerm: true
+
 
   # Controls whether deleting a home grants a free home slot again.
   freeHomes:
     # Enables or disables this feature.
     # Default: true
     active: true
+
+    # Disables the free homes feature when the player is in Creative or Spectator mode.
+    # This means that no free homes will be granted or consumed while in these game modes.
+    disableInCreative: true
 
 
   # Controls the experience cost behavior for the /home command.
@@ -48,12 +62,17 @@ global:
     # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
     formula: "dist/10"
 
+    # Disables the experience cost when the player has the bypass permission.
+    # Warning: If a player has op you automatically have this permission.
+    # Default: true
+    disableWithBypassPerm: true
+
 
   # Controls the delay before teleporting with /home.
   delay:
     # Enables or disables the delay.
     # Default: false
-    active: true
+    active: false
 
     # Delay duration in seconds.
     # Default: 5
@@ -80,7 +99,7 @@ global:
   timeout:
     # Enables or disables the timeout.
     # Default: false
-    active: true
+    active: false
 
     # Timeout duration in seconds.
     # Default: 5
@@ -105,7 +124,7 @@ global:
   obstructedHomeCheck:
     # Enables or disables the obstruction check.
     # Default: false
-    active: true
+    active: false
 
     # If enabled, skips the check in creative/spectator mode.
     # Default: true
@@ -119,18 +138,8 @@ global:
   homeTeleportOnGroundCheck:
     # Enables or disables the on-ground check.
     # Default: false
-    active: true
+    active: false
 
     # If enabled, bypasses the check in creative/spectator mode.
     # Default: true
     disableInCreative: true
-
-
-# Skyblock:
-#   worlds:
-#     - bskyblock_world
-#     - bskyblock_world_nether
-#     - bskyblock_world_the_end
-#
-#   freeHomes:
-#     active: true

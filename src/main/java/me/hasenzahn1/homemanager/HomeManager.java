@@ -29,6 +29,7 @@ public final class HomeManager extends JavaPlugin {
 
     public static int PLUGIN_VERSION = 1;
     public static boolean PLACEHOLDER_API_EXISTS;
+    public static boolean DEV_MODE = true;
 
     public static String PREFIX = "[HomeManager]";
     private static HomeManager instance;

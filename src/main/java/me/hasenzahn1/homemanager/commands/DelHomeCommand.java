@@ -68,7 +68,9 @@ public class DelHomeCommand extends BaseHomeCommand {
         Logger.DEBUG.log("Deleted home " + home.name() + " of player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
 
         //Grant free home
-        if (arguments.getWorldGroup().getSettings().isFreeHomesActive()) {
+        //boolean shouldNotGrantFreeHomes = !arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable();
+        boolean shouldGrantFreeHomes = !arguments.isSelf() || (arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
+        if (arguments.getWorldGroup().getSettings().isFreeHomesActive() && shouldGrantFreeHomes) {
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             Logger.DEBUG.log("Granted freehome for player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
         }

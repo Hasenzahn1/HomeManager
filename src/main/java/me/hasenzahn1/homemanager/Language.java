@@ -1,6 +1,5 @@
 package me.hasenzahn1.homemanager;
 
-import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.config.LanguageConfig;
 
 public class Language {
@@ -68,7 +67,7 @@ public class Language {
 
     public static void initialize() {
         Logger.DEBUG.log("Initializing language system");
-        HomeManager.getInstance().saveResource("lang.yml", DefaultConfig.DEBUG_REPLACE_CONFIG);
+        HomeManager.getInstance().saveResource("lang.yml", HomeManager.DEV_MODE);
         languageConfig = new LanguageConfig();
     }
 

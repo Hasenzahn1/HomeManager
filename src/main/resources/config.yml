@@ -1,10 +1,26 @@
-debug:
-  logging: true
-  regenerateConfigsOnStart: true
+# ========================================================================== #
+#   _    _                        __  __                                     #
+#  | |  | |                      |  \/  |                                    #
+#  | |__| | ___  _ __ ___   ___  | \  / | __ _ _ __   __ _  __ _  ___ _ __   #
+#  |  __  |/ _ \| '_ ` _ \ / _ \ | |\/| |/ _` | '_ \ / _` |/ _` |/ _ \ '__|  #
+#  | |  | | (_) | | | | | |  __/ | |  | | (_| | | | | (_| | (_| |  __/ |     #
+#  |_|  |_|\___/|_| |_| |_|\___| |_|  |_|\__,_|_| |_|\__,_|\__, |\___|_|     #
+#                                                           __/ |            #
+#                                                          |___/             #
+# ========================================================================== #
 
-# Duration is ms (100000ms => 100s)
+debug:
+  # Enables debug logging.
+  logging: true
+
+# Duration in seconds for how long cached data remains valid.
+# Data is automatically invalidated when creating or deleting homes.
+# Cached data is only used for tab completion.
 cacheExpireDuration: 600
 
+# Duration in seconds of the visual highlight when using the /homesearch command.
 homeSearchDurationInSeconds: 30
 
+# Time in seconds an admin has to confirm an action,
+# such as purging all homes in a world.
 homeAdminConfirmationDuration: 10

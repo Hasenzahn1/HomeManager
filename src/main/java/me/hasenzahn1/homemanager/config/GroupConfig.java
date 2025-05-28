@@ -4,10 +4,10 @@ import me.hasenzahn1.homemanager.HomeManager;
 import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.group.WorldGroupManager;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +15,8 @@ import java.util.Set;
 
 public class GroupConfig extends CustomConfig {
 
-    public GroupConfig() {
-        super(HomeManager.getInstance(), "groups.yml");
+    public GroupConfig(File file) {
+        super(HomeManager.getInstance(), file);
     }
 
     /**
@@ -26,7 +26,7 @@ public class GroupConfig extends CustomConfig {
      *
      * @return Map of loaded worldgroups with the global group
      */
-    public HashMap<String, WorldGroup> loadWorldGroups() {
+    public HashMap<String, WorldGroup> loadWorldGroups(WorldGroupManager worldGroupManager) {
         FileConfiguration config = getConfig();
         Set<String> worldGroupNames = config.getKeys(false);
         HashMap<String, WorldGroup> worldGroups = new HashMap<>();
@@ -34,20 +34,20 @@ public class GroupConfig extends CustomConfig {
         //Load WorldGroups from config
         List<World> groupedWorlds = new ArrayList<>();
         for (String groupName : worldGroupNames) {
+            if (worldGroups.containsKey(groupName) || worldGroupManager.groupExists(groupName)) {
+                Logger.DEBUG.log("Skipping worldgroup " + groupName + " as it already exists");
+                continue;
+            }
             WorldGroup worldGroup = new WorldGroup(groupName, config.getConfigurationSection(groupName));
             worldGroups.put(worldGroup.getName(), worldGroup);
+
+            //Remove duplicate Worlds
+            worldGroup.getWorlds().removeIf(world -> groupedWorlds.contains(world) || worldGroupManager.groupExists(world));
+
+            //Add Worlds to groupWorlds
             groupedWorlds.addAll(worldGroup.getWorlds());
             Logger.DEBUG.log("Successfully loaded world group " + worldGroup.getName());
         }
-
-        //Find all worlds that are not in a group
-        List<World> nonGroupedWorlds = Bukkit.getWorlds();
-        nonGroupedWorlds.removeAll(groupedWorlds);
-
-        //Create default global group
-        WorldGroup globalGroup = worldGroups.getOrDefault(WorldGroupManager.GLOBAL_GROUP, new WorldGroup(WorldGroupManager.GLOBAL_GROUP));
-        globalGroup.getWorlds().addAll(nonGroupedWorlds);
-        worldGroups.put(WorldGroupManager.GLOBAL_GROUP, globalGroup);
         return worldGroups;
     }
 }
