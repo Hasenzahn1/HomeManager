@@ -77,3 +77,7 @@ teleportationDelay:
   teleportationSuccess: "&aSuccessfully teleported to home &6%homename%."
   teleportationSuccessActionbar: "&aTeleported to home &6%homename%."
   teleportationSuccessOther: "&aSuccessfully teleported to home &6%homename% &aof player &6%player%."
+
+regions:
+  homeCreationDisabled: "Home creation is disabled in this region"
+  homeTeleportDisabled: "Home teleport is disabled in this region"

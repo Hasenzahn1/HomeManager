@@ -7,11 +7,13 @@ import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.checks.HomeExperienceCheck;
+import me.hasenzahn1.homemanager.commands.checks.WorldGuardRegionCheck;
 import me.hasenzahn1.homemanager.commands.system.BaseHomeCommand;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,6 +28,8 @@ public class SetHomeCommand extends BaseHomeCommand {
 
     private final HomeExperienceCheck homeExperienceCheck;
 
+    private WorldGuardRegionCheck worldGuardRegionCheck;
+
     public SetHomeCommand(CompletionsHelper completionsHelper) {
         super(completionsHelper);
 
@@ -35,6 +39,11 @@ public class SetHomeCommand extends BaseHomeCommand {
                 return arguments.getWorldGroup().getSettings().getRequiredExperience(currentHomes);
             }
         };
+
+        if (HomeManager.WORLD_GUARD_API_EXISTS) {
+            worldGuardRegionCheck = new WorldGuardRegionCheck(WorldGuardIntegration.homeCreationFlag);
+        }
+
     }
 
     // /sethome (player) \<name>
@@ -57,6 +66,12 @@ public class SetHomeCommand extends BaseHomeCommand {
         //Validate Arguments
         if (ArgumentValidator.checkInvalidPlayerArgs(commandSender, arguments, command))
             return true;
+
+        //Validate Region
+        if (worldGuardRegionCheck != null && !worldGuardRegionCheck.canUseHomes(arguments.getCmdSender())) {
+            MessageManager.sendMessage(commandSender, Language.REGIONS_HOME_CREATION_DISABLED);
+            return true;
+        }
 
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();

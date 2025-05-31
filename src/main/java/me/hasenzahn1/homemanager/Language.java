@@ -63,6 +63,9 @@ public class Language {
     public static final String HOME_SEARCH_HOME_LINE = "commands.homesearch.display.homeLine";
     public static final String HOME_SEARCH_DELETE_BUTTON = "commands.homesearch.display.deleteButton";
 
+    public static final String REGIONS_HOME_CREATION_DISABLED = "regions.homeCreationDisabled";
+    public static final String REGIONS_HOME_TELEPORTATION_DISABLED = "regions.homeTeleportDisabled";
+
     private static LanguageConfig languageConfig;
 
     public static void initialize() {

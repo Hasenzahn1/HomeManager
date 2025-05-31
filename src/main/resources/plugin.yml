@@ -5,7 +5,7 @@ api-version: '1.21'
 authors: [ Hasenzahn1 ]
 description: A Plugin for managing homes in a customizable way
 
-softdepend: [ "PlaceholderAPI" ]
+softdepend: [ "PlaceholderAPI", "WorldGuard" ]
 
 commands:
   sethome:

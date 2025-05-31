@@ -9,6 +9,7 @@ import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
 import me.hasenzahn1.homemanager.homes.caching.HomesCache;
+import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
@@ -29,6 +30,7 @@ public final class HomeManager extends JavaPlugin {
 
     public static int PLUGIN_VERSION = 1;
     public static boolean PLACEHOLDER_API_EXISTS;
+    public static boolean WORLD_GUARD_API_EXISTS;
     public static boolean DEV_MODE = true;
 
     public static String PREFIX = "[HomeManager]";
@@ -46,6 +48,15 @@ public final class HomeManager extends JavaPlugin {
     private TimeoutListener timeoutListener;
 
     private HashMap<UUID, PlayerTeleportation> teleportations;
+
+    public void onLoad() {
+        //Register Worldguard Integration
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
+            WORLD_GUARD_API_EXISTS = true;
+            new WorldGuardIntegration(this).register();
+            Logger.DEBUG.log("Registered WorldGuard Integration");
+        }
+    }
 
     @Override
     public void onEnable() {
@@ -86,6 +97,13 @@ public final class HomeManager extends JavaPlugin {
         //Teleportations
         teleportations = new HashMap<>();
 
+        //Initialize External Plugins
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            PLACEHOLDER_API_EXISTS = true;
+            new PlaceholderHomeExpansion().register();
+            Logger.DEBUG.log("Registered PlaceholderAPI Expansion");
+        }
+
         //Initialize commands
         registerCommand("sethome", new SetHomeCommand(completionsHelper));
         registerCommand("delhome", new DelHomeCommand(completionsHelper));
@@ -94,13 +112,6 @@ public final class HomeManager extends JavaPlugin {
 
         registerCommand("homeadmin", new HomeAdminCommand());
         registerCommand("homesearch", new HomeSearchCommand());
-
-        //Initialize External Plugins
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) { //
-            PLACEHOLDER_API_EXISTS = true;
-            new PlaceholderHomeExpansion().register(); //
-            Logger.DEBUG.log("Registered PlaceholderAPI Expansion");
-        }
     }
 
     private <T extends CommandExecutor & TabCompleter> void registerCommand(String name, T command) {
