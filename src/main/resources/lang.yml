@@ -78,6 +78,13 @@ teleportationDelay:
   teleportationSuccessActionbar: "&aTeleported to home &6%homename%."
   teleportationSuccessOther: "&aSuccessfully teleported to home &6%homename% &aof player &6%player%."
 
-regions:
-  homeCreationDisabled: "Home creation is disabled in this region"
-  homeTeleportDisabled: "Home teleport is disabled in this region"
+worldguard:
+  createHomesDisabled: "Home creation is disabled in this region"
+  teleportHomesDisabled: "Home teleport is disabled in this region"
+
+plotsquared:
+  createHomesCaption: "Disable/Enable home creation in this plot"
+  createHomesDisabled: "Home creation is disabled in this plot"
+
+  teleportHomesCaption: "Disable/Enable home teleportation in this plot"
+  teleportHomesDisabled: "Home teleport is disabled in this region"

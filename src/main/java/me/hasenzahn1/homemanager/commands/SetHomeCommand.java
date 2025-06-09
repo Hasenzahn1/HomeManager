@@ -7,12 +7,14 @@ import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.checks.HomeExperienceCheck;
+import me.hasenzahn1.homemanager.commands.checks.PlotsquaredRegionCheck;
 import me.hasenzahn1.homemanager.commands.checks.WorldGuardRegionCheck;
 import me.hasenzahn1.homemanager.commands.system.BaseHomeCommand;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
 import org.bukkit.command.Command;
@@ -30,6 +32,8 @@ public class SetHomeCommand extends BaseHomeCommand {
 
     private WorldGuardRegionCheck worldGuardRegionCheck;
 
+    private PlotsquaredRegionCheck plotsquaredRegionCheck;
+
     public SetHomeCommand(CompletionsHelper completionsHelper) {
         super(completionsHelper);
 
@@ -42,6 +46,11 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         if (HomeManager.WORLD_GUARD_API_EXISTS) {
             worldGuardRegionCheck = new WorldGuardRegionCheck(WorldGuardIntegration.homeCreationFlag);
+        }
+
+        System.out.println("Plotsquared Api Exists: " + HomeManager.PLOTSQUARED_API_EXISTS);
+        if (HomeManager.PLOTSQUARED_API_EXISTS) {
+            plotsquaredRegionCheck = new PlotsquaredRegionCheck(PlotsquaredIntegration.CREATE_HOMES);
         }
 
     }
@@ -69,7 +78,13 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Validate Region
         if (worldGuardRegionCheck != null && !worldGuardRegionCheck.canUseHomes(arguments.getCmdSender())) {
-            MessageManager.sendMessage(commandSender, Language.REGIONS_HOME_CREATION_DISABLED);
+            MessageManager.sendMessage(commandSender, Language.WORLDGUARD_HOME_CREATION_DISABLED);
+            return true;
+        }
+
+        //Validate Plot
+        if (plotsquaredRegionCheck != null && !plotsquaredRegionCheck.canUseHomes(arguments.getCmdSender())) {
+            MessageManager.sendMessage(commandSender, Language.PLOTSQUARED_CREATE_HOMES_DISABLED);
             return true;
         }
 

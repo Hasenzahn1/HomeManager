@@ -9,6 +9,7 @@ import me.hasenzahn1.homemanager.group.WorldGroupManager;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerTeleportation;
 import me.hasenzahn1.homemanager.homes.caching.HomesCache;
+import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
@@ -31,6 +32,7 @@ public final class HomeManager extends JavaPlugin {
     public static int PLUGIN_VERSION = 1;
     public static boolean PLACEHOLDER_API_EXISTS;
     public static boolean WORLD_GUARD_API_EXISTS;
+    public static boolean PLOTSQUARED_API_EXISTS;
     public static boolean DEV_MODE = true;
 
     public static String PREFIX = "[HomeManager]";
@@ -104,10 +106,22 @@ public final class HomeManager extends JavaPlugin {
             Logger.DEBUG.log("Registered PlaceholderAPI Expansion");
         }
 
+        if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
+            System.out.println("WHYYY DOES THIS NOT WORK!!!");
+            PLOTSQUARED_API_EXISTS = true;
+            new PlotsquaredIntegration(this).register();
+            Logger.DEBUG.log("Registered Plotsquared Expansion");
+        }
+
         //Initialize commands
+        System.out.println("Register Commands");
+        System.out.println("Sethome");
         registerCommand("sethome", new SetHomeCommand(completionsHelper));
+        System.out.println("Delhome");
         registerCommand("delhome", new DelHomeCommand(completionsHelper));
+        System.out.println("Home");
         registerCommand("home", new HomeCommand(completionsHelper));
+        System.out.println("Homes");
         registerCommand("homes", new HomeListCommand(completionsHelper));
 
         registerCommand("homeadmin", new HomeAdminCommand());

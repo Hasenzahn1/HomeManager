@@ -63,8 +63,15 @@ public class Language {
     public static final String HOME_SEARCH_HOME_LINE = "commands.homesearch.display.homeLine";
     public static final String HOME_SEARCH_DELETE_BUTTON = "commands.homesearch.display.deleteButton";
 
-    public static final String REGIONS_HOME_CREATION_DISABLED = "regions.homeCreationDisabled";
-    public static final String REGIONS_HOME_TELEPORTATION_DISABLED = "regions.homeTeleportDisabled";
+    public static final String WORLDGUARD_HOME_CREATION_DISABLED = "worldguard.createHomesDisabled";
+    public static final String REGIONS_HOME_TELEPORTATION_DISABLED = "worldguard.teleportHomesDisabled";
+
+
+    public static final String PLOTSQUARED_CREATION_HOMES_CAPTION = "plotsquared.createHomesCaption";
+    public static final String PLOTSQUARED_CREATE_HOMES_DISABLED = "plotsquared.createHomesDisabled";
+    public static final String PLOTSQUARED_TELEPORT_HOMES_CAPTION = "plotsquared.teleportHomesCaption";
+    public static final String PLOTSQUARED_TELEPORT_HOMES_DISABLED = "plotsquared.teleportHomesDisabled";
+
 
     private static LanguageConfig languageConfig;
 
