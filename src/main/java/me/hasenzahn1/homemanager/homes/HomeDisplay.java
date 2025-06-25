@@ -18,6 +18,9 @@ import org.joml.Vector3f;
 
 import java.util.UUID;
 
+/**
+ * Represents a single home entry displayed as part of the {@code /homesearch} command.
+ */
 public class HomeDisplay {
 
     public static NamespacedKey DISPLAY_KEY = new NamespacedKey(HomeManager.getInstance(), "home_display");
@@ -25,8 +28,8 @@ public class HomeDisplay {
     private final Player initiator;
     private final Home home;
 
-    private Slime slime;
-    private TextDisplay textDisplay;
+    private Slime glowingMarker;
+    private TextDisplay nameDisplay;
 
     public HomeDisplay(Player initiator, Home home) {
         this.initiator = initiator;
@@ -35,11 +38,13 @@ public class HomeDisplay {
         display();
     }
 
+    /**
+     * Spawns the glowing marker slime and the display. Loading the chunk in the process
+     */
     private void display() {
         if (!home.location().getChunk().isLoaded()) return;
 
-        //
-        slime = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY(), home.location().getBlockZ() + 0.5), Slime.class, s -> {
+        glowingMarker = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY(), home.location().getBlockZ() + 0.5), Slime.class, s -> {
             s.setSize(2);
             s.setAI(false);
             s.setGlowing(true);
@@ -58,10 +63,8 @@ public class HomeDisplay {
             initiator.showEntity(HomeManager.getInstance(), s);
         });
 
-        //
-        textDisplay = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY() + 1.5, home.location().getBlockZ() + 0.5), TextDisplay.class, t -> {
+        nameDisplay = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY() + 1.5, home.location().getBlockZ() + 0.5), TextDisplay.class, t -> {
             t.setSeeThrough(true);
-            //t.setRotation(0, 0);
             t.text(Component.text(home.name() + "\n" + home.getOwnersName())); // .color(TextColor.color(getColorFromUUID(home.uuid())))
             t.setTextOpacity((byte) 255);
             t.setBillboard(Display.Billboard.VERTICAL);
@@ -77,6 +80,15 @@ public class HomeDisplay {
 
     }
 
+    /**
+     * Generates a deterministic RGB color code based on the hash of the given UUID.
+     * <p>
+     * This method extracts the red, green, and blue components from the UUID's hash code
+     * and combines them into a single RGB integer (0xRRGGBB).
+     *
+     * @param uuid The UUID from which to generate the color.
+     * @return An integer representing the RGB color.
+     */
     private int getColorFromUUID(UUID uuid) {
         int hash = uuid.hashCode();
 
@@ -87,15 +99,23 @@ public class HomeDisplay {
         return (r << 16) | (g << 8) | b;
     }
 
+    /**
+     * Destroys the glowing marker and the name display.
+     */
     public void destroy() {
-        if (slime != null) {
-            //slime.teleport(slime.getLocation().subtract(0, -1000, 0));
-            slime.remove();
-        }
-        if (textDisplay != null) textDisplay.remove();
+        if (glowingMarker != null) glowingMarker.remove();
+        if (nameDisplay != null) nameDisplay.remove();
     }
 
+    /**
+     * Checks if this home display has been spawned in the world.
+     * <p>
+     * A display is considered spawned if its visual representation
+     * has been created and placed into the Minecraft world.
+     *
+     * @return true if the display has been spawned, false otherwise
+     */
     public boolean hasBeenSpawned() {
-        return textDisplay != null;
+        return nameDisplay != null;
     }
 }

@@ -75,24 +75,53 @@ public class Language {
 
     private static LanguageConfig languageConfig;
 
+    /**
+     * Initializes the Language System recreating the lang.yml if the plugin is in DEV mode.
+     */
     public static void initialize() {
         Logger.DEBUG.log("Initializing language system");
         HomeManager.getInstance().saveResource("lang.yml", HomeManager.DEV_MODE);
         languageConfig = new LanguageConfig();
     }
 
+    /**
+     * Retrieves a language string by key and replaces placeholders with provided arguments.
+     * <p>
+     * The method fetches a language string from the language configuration based on the provided key.
+     * It also replaces placeholders in the string (e.g., `%placeholder%`) with the corresponding argument values.
+     * Additionally, it converts color codes from `&` format to `§` format for Minecraft compatibility.
+     *
+     * @param key  the language key to fetch the string
+     * @param args pairs of placeholder keys and their replacement values
+     * @return the formatted language string with placeholders replaced, or a default message if the key is not found
+     */
     public static String getLang(String key, String... args) {
+        // Fetch language string from config with a default message if the key is not found
         String lang = languageConfig.getConfig().getString(key, "&cUnknown language key &6" + key);
+
+        // Replace each placeholder with corresponding argument
         for (int i = 0; i + 1 < args.length; i += 2) {
             lang = lang.replace("%" + args[i] + "%", args[i + 1]);
         }
+
+        // Convert color codes from '&' to '§' for Minecraft compatibility
         return lang.replace("&", "§");
     }
 
+
+    /**
+     * Checks if the Language Config contains a specific language key
+     *
+     * @param key The key to check
+     * @return true if the key exist false otherwise
+     */
     public static boolean containsLang(String key) {
         return languageConfig.getConfig().contains(key);
     }
 
+    /**
+     * Reloads the Language Config
+     */
     public static void reload() {
         languageConfig.reloadConfig();
     }

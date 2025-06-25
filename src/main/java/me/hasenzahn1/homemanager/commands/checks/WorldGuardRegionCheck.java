@@ -11,6 +11,13 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.entity.Player;
 
+/**
+ * Utility class to check whether a player is allowed to use homes
+ * in their current WorldGuard region context based on a specified {@link StateFlag}.
+ * <p>
+ * This considers global region rules and region priority for DENY flags,
+ * but still allows members of the denying region to bypass restrictions.
+ */
 public class WorldGuardRegionCheck {
 
     private final StateFlag flag;
@@ -19,6 +26,20 @@ public class WorldGuardRegionCheck {
         this.flag = flag;
     }
 
+    /**
+     * Determines if the given player is allowed to use homes at their current location.
+     * <p>
+     * The check follows these steps:
+     * <ul>
+     *     <li>Checks if the flag is globally allowed in the current region set.</li>
+     *     <li>If denied, finds the highest-priority region with {@code DENY} for this flag.</li>
+     *     <li>If the player is a member of that region, permission is granted anyway.</li>
+     *     <li>Otherwise, access is denied.</li>
+     * </ul>
+     *
+     * @param player the player to check
+     * @return {@code true} if the player may use homes here; otherwise {@code false}
+     */
     public boolean canUseHomes(Player player) {
         RegionQuery query = WorldGuard.getInstance()
                 .getPlatform().getRegionContainer()
@@ -27,25 +48,23 @@ public class WorldGuardRegionCheck {
         ApplicableRegionSet set = query.getApplicableRegions(loc);
 
         LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
-        // 1. Ist global erlaubt?
+
+        // 1. Check global allowance
         boolean isAllowed = query.testState(loc, localPlayer, flag);
         if (isAllowed) return true;
 
-
-        // 2. Finde die höchste Priorität unter DENY-Regionen
+        // 2. Find highest-priority region with DENY
         int maxDenyPrio = set.getRegions().stream()
                 .filter(r -> r.getFlag(flag) == StateFlag.State.DENY)
                 .mapToInt(ProtectedRegion::getPriority)
                 .max()
                 .orElse(Integer.MIN_VALUE);
 
-        // 3. Checke jede Region mit genau dieser Priorität
+        // 3. Check if the player is a member of the denying region
         for (ProtectedRegion region : set.getRegions()) {
             if (region.getFlag(flag) == StateFlag.State.DENY
                     && region.getPriority() == maxDenyPrio) {
-                if (region.isMember(localPlayer)) return true;
-
-                return false;
+                return region.isMember(localPlayer);
             }
         }
 

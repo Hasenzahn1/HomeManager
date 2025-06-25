@@ -10,13 +10,19 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Represents the settings for a specific world group in the HomeManager plugin.
+ * This class holds various configuration options such as experience requirements, delays, timeouts, and other settings
+ * for home management in a given world group.
+ */
 public class WorldGroupSettings {
 
+    // Default settings for world groups
     public static WorldGroupSettings DEFAULT = new WorldGroupSettings();
 
     private WorldGroup parentWorldGroup;
 
-    //new
+    // Home management settings
     private boolean setHomeExperienceActive = false;
     private List<Integer> setHomeExperiencePerHome = List.of();
     private String setHomeExperienceFormula = "";
@@ -47,7 +53,14 @@ public class WorldGroupSettings {
 
     private int maxHomes = 10;
 
-
+    /**
+     * Constructs a WorldGroupSettings object from a configuration section.
+     * This constructor loads the settings for a specific world group from the provided configuration.
+     * If a key is not present in the section a default value will be used.
+     *
+     * @param section          The configuration section containing the world group settings.
+     * @param parentWorldGroup The parent world group that this settings object belongs to.
+     */
     public WorldGroupSettings(ConfigurationSection section, WorldGroup parentWorldGroup) {
         this.parentWorldGroup = parentWorldGroup;
         setHomeExperienceActive = section.getBoolean("setHomeExperience.active", setHomeExperienceActive);
@@ -91,16 +104,29 @@ public class WorldGroupSettings {
         homeTeleportOnGroundCheckDisableInCreative = section.getBoolean("homeTeleportOnGroundCheck.disableInCreative", homeTeleportOnGroundCheckDisableInCreative);
 
         maxHomes = section.getInt("maxHomes", maxHomes);
-
+    }
+    
+    /**
+     * Default constructor for WorldGroupSettings (used for the default settings).
+     */
+    private WorldGroupSettings() {
     }
 
+    /**
+     * Sets the parent world group for this settings object.
+     *
+     * @param worldGroup The parent world group.
+     */
     public void setParentWorldGroup(WorldGroup worldGroup) {
         this.parentWorldGroup = worldGroup;
     }
 
-    private WorldGroupSettings() {
-    }
-
+    /**
+     * Calculates the required experience for a player to set a home, based on the number of homes they already have.
+     *
+     * @param currentHomes The number of homes the player currently has.
+     * @return The amount of experience required to set another home.
+     */
     public int getRequiredExperience(int currentHomes) {
         if (setHomeExperiencePerHome.size() > currentHomes) return setHomeExperiencePerHome.get(currentHomes);
         if (!setHomeExperienceFormula.isEmpty())
@@ -110,6 +136,12 @@ public class WorldGroupSettings {
         return 0;
     }
 
+    /**
+     * Retrieves the maximum number of homes a player can have based on their permissions and the world group's settings.
+     *
+     * @param player The player whose home limit is being checked.
+     * @return The maximum number of homes the player can have.
+     */
     public int getMaxHomes(CommandSender player) {
         int maxHomes = PermissionUtils.getMaxHomesFromPermission(player, parentWorldGroup.getName());
         if (maxHomes < 0) {
@@ -117,6 +149,22 @@ public class WorldGroupSettings {
         }
         return maxHomes;
     }
+
+    /**
+     * Calculates the experience required for a home teleportation based on the distance and whether the world changes.
+     *
+     * @param start The starting location of the teleportation.
+     * @param end   The destination location of the teleportation.
+     * @return The amount of experience required for the teleportation.
+     */
+    public int getHomeTeleportExperience(Location start, Location end) {
+        if (homeTeleportExperienceFormula.isEmpty()) return 0;
+        double dist = start.toVector().distance(end.toVector());
+        boolean world = start.getWorld().equals(end.getWorld());
+        return (int) ExpressionEvaluator.eval(homeTeleportExperienceFormula.replace("dist", String.valueOf(dist)).replace("worldChange", String.valueOf(world ? 1 : 0)));
+    }
+
+    // Getters for various settings
 
     public boolean isSetHomeExperienceActive() {
         return setHomeExperienceActive;
@@ -128,13 +176,6 @@ public class WorldGroupSettings {
 
     public boolean isHomeTeleportExperienceActive() {
         return homeTeleportExperienceActive;
-    }
-
-    public int getHomeTeleportExperience(Location start, Location end) {
-        if (homeTeleportExperienceFormula.isEmpty()) return 0;
-        double dist = start.toVector().distance(end.toVector());
-        boolean world = start.getWorld().equals(end.getWorld());
-        return (int) ExpressionEvaluator.eval(homeTeleportExperienceFormula.replace("dist", String.valueOf(dist)).replace("worldChange", String.valueOf(world ? 1 : 0)));
     }
 
     public boolean isDelayActive() {

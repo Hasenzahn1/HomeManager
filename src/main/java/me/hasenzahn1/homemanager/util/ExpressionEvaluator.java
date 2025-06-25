@@ -1,15 +1,37 @@
 package me.hasenzahn1.homemanager.util;
 
+/**
+ * A class that evaluates mathematical expressions represented as strings.
+ * This class supports basic arithmetic operations such as addition, subtraction, multiplication, division,
+ * exponentiation, as well as common mathematical functions like sqrt, sin, cos, and tan.
+ */
 public class ExpressionEvaluator {
 
+    /**
+     * Evaluates the given mathematical expression in the form of a string.
+     *
+     * @param str the mathematical expression to evaluate
+     * @return the result of the evaluation as a double
+     * @throws RuntimeException if the expression is malformed or contains unknown characters
+     */
     public static double eval(final String str) {
         return new Object() {
             int pos = -1, ch;
 
+            /**
+             * Advances to the next character in the expression.
+             */
             void nextChar() {
                 ch = (++pos < str.length()) ? str.charAt(pos) : -1;
             }
 
+            /**
+             * Attempts to consume a specific character if it matches the current character.
+             * Skips whitespace characters.
+             *
+             * @param charToEat the character to match and consume
+             * @return true if the character was consumed, false otherwise
+             */
             boolean eat(int charToEat) {
                 while (ch == ' ') nextChar();
                 if (ch == charToEat) {
@@ -19,6 +41,12 @@ public class ExpressionEvaluator {
                 return false;
             }
 
+            /**
+             * Parses the entire expression and returns the result.
+             *
+             * @return the evaluated result of the expression
+             * @throws RuntimeException if there is an unexpected character in the expression
+             */
             double parse() {
                 nextChar();
                 double x = parseExpression();
@@ -26,13 +54,11 @@ public class ExpressionEvaluator {
                 return x;
             }
 
-            // Grammar:
-            // expression = term | expression `+` term | expression `-` term
-            // term = factor | term `*` factor | term `/` factor
-            // factor = `+` factor | `-` factor | `(` expression `)` | number
-            //        | functionName `(` expression `)` | functionName factor
-            //        | factor `^` factor
-
+            /**
+             * Parses an expression, which can consist of terms and addition or subtraction operations.
+             *
+             * @return the result of the parsed expression
+             */
             double parseExpression() {
                 double x = parseTerm();
                 for (; ; ) {
@@ -42,6 +68,11 @@ public class ExpressionEvaluator {
                 }
             }
 
+            /**
+             * Parses a term, which can consist of factors and multiplication or division operations.
+             *
+             * @return the result of the parsed term
+             */
             double parseTerm() {
                 double x = parseFactor();
                 for (; ; ) {
@@ -51,6 +82,12 @@ public class ExpressionEvaluator {
                 }
             }
 
+            /**
+             * Parses a factor, which can be a number, a parenthesized expression, or a function.
+             *
+             * @return the result of the parsed factor
+             * @throws RuntimeException if there is an invalid factor in the expression
+             */
             double parseFactor() {
                 if (eat('+')) return +parseFactor(); // unary plus
                 if (eat('-')) return -parseFactor(); // unary minus

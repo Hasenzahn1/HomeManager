@@ -15,6 +15,7 @@ import me.hasenzahn1.homemanager.group.WorldGroup;
 import me.hasenzahn1.homemanager.group.WorldGroupSettings;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.PlayerHomes;
+import me.hasenzahn1.homemanager.homes.teleportation.TeleportationManager;
 import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
@@ -157,12 +158,12 @@ public class HomeCommand extends BaseHomeCommand {
         boolean delayActive = settings.isDelayActive();
         boolean hasDelayBypass = !arguments.isSelf() || (settings.isDelayDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable()) || PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup());
         if (delayActive && !hasDelayBypass) {
-            HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, settings.getDelayDurationInSeconds(), experienceToBePaid);
+            TeleportationManager.getInstance().createHomeTeleportation(arguments, requestedHome, settings.getDelayDurationInSeconds(), experienceToBePaid);
             return true;
         }
 
         //Teleport without delay
-        HomeManager.getInstance().createHomeTeleportation(arguments, requestedHome, 0, experienceToBePaid);
+        TeleportationManager.getInstance().createHomeTeleportation(arguments, requestedHome, 0, experienceToBePaid);
         return true;
     }
 

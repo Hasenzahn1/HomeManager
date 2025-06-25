@@ -7,8 +7,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
+/**
+ * Listener that removes home display entities when a chunk is unloaded.
+ * <p>
+ * Ensures that display entities related to homes are not left behind when their
+ * chunk is unloaded, preventing potential memory leaks or entity persistence issues.
+ */
 public class HomeDisplayRemover implements Listener {
 
+    /**
+     * Handles the {@link ChunkUnloadEvent} and removes any entities that are marked as
+     * home displays via the {@link HomeDisplay#DISPLAY_KEY} in their persistent data container.
+     *
+     * @param event The chunk unload event
+     */
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
         int count = 0;

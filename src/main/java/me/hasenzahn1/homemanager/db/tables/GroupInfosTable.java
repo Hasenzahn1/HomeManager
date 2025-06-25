@@ -28,6 +28,14 @@ public class GroupInfosTable extends Table {
                 "PRIMARY KEY (uuid, worldgroup));";
     }
 
+    /**
+     * Saves the number of free homes a player has in a specific world group.
+     *
+     * @param con       The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid      The UUID of the player.
+     * @param group     The world group in which the free homes are registered.
+     * @param freeHomes The number of free homes to save.
+     */
     public void saveFreeHomes(Connection con, UUID uuid, String group, int freeHomes) {
         try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, worldgroup, freehomes) VALUES (?, ?, ?)")) {
             statement.setString(1, uuid.toString());
@@ -42,6 +50,13 @@ public class GroupInfosTable extends Table {
         }
     }
 
+    /**
+     * Retrieves a mapping of world groups to the number of free homes a player has in each.
+     *
+     * @param con  The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid The UUID of the player.
+     * @return A map where each key is a world group and the corresponding value is the player's free home count in that group.
+     */
     public HashMap<WorldGroup, Integer> getAllFreeHomes(Connection con, UUID uuid) {
         HashMap<WorldGroup, Integer> map = new HashMap<>();
         try (PreparedStatement statement = con.prepareStatement("SELECT worldgroup, freehomes FROM " + getTableName() + " WHERE uuid = ?")) {
@@ -65,6 +80,14 @@ public class GroupInfosTable extends Table {
         return map;
     }
 
+    /**
+     * Retrieves the number of free (unused) homes available to a player within a specific world group.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid  The UUID of the player.
+     * @param group The world group from which to retrieve the available homes.
+     * @return The number of free homes the player has in the specified world group.
+     */
     public int getAllFreeHomes(Connection con, UUID uuid, String group) {
         try (PreparedStatement statement = con.prepareStatement("SELECT freehomes FROM " + getTableName() + " WHERE uuid=? AND worldgroup LIKE ?")) {
             statement.setString(1, uuid.toString());
@@ -81,6 +104,13 @@ public class GroupInfosTable extends Table {
         return 0;
     }
 
+    /**
+     * Increments the number of free homes a player has in the specified world group by one.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid  The UUID of the player.
+     * @param group The world group in which to increment the player's free home count.
+     */
     public void incrementFreeHomes(Connection con, UUID uuid, String group) {
         try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, worldgroup, freehomes) VALUES(?,?,1) ON CONFLICT(uuid, worldgroup) DO UPDATE SET freehomes = freehomes + 1")) {
             statement.setString(1, uuid.toString());
@@ -94,6 +124,13 @@ public class GroupInfosTable extends Table {
         }
     }
 
+    /**
+     * Decrements the number of free homes a player has in the specified world group by one.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid  The UUID of the player.
+     * @param group The world group in which to decrement the player's free home count.
+     */
     public void decrementFreeHomes(Connection con, UUID uuid, String group) {
         try (PreparedStatement statement = con.prepareStatement("UPDATE " + getTableName() + " SET freehomes = freehomes - 1 WHERE uuid=? AND worldgroup LIKE ? AND freehomes > 0")) {
             statement.setString(1, uuid.toString());

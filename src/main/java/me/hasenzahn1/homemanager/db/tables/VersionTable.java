@@ -21,6 +21,12 @@ public class VersionTable extends Table {
                 "version INTEGER PRIMARY KEY);";
     }
 
+    /**
+     * Retrieves the highest version saved in the database.
+     *
+     * @param con The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @return The highest version stored in the database.
+     */
     public int getVersion(Connection con) {
         try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName() + " ORDER BY version DESC LIMIT 1")) {
             ResultSet result = statement.executeQuery();
@@ -34,6 +40,12 @@ public class VersionTable extends Table {
         return 0;
     }
 
+    /**
+     * Set the current plugin version to the database
+     *
+     * @param con     The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param version The version to save to the database
+     */
     public void setVersion(Connection con, int version) {
         try (PreparedStatement statement = con.prepareStatement("INSERT OR IGNORE INTO " + getTableName() + "(version) VALUES(?)")) {
             statement.setInt(1, version);

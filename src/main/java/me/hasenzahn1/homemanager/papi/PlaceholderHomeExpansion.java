@@ -15,34 +15,56 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * PlaceholderAPI expansion for the HomeManager plugin.
+ * Provides support for home-related placeholders such as home counts, limits, etc.
+ */
 public class PlaceholderHomeExpansion extends PlaceholderExpansion {
 
     private final HomeManager plugin;
 
+    /**
+     * Constructs the PlaceholderHomeExpansion using the HomeManager instance.
+     */
     public PlaceholderHomeExpansion() {
         plugin = HomeManager.getInstance();
     }
 
+    /**
+     * Returns the identifier used in the placeholder (e.g., %homemanager_<placeholder>%).
+     */
     @Override
     public @NotNull String getIdentifier() {
         return "homemanager";
     }
 
+    /**
+     * Returns the author of this expansion.
+     */
     @Override
     public @NotNull String getAuthor() {
         return "Hasenzahn1";
     }
 
+    /**
+     * Returns the version of this expansion (same as plugin version).
+     */
     @Override
     public @NotNull String getVersion() {
         return HomeManager.getInstance().getDescription().getVersion();
     }
 
+    /**
+     * Whether the expansion should persist through PlaceholderAPI reloads.
+     */
     @Override
     public boolean persist() {
         return true;
     }
 
+    /**
+     * Returns a list of supported placeholder formats.
+     */
     @Override
     public @NotNull List<String> getPlaceholders() {
         return List.of("%homemanager_homes_<worldgroup-or-'this'>_<player-or-'self'>%",
@@ -52,6 +74,13 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
                 "%homemanager_currentgroup%");
     }
 
+    /**
+     * Handles the placeholder request from PlaceholderAPI.
+     *
+     * @param requester The player requesting the placeholder (may be offline).
+     * @param params    The placeholder parameters (after the identifier).
+     * @return The resolved value or null if unsupported.
+     */
     @Override
     public @Nullable String onRequest(OfflinePlayer requester, @NotNull String params) {
         if (requester == null) return null;
@@ -74,17 +103,22 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
             return handleNextExperiencePlaceholder(requester, args);
         }
 
-
         if (args[0].equalsIgnoreCase("currentgroup")) {
             if (args.length != 1) return null;
             if (!(requester instanceof Player)) return "-";
             return plugin.getWorldGroupManager().getWorldGroup(((Player) requester).getWorld()).getName();
         }
 
-
         return null;
     }
 
+    /**
+     * Parses the UUID and WorldGroup from the placeholder arguments.
+     *
+     * @param requester The requesting player.
+     * @param args      The placeholder arguments split by '_'.
+     * @return A Pair containing the UUID and WorldGroup, or null values on failure.
+     */
     private Pair<UUID, WorldGroup> parseArgs(OfflinePlayer requester, String[] args) {
         if (args.length < 2) return Pair.of(null, null);
         String player = args[args.length - 1];
@@ -104,6 +138,9 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         return Pair.of(playerUUID, worldGroup);
     }
 
+    /**
+     * Resolves the %nexthomexp% placeholder.
+     */
     private String handleNextExperiencePlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
@@ -112,6 +149,9 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         return String.valueOf(parsedArgs.value().getSettings().getRequiredExperience(homeCount));
     }
 
+    /**
+     * Resolves the %maxhomes% placeholder.
+     */
     private String handleMaxHomesPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
@@ -121,6 +161,9 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         return String.valueOf(parsedArgs.value().getSettings().getMaxHomes(p));
     }
 
+    /**
+     * Resolves the %homes% placeholder.
+     */
     private String handleHomeCountPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
@@ -128,6 +171,9 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         return String.valueOf(plugin.getHomesCache().get(parsedArgs.key()).getHomeCount(parsedArgs.value()));
     }
 
+    /**
+     * Resolves the %freehomes% placeholder.
+     */
     private String handleFreeHomesCountPlaceholder(OfflinePlayer requester, String[] args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";

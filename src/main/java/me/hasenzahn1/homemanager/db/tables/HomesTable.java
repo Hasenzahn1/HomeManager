@@ -44,6 +44,15 @@ public class HomesTable extends Table {
                 ");";
     }
 
+    /**
+     * Retrieves all homes located within a specified horizontal radius around a given center point.
+     * The Y-coordinate is ignored; the search is performed in a 2D circle on the XZ-plane.
+     *
+     * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param center The center point of the search area (Y-coordinate is ignored).
+     * @param radius The radius of the circular search area.
+     * @return A list of all homes found within the specified radius on the XZ-plane.
+     */
     public List<Home> getHomesInRadius(Connection con, Location center, int radius) {
         List<Home> homes = new ArrayList<>();
         String sql = "SELECT * FROM " + getTableName() + " WHERE world LIKE '%world%' AND (x%x%)*(x%x%)+(z%z%)*(z%z%)<%radius%*%radius%"
@@ -75,6 +84,13 @@ public class HomesTable extends Table {
         return homes;
     }
 
+    /**
+     * Deletes all homes stored in the database that are located in the specified world.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param world The world whose homes should be removed from the database.
+     * @return The number of homes deleted. Returns 0 if an error occurs during the operation.
+     */
     public int purgeHomesInWorld(Connection con, World world) {
         try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE world LIKE ?")) {
             statement.setString(1, world.getName());
@@ -86,6 +102,13 @@ public class HomesTable extends Table {
         return 0;
     }
 
+    /**
+     * Deletes all homes from the database that are not located in the specified list of worlds.
+     *
+     * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param worlds A list of worlds to keep; homes in other worlds will be removed.
+     * @return The number of homes deleted. Returns 0 if an error occurs during the operation.
+     */
     public int cleanupHomes(Connection con, List<World> worlds) {
         StringBuilder sql = new StringBuilder("DELETE FROM " + getTableName() + " WHERE");
         for (World world : worlds) {
@@ -102,6 +125,14 @@ public class HomesTable extends Table {
         return 0;
     }
 
+    /**
+     * Retrieves all home names of a player, grouped by their corresponding world group.
+     *
+     * @param con  The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid The UUID of the player whose homes should be retrieved.
+     * @return A map where each key is a {@link WorldGroup} and the value is a list of home names
+     * the player owns in that group. Returns an empty map if no homes are found or an error occurs.
+     */
     public HashMap<WorldGroup, List<String>> getAllHomeNamesFromPlayer(Connection con, UUID uuid) {
         HashMap<WorldGroup, List<String>> map = new HashMap<>();
         try (PreparedStatement statement = con.prepareStatement("SELECT world, name FROM " + getTableName() + " WHERE uuid = ?")) {
@@ -127,6 +158,14 @@ public class HomesTable extends Table {
     }
 
 
+    /**
+     * Retrieves all homes from a player in a specific worldgroup
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid  The UUID of the player whose homes should be retrieved.
+     * @param group The worldgroup from which the homes should be retrieved
+     * @return A {@link PlayerHomes} object with all the homes from the worldgroup
+     */
     public PlayerHomes getHomesFromPlayer(Connection con, UUID uuid, WorldGroup group) {
         String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
         HashMap<String, Home> homes = new HashMap<>();
@@ -160,6 +199,14 @@ public class HomesTable extends Table {
         return new PlayerHomes(homes);
     }
 
+    /**
+     * Retrieves the home count from a player in a specified worldgroup
+     *
+     * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param player The UUID of the player whose home count should be retrieved.
+     * @param group  The worldgroup from which the home count should be retrieved
+     * @return The number of homes the player has in the respective worldgroup
+     */
     public int getHomeCountFromPlayer(Connection con, UUID player, WorldGroup group) {
         String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
         int count = 0;
@@ -183,6 +230,13 @@ public class HomesTable extends Table {
         return count;
     }
 
+    /**
+     * Saves a players home to the database
+     *
+     * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param player The UUID of the player whose home should be saved.
+     * @param home   The home to save to the database
+     */
     public void saveHomeToDatabase(Connection con, UUID player, Home home) {
         try (PreparedStatement statement = con.prepareStatement("INSERT INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)")) {
             statement.setString(1, player.toString());
@@ -201,6 +255,14 @@ public class HomesTable extends Table {
         }
     }
 
+    /**
+     * Removes a home of a player in a specific world group by its name.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param uuid  The UUID of the player whose home should be removed.
+     * @param name  The name of the home to be removed.
+     * @param group The world group in which the home is located.
+     */
     public void removeHomeFromDatabase(Connection con, UUID uuid, String name, WorldGroup group) {
         String placeHolders = group.getWorlds().stream().map(World::getName).map(n -> "?").collect(Collectors.joining(","));
         try (PreparedStatement statement = con.prepareStatement("DELETE FROM " + getTableName() + " WHERE uuid=? AND name LIKE ? AND world IN (" + placeHolders + ")")) {
@@ -219,6 +281,12 @@ public class HomesTable extends Table {
         }
     }
 
+    /**
+     * Adds a large number of homes, gathered from the migration system, to the database in bulk.
+     *
+     * @param con  The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param data A list of {@link me.hasenzahn1.homemanager.migration.HomeMigrator.HomeData} objects representing the homes to be added.
+     */
     public void bulkAddHomeFromMigration(Connection con, List<HomeMigrator.HomeData> data) {
         try (PreparedStatement statement = con.prepareStatement("INSERT OR REPLACE INTO " + getTableName() + " (uuid, name, world, x, y, z, yaw, pitch) VALUES(?,?,?,?,?,?,?,?)")) {
             con.setAutoCommit(false);
