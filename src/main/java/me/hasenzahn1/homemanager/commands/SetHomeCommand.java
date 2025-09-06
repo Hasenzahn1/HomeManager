@@ -17,6 +17,8 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -47,8 +49,6 @@ public class SetHomeCommand extends BaseHomeCommand {
         if (HomeManager.WORLD_GUARD_API_EXISTS) {
             worldGuardRegionCheck = new WorldGuardRegionCheck(WorldGuardIntegration.homeCreationFlag);
         }
-
-        System.out.println("Plotsquared Api Exists: " + HomeManager.PLOTSQUARED_API_EXISTS);
         if (HomeManager.PLOTSQUARED_API_EXISTS) {
             plotsquaredRegionCheck = new PlotsquaredRegionCheck(PlotsquaredIntegration.CREATE_HOMES);
         }
@@ -122,7 +122,7 @@ public class SetHomeCommand extends BaseHomeCommand {
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
         //TODO: Gamemode check to config
         boolean hasToPayExperience = homeExperienceCheck.hasToPayExperience(arguments, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm());
-        boolean shouldDecrementFreeHomes = !arguments.isSelf() || (arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
+        boolean shouldDecrementFreeHomes = arguments.isSelf() || !(arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
 
         //No Experience Required
         if (!hasToPayExperience || !arguments.getWorldGroup().getSettings().isSetHomeExperienceActive()) {
@@ -141,6 +141,8 @@ public class SetHomeCommand extends BaseHomeCommand {
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
             return true;
         }
+
+        Bukkit.broadcast(Component.text("HGallo"));
 
         //You don't have enough experience, but you have to pay experience
         int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);

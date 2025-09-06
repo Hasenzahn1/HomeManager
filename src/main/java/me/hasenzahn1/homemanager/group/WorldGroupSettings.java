@@ -23,7 +23,7 @@ public class WorldGroupSettings {
     private WorldGroup parentWorldGroup;
 
     // Home management settings
-    private boolean setHomeExperienceActive = false;
+    private boolean setHomeExperienceActive = true;
     private List<Integer> setHomeExperiencePerHome = List.of();
     private String setHomeExperienceFormula = "";
     private boolean setHomeDisableWithBypassPerm = true;
@@ -105,7 +105,7 @@ public class WorldGroupSettings {
 
         maxHomes = section.getInt("maxHomes", maxHomes);
     }
-    
+
     /**
      * Default constructor for WorldGroupSettings (used for the default settings).
      */

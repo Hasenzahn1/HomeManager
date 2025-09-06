@@ -20,18 +20,20 @@ global:
   # Controls the experience cost behavior for the /sethome command.
   setHomeExperience:
     # Enables or disables experience costs when setting a home.
-    # Default: false
+    # Default: true
     active: true
 
     # Defines the experience level cost for each home slot.
     # If more homes are created than values provided, the last value will be reused unless a formula is defined.
     # This setting overrides the experienceFormula if both are present.
+    # Default: []
     experiencePerHome: [ 0, 5, 10, 15, 25, 40, 65, 105, 170, 275, 445 ]
 
     # Formula to calculate experience cost based on the number of homes.
     # Use "amount" as a placeholder for the current number of homes.
     # If both experiencePerHome and experienceFormula are set, experiencePerHome takes a higher priority than the experience formula.
     # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
+    # Default: ""
     experienceFormula: "2*amount+100"
 
     # Disables the experience cost when the player has the bypass permission.
@@ -48,6 +50,7 @@ global:
 
     # Disables the free homes feature when the player is in Creative or Spectator mode.
     # This means that no free homes will be granted or consumed while in these game modes.
+    # Default: true
     disableInCreative: true
 
 
@@ -55,11 +58,12 @@ global:
   homeTeleportExperience:
     # Enables or disables experience cost for teleportation.
     # Default: false
-    active: true
+    active: false
 
     # Formula to calculate the cost based on teleport distance.
     # Use "dist" for distance and "worldChange" (1 if changing world, 0 otherwise).
     # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
+    # Default: ""
     formula: "dist/10"
 
     # Disables the experience cost when the player has the bypass permission.
@@ -84,6 +88,7 @@ global:
 
     # List of damage causes that cancel the teleportation while delayed.
     # Valid causes: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
+    # Default: []
     interruptCauses:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
@@ -107,6 +112,7 @@ global:
 
     # List of damage causes that trigger the timeout.
     # Valid causes: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/entity/EntityDamageEvent.DamageCause.html
+    # Default: []
     causes:
       - ENTITY_ATTACK
       - ENTITY_SWEEP_ATTACK
