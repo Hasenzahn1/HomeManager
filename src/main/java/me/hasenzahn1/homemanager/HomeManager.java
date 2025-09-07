@@ -95,7 +95,6 @@ public final class HomeManager extends JavaPlugin {
         }
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlotSquared")) {
-            System.out.println("WHYYY DOES THIS NOT WORK!!!");
             PLOTSQUARED_API_EXISTS = true;
             new PlotsquaredIntegration(this).register();
             Logger.DEBUG.log("Registered Plotsquared Expansion");

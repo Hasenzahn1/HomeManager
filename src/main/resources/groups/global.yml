@@ -1,4 +1,3 @@
-# WorldGroups are defined in this config.
 # One special "global" worldgroup always exists. You can add your own groups by copying or uncommenting the entries below.
 # All settings are optional unless noted otherwise. If a setting is missing, the default will be used.
 # The only required setting per worldgroup is the list of worlds.
@@ -7,9 +6,7 @@ global:
   # List of all worlds included in this worldgroup.
   # A world can only belong to one worldgroup.
   # Any world not listed in any group will automatically be assigned to the global group.
-  worlds:
-    - world_nether
-    - world_the_end
+  worlds: [ ]
 
   # The maximum number of homes a player can have by default.
   # This can be overridden using the permission: homemanager.maxhomes.<worldgroup>.<amount>
@@ -20,8 +17,8 @@ global:
   # Controls the experience cost behavior for the /sethome command.
   setHomeExperience:
     # Enables or disables experience costs when setting a home.
-    # Default: true
-    active: true
+    # Default: false
+    active: false
 
     # Defines the experience level cost for each home slot.
     # If more homes are created than values provided, the last value will be reused unless a formula is defined.
@@ -45,8 +42,8 @@ global:
   # Controls whether deleting a home grants a free home slot again.
   freeHomes:
     # Enables or disables this feature.
-    # Default: true
-    active: true
+    # Default: false
+    active: false
 
     # Disables the free homes feature when the player is in Creative or Spectator mode.
     # This means that no free homes will be granted or consumed while in these game modes.
@@ -139,6 +136,7 @@ global:
     # Time window (in seconds) in which the command can be reissued after a failed attempt.
     # Default: 5
     retryDuration: 5
+
 
   # Controls whether players must be on the ground to use the /home command.
   homeTeleportOnGroundCheck:

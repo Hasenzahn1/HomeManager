@@ -109,8 +109,8 @@ public class HomeCommand extends BaseHomeCommand {
 
         //Check if world exists
         if (!requestedHome.location().isWorldLoaded()) {
-            Component baseText = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_WORLD_NOT_EXISTING_BASE_TEXT) + " ");
-            Component deleteText = Component.text(Language.getLang(Language.WARNING_WORLD_NOT_EXISTING_DELETE_TEXT)).clickEvent(ClickEvent.runCommand("/delhome " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
+            Component baseText = Component.text(HomeManager.PREFIX + MessageManager.getPAPILang(commandSender, Language.WARNING_WORLD_NOT_EXISTING_BASE_TEXT) + " ");
+            Component deleteText = Component.text(MessageManager.getPAPILang(commandSender, Language.WARNING_WORLD_NOT_EXISTING_DELETE_TEXT)).clickEvent(ClickEvent.runCommand("/delhome " + arguments.getCmdSender().getName() + " " + requestedHome.name() + " -g " + arguments.getWorldGroup().getName()));
             arguments.getCmdSender().sendMessage(baseText.append(deleteText));
             return true;
         }
@@ -126,7 +126,7 @@ public class HomeCommand extends BaseHomeCommand {
         boolean homeObstructionCheck = settings.isObstructedHomeCheckActive();
         boolean hasObstructionCheckBypass = (settings.isObstructedHomeCheckDisableInCreative() && arguments.getCmdSender().getGameMode().isInvulnerable());
         if (homeObstructionCheck && !hasObstructionCheckBypass && obstructionCheck.checkForObstruction(arguments, requestedHome)) {
-            Component component = Component.text(HomeManager.PREFIX + Language.getLang(Language.WARNING_HOME_OBSTRUCTED,
+            Component component = Component.text(HomeManager.PREFIX + MessageManager.getPAPILang(commandSender, Language.WARNING_HOME_OBSTRUCTED,
                             "seconds", String.valueOf(settings.getObstructedHomeCheckRetryDurationInSeconds()))
                     ).clickEvent(ClickEvent.runCommand(getCommandFromHome(requestedHome)))
                     .hoverEvent(HoverEvent.showText(Component.text(getCommandFromHome(requestedHome))));

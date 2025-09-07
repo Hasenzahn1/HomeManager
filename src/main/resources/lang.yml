@@ -1,6 +1,7 @@
 prefix: "&7[&bHomeManager&7] "
 
 # Add an Actionbar behind the message to send the message to the players actionbar
+# Removing the key will disable the message
 
 commands:
   noPlayer: "&cThis command can only be used by players."

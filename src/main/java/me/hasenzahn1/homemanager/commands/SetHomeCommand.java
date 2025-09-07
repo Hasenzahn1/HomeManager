@@ -17,8 +17,6 @@ import me.hasenzahn1.homemanager.homes.PlayerHomes;
 import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.permission.PermissionValidator;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -142,8 +140,6 @@ public class SetHomeCommand extends BaseHomeCommand {
             return true;
         }
 
-        Bukkit.broadcast(Component.text("HGallo"));
-
         //You don't have enough experience, but you have to pay experience
         int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
         if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm())) {
@@ -189,7 +185,7 @@ public class SetHomeCommand extends BaseHomeCommand {
         boolean playerHasOtherPermission = player.hasPermission("homemanager.commands.sethome.other." + HomeManager.getInstance().getWorldGroupManager().getWorldGroup(player.getWorld()).getName());
 
         // Define Completions
-        List<String> nameArgCompletions = List.of("<homename>");
+        List<String> nameArgCompletions = List.of("homename");
         List<String> offlinePlayers = completionsHelper.matchAndSort(completionsHelper.getOfflinePlayers(), strings[0]);
         boolean otherPlayerArgMightBeSet = !offlinePlayers.isEmpty();
 

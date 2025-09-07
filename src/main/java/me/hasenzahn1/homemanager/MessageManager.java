@@ -65,6 +65,8 @@ public class MessageManager {
      * The message can be sent either as a regular message or as an action bar message based on the configuration.
      * If the config contains the {@code <key>Actionbar} key, the message is sent as an actionbar message.
      * If the config contains the {@code <key>} key the message will be sent as a normal message.
+     * <p>
+     * Applies PAPI Placeholders if PlaceholderAPI is available
      *
      * @param player       the player or command sender to receive the message
      * @param languageKey  the language key to retrieve the message
@@ -77,17 +79,30 @@ public class MessageManager {
         }
 
         if (Language.containsLang(languageKey) || !messageHasBeenSent) {
-            String message = Language.getLang(languageKey, replacements);
-            if (player instanceof OfflinePlayer && HomeManager.PLACEHOLDER_API_EXISTS)
-                message = PlaceholderAPI.setPlaceholders(((Player) player).getPlayer(), message);
+            String message = getPAPILang(player, languageKey, replacements);
             player.sendMessage(Component.text(HomeManager.PREFIX + message));
         }
+    }
+
+    public static String getPAPILang(CommandSender player, String languageKey, String... replacements) {
+        String message = Language.getLang(languageKey);
+
+        //Apply Papi placeholders
+        if (player instanceof OfflinePlayer && HomeManager.PLACEHOLDER_API_EXISTS) {
+            message = PlaceholderAPI.setPlaceholders((OfflinePlayer) player, message);
+        }
+
+        //Apply plugin internal replacements
+        for (int i = 0; i + 1 < replacements.length; i += 2) {
+            message = message.replace("%" + replacements[i] + "%", replacements[i + 1]);
+        }
+        return message;
     }
 
     /**
      * Sends a message to the player as an action bar message.
      * <p>
-     * If the player is not an instance of `Player`, no message is sent.
+     * Applies PAPI Placeholders if PlaceholderAPI is available
      *
      * @param player       the player to receive the action bar message
      * @param languageKey  the language key to retrieve the action bar message
@@ -96,10 +111,7 @@ public class MessageManager {
      */
     private static boolean sendActionbarMessage(CommandSender player, String languageKey, String... replacements) {
         if (!(player instanceof Player)) return false;
-
-        String message = Language.getLang(languageKey, replacements);
-        if (HomeManager.PLACEHOLDER_API_EXISTS)
-            message = PlaceholderAPI.setPlaceholders(((OfflinePlayer) player), message);
+        String message = getPAPILang(player, languageKey, replacements);
         player.sendActionBar(Component.text(message));
         return true;
     }

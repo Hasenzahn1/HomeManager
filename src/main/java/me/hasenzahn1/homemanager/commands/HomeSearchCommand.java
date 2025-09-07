@@ -107,21 +107,21 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
         }
 
         //Display header "%prefix% &aFound &6%amount% &ahomes at &7(%x%, %y%, %z%) &awith radius &6%radius%"
-        player.sendMessage(Language.getLang(Language.HOME_SEARCH_HEADER,
+        MessageManager.sendMessage(player, Language.HOME_SEARCH_HEADER,
                 "prefix", HomeManager.PREFIX,
                 "amount", String.valueOf(homes.size()),
                 "radius", String.valueOf(radius),
                 "x", String.valueOf(player.getLocation().getBlockY()),
                 "y", String.valueOf(player.getLocation().getBlockY()),
-                "z", String.valueOf(player.getLocation().getBlockZ())));
+                "z", String.valueOf(player.getLocation().getBlockZ()));
 
 
         //Display homes
         for (String key : playerHomes.keySet().stream().sorted().toList()) {
-            player.sendMessage(Language.getLang(Language.HOME_SEARCH_PLAYER_LINE, "player", key));
+            player.sendMessage(MessageManager.getPAPILang(player, Language.HOME_SEARCH_PLAYER_LINE, "player", key));
 
             for (Home home : playerHomes.get(key)) {
-                Component homeLine = Component.text(Language.getLang(Language.HOME_SEARCH_HOME_LINE,
+                Component homeLine = Component.text(MessageManager.getPAPILang(player, Language.HOME_SEARCH_HOME_LINE,
                         "homename", home.name(),
                         "x", String.valueOf(home.location().getBlockX()),
                         "y", String.valueOf(home.location().getBlockY()),
@@ -129,7 +129,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
                 homeLine = homeLine.hoverEvent(HoverEvent.showText(Component.text(HomeCommand.getCommandFromHome(home))))
                         .clickEvent(ClickEvent.runCommand(HomeCommand.getCommandFromHome(home)));
 
-                Component deleteBtn = Component.text(Language.getLang(Language.HOME_SEARCH_DELETE_BUTTON))
+                Component deleteBtn = Component.text(MessageManager.getPAPILang(player, Language.HOME_SEARCH_DELETE_BUTTON))
                         .clickEvent(ClickEvent.runCommand(DelHomeCommand.getCommandFromHome(home)))
                         .hoverEvent(Component.text(DelHomeCommand.getCommandFromHome(home)));
 

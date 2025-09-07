@@ -48,6 +48,8 @@ public class WorldGuardRegionCheck {
         ApplicableRegionSet set = query.getApplicableRegions(loc);
 
         LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(player);
+        //TODO: WorldGuard.getInstance().getPlatform().getSessionManager().hasBypass(player) | has bypass perm
+        //TODO: WorldConfiguration worldConfig = WorldGuardPlugin.inst().getConfigManager().get(world); | worldConfig.useRegions Is Restricted world checken
 
         // 1. Check global allowance
         boolean isAllowed = query.testState(loc, localPlayer, flag);

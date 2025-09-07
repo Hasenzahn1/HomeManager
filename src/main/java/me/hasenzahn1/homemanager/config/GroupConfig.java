@@ -43,7 +43,8 @@ public class GroupConfig extends CustomConfig {
 
             //Remove duplicate Worlds
             worldGroup.getWorlds().removeIf(world -> groupedWorlds.contains(world) || worldGroupManager.groupExists(world));
-
+            //TODO: ADD LOGGING IF WORLD IN ANOTHER GROUP
+            
             //Add Worlds to groupWorlds
             groupedWorlds.addAll(worldGroup.getWorlds());
             Logger.DEBUG.log("Successfully loaded world group " + worldGroup.getName());

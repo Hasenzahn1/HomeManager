@@ -85,27 +85,16 @@ public class Language {
     }
 
     /**
-     * Retrieves a language string by key and replaces placeholders with provided arguments.
+     * Retrieves a language string by key returning a default message if the key does not exist.
      * <p>
      * The method fetches a language string from the language configuration based on the provided key.
-     * It also replaces placeholders in the string (e.g., `%placeholder%`) with the corresponding argument values.
      * Additionally, it converts color codes from `&` format to `§` format for Minecraft compatibility.
      *
-     * @param key  the language key to fetch the string
-     * @param args pairs of placeholder keys and their replacement values
+     * @param key the language key to fetch the string
      * @return the formatted language string with placeholders replaced, or a default message if the key is not found
      */
-    public static String getLang(String key, String... args) {
-        // Fetch language string from config with a default message if the key is not found
-        String lang = languageConfig.getConfig().getString(key, "&cUnknown language key &6" + key);
-
-        // Replace each placeholder with corresponding argument
-        for (int i = 0; i + 1 < args.length; i += 2) {
-            lang = lang.replace("%" + args[i] + "%", args[i + 1]);
-        }
-
-        // Convert color codes from '&' to '§' for Minecraft compatibility
-        return lang.replace("&", "§");
+    public static String getLang(String key) {
+        return languageConfig.getConfig().getString(key, "&cUnknown language key &6" + key).replace("&", "§");
     }
 
 

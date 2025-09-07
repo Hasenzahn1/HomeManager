@@ -23,12 +23,12 @@ public class WorldGroupSettings {
     private WorldGroup parentWorldGroup;
 
     // Home management settings
-    private boolean setHomeExperienceActive = true;
+    private boolean setHomeExperienceActive = false;
     private List<Integer> setHomeExperiencePerHome = List.of();
     private String setHomeExperienceFormula = "";
     private boolean setHomeDisableWithBypassPerm = true;
 
-    private boolean freeHomesActive = true;
+    private boolean freeHomesActive = false;
     private boolean freeHomesDisableInCreative = true;
 
     private boolean homeTeleportExperienceActive = false;

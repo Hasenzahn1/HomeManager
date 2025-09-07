@@ -23,4 +23,4 @@ homeSearchDurationInSeconds: 30
 
 # Time in seconds an admin has to confirm an action,
 # such as purging all homes in a world.
-homeAdminConfirmationDuration: 10
+homeAdminConfirmationDuration: 5

@@ -10,19 +10,20 @@ softdepend: [ "PlaceholderAPI", "WorldGuard", "PlotSquared" ]
 commands:
   sethome:
     description: Sets a home at your position
-    usage: /sethome (player) name
+    usage: /sethome (player) <homename>
   delhome:
     description: Deletes the provided home
-    usage: /delhome (player) name (-g/-group <groupname>)
+    usage: /delhome (player) <homename> (-g/-group <groupname>)
   home:
     description: Teleports to the specified home
-    usage: /home (player) name (-g/-group <groupname>)
+    usage: /home (player) <homename> (-g/-group <groupname>)
   homes:
     description: Displays the homes of the player.
     usage: /homes (player) (-g/-group <groupname>)
+    aliases: [ homelist ]
   homeadmin:
     description: Admin command for the home plugin
-    usage: /homeadmin <cleanup/purge/migrate/reload>
+    usage: /homeadmin <cleanup/purge/migrate/reload/freehomes>
   homesearch:
     description: Searches homes within a radius
     usage: /homesearch <radius>
