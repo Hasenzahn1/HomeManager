@@ -67,11 +67,11 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
      */
     @Override
     public @NotNull List<String> getPlaceholders() {
-        return List.of("%homemanager_homes_<worldgroup-or-'this'>_<player-or-'self'>%",
-                "%homemanager_freehomes_<worldgroup-or-'this'>_<player-or-'self'>%",
-                "%homemanager_maxhomes_<worldgroup-or-'this'>_<player-or-'self'>%",
-                "%homemanager_nexthomexp_<worldgroup-or-'this'>_<player-or-'self'>%",
-                "%homemanager_currentgroup%");
+        return List.of("%homemanager_homes_<worldgroup or 'this'>:<player or 'self'>%",
+                "%homemanager_freehomes_<worldgroup or 'this'>:<player or 'self'>%",
+                "%homemanager_maxhomes_<worldgroup or 'this'>:<player or 'self'>%",
+                "%homemanager_nexthomexp_<worldgroup or 'this'>:<player or 'self'>%",
+                "%homemanager_currentgroup_<player or 'self'>%");
     }
 
     /**
@@ -86,27 +86,26 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         if (requester == null) return null;
 
         String[] args = params.split("_");
+        String text = String.join("_", Arrays.copyOfRange(args, 1, args.length));
 
         if (args[0].equalsIgnoreCase("homes")) {
-            return handleHomeCountPlaceholder(requester, args);
+            return handleHomeCountPlaceholder(requester, text);
         }
 
         if (args[0].equalsIgnoreCase("freehomes")) {
-            return handleFreeHomesCountPlaceholder(requester, args);
+            return handleFreeHomesCountPlaceholder(requester, text);
         }
 
         if (args[0].equalsIgnoreCase("maxhomes")) {
-            return handleMaxHomesPlaceholder(requester, args);
+            return handleMaxHomesPlaceholder(requester, text);
         }
 
         if (args[0].equalsIgnoreCase("nexthomexp")) {
-            return handleNextExperiencePlaceholder(requester, args);
+            return handleNextExperiencePlaceholder(requester, text);
         }
 
         if (args[0].equalsIgnoreCase("currentgroup")) {
-            if (args.length != 1) return null;
-            if (!(requester instanceof Player)) return "-";
-            return plugin.getWorldGroupManager().getWorldGroup(((Player) requester).getWorld()).getName();
+            return handleCurrentGroupPlaceholder(requester, text);
         }
 
         return null;
@@ -119,15 +118,16 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
      * @param args      The placeholder arguments split by '_'.
      * @return A Pair containing the UUID and WorldGroup, or null values on failure.
      */
-    private Pair<UUID, WorldGroup> parseArgs(OfflinePlayer requester, String[] args) {
-        if (args.length < 2) return Pair.of(null, null);
-        String player = args[args.length - 1];
-        String worldGroupName = String.join("_", Arrays.copyOfRange(args, 1, args.length - 1));
+    private Pair<UUID, WorldGroup> parseArgs(OfflinePlayer requester, String args) {
+        String[] parts = args.split(":");
+        if (parts.length != 2) return Pair.of(null, null);
+
+        String worldGroupName = parts[0];
+        String player = parts[1];
 
         UUID playerUUID;
         if (player.equalsIgnoreCase("self")) playerUUID = requester.getUniqueId();
         else playerUUID = PlayerNameUtils.getUUIDFromString(player);
-
         WorldGroup worldGroup;
         if (worldGroupName.equalsIgnoreCase("this")) {
             if (!(requester instanceof Player)) {
@@ -138,10 +138,24 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
         return Pair.of(playerUUID, worldGroup);
     }
 
+    private String handleCurrentGroupPlaceholder(OfflinePlayer requester, String args) {
+        UUID playerToCheckUUID;
+        String playerName = args;
+        if (playerName.equalsIgnoreCase("self")) playerToCheckUUID = requester.getUniqueId();
+        else playerToCheckUUID = PlayerNameUtils.getUUIDFromString(playerName);
+
+        if (playerToCheckUUID == null) return null;
+
+        OfflinePlayer playerToCheck = Bukkit.getOfflinePlayer(playerToCheckUUID);
+        if (!playerToCheck.isOnline()) return "-";
+        if (playerToCheck.getPlayer() == null) return "-";
+        return plugin.getWorldGroupManager().getWorldGroup(playerToCheck.getPlayer().getWorld()).getName();
+    }
+
     /**
      * Resolves the %nexthomexp% placeholder.
      */
-    private String handleNextExperiencePlaceholder(OfflinePlayer requester, String[] args) {
+    private String handleNextExperiencePlaceholder(OfflinePlayer requester, String args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
@@ -152,7 +166,7 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
     /**
      * Resolves the %maxhomes% placeholder.
      */
-    private String handleMaxHomesPlaceholder(OfflinePlayer requester, String[] args) {
+    private String handleMaxHomesPlaceholder(OfflinePlayer requester, String args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
@@ -164,7 +178,7 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
     /**
      * Resolves the %homes% placeholder.
      */
-    private String handleHomeCountPlaceholder(OfflinePlayer requester, String[] args) {
+    private String handleHomeCountPlaceholder(OfflinePlayer requester, String args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
@@ -174,7 +188,7 @@ public class PlaceholderHomeExpansion extends PlaceholderExpansion {
     /**
      * Resolves the %freehomes% placeholder.
      */
-    private String handleFreeHomesCountPlaceholder(OfflinePlayer requester, String[] args) {
+    private String handleFreeHomesCountPlaceholder(OfflinePlayer requester, String args) {
         Pair<UUID, WorldGroup> parsedArgs = parseArgs(requester, args);
         if (parsedArgs.key() == null || parsedArgs.value() == null) return "-";
 
