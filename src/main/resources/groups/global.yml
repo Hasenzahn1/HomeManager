@@ -33,17 +33,12 @@ global:
     # Default: ""
     experienceFormula: "2*amount+100"
 
-    # Disables the experience cost when the player has the bypass permission.
-    # Warning: If a player has op you automatically have this permission.
-    # Default: true
-    disableWithBypassPerm: true
-
-
+  
   # Controls whether deleting a home grants a free home slot again.
   freeHomes:
     # Enables or disables this feature.
     # Default: false
-    active: false
+    active: true
 
     # Disables the free homes feature when the player is in Creative or Spectator mode.
     # This means that no free homes will be granted or consumed while in these game modes.
@@ -62,11 +57,6 @@ global:
     # Supported functions: +, -, *, /, ^, sqrt(...), sin(...), cos(...), tan(...)
     # Default: ""
     formula: "dist/10"
-
-    # Disables the experience cost when the player has the bypass permission.
-    # Warning: If a player has op you automatically have this permission.
-    # Default: true
-    disableWithBypassPerm: true
 
 
   # Controls the delay before teleporting with /home.
@@ -120,6 +110,12 @@ global:
       - BLOCK_EXPLOSION
       - ENTITY_EXPLOSION
       - CAMPFIRE
+
+  # Controls whether the teleport during falls will cause fall damage or not
+  safeTeleport:
+    # Enables or disabled the Safe teleport feature
+    # Default: false
+    active: true
 
 
   # Controls whether homes are checked for obstructions (e.g. blocks in the way).

@@ -75,13 +75,13 @@ public class SetHomeCommand extends BaseHomeCommand {
             return true;
 
         //Validate Region
-        if (worldGuardRegionCheck != null && !worldGuardRegionCheck.canUseHomes(arguments.getCmdSender())) {
+        if (!isWorldGuardAllowed(arguments) && !hasBypass(arguments, PermissionValidator.SET_HOME_WORLDGUARD_BYPASS)) {
             MessageManager.sendMessage(commandSender, Language.WORLDGUARD_HOME_CREATION_DISABLED);
             return true;
         }
 
         //Validate Plot
-        if (plotsquaredRegionCheck != null && !plotsquaredRegionCheck.canUseHomes(arguments.getCmdSender())) {
+        if (!isPlotSquaredAllowed(arguments) && !hasBypass(arguments, PermissionValidator.SET_HOME_PLOTSQUARED_BYPASS)) {
             MessageManager.sendMessage(commandSender, Language.PLOTSQUARED_CREATE_HOMES_DISABLED);
             return true;
         }
@@ -106,9 +106,7 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Gather Max Homes from db
         int maxHomes = arguments.getWorldGroup().getSettings().getMaxHomes(commandSender);
-
-        //Check if the player has reached his maxHome Limit
-        if (arguments.isSelf() && playerHomes.getHomeAmount() >= maxHomes) {
+        if (arguments.isSelf() && playerHomes.getHomeAmount() >= maxHomes && !hasBypass(arguments, PermissionValidator.SET_HOME_MAX_HOMES_BYPASS)) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_MAX_HOMES, "amount", String.valueOf(maxHomes));
             dbSession.destroy();
             return true;
@@ -118,12 +116,12 @@ public class SetHomeCommand extends BaseHomeCommand {
         Home requestedHome = new Home(arguments.getActionPlayerUUID(), arguments.getHomeName(), arguments.getCmdSender().getLocation());
 
         //Player does not have to pay experience if he is not in survival, or he is setting a home for another player
-        //TODO: Gamemode check to config
-        boolean hasToPayExperience = homeExperienceCheck.hasToPayExperience(arguments, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm());
-        boolean shouldDecrementFreeHomes = arguments.isSelf() || !(arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
+        boolean expActive = arguments.getWorldGroup().getSettings().isSetHomeExperienceActive();
+        boolean hasToPayExperience = !hasBypass(arguments, PermissionValidator.SET_HOME_EXPERIENCE_BYPASS) && homeExperienceCheck.hasToPayExperience(arguments);
+        boolean shouldDecrementFreeHomes = shouldDecrementFreeHomes(arguments);
 
         //No Experience Required
-        if (!hasToPayExperience || !arguments.getWorldGroup().getSettings().isSetHomeExperienceActive()) {
+        if (!hasToPayExperience || !expActive) {
             if (shouldDecrementFreeHomes)
                 dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
@@ -132,8 +130,6 @@ public class SetHomeCommand extends BaseHomeCommand {
 
         //Get FreeHomes From db
         int freeHomes = dbSession.getFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
-
-        //If the player has free homes use it.
         if (freeHomes > 0 && shouldDecrementFreeHomes) {
             dbSession.decrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
@@ -141,8 +137,10 @@ public class SetHomeCommand extends BaseHomeCommand {
         }
 
         //You don't have enough experience, but you have to pay experience
-        int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
-        if (homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome, arguments.getWorldGroup().getSettings().isSetHomeDisableWithBypassPerm())) {
+        final int requiredLevels = homeExperienceCheck.getRequiredExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
+        final boolean lacksExp = homeExperienceCheck.checkForInvalidExperience(arguments, playerHomes.getHomeAmount(), requestedHome);
+
+        if (!hasBypass(arguments, PermissionValidator.SET_HOME_EXPERIENCE_BYPASS) && lacksExp) {
             MessageManager.sendMessage(commandSender, Language.SET_HOME_NO_EXP, "levels", String.valueOf(requiredLevels));
             dbSession.destroy();
             return true;
@@ -152,6 +150,23 @@ public class SetHomeCommand extends BaseHomeCommand {
         arguments.getCmdSender().setLevel(Math.max(0, arguments.getCmdSender().getLevel() - Math.max(0, requiredLevels)));
         saveHomeToDatabaseAndDestroy(dbSession, commandSender, arguments.getActionPlayerUUID(), requestedHome);
         return true;
+    }
+
+    private boolean isWorldGuardAllowed(PlayerNameArguments a) {
+        return worldGuardRegionCheck == null
+                || worldGuardRegionCheck.canUseHomes(a.getCmdSender());
+    }
+
+    private boolean isPlotSquaredAllowed(PlayerNameArguments a) {
+        return plotsquaredRegionCheck == null
+                || plotsquaredRegionCheck.canUseHomes(a.getCmdSender());
+    }
+
+    private boolean shouldDecrementFreeHomes(PlayerNameArguments a) {
+        final var settings = a.getWorldGroup().getSettings();
+        final boolean creativeInvuln = a.getCmdSender().getGameMode().isInvulnerable();
+        final boolean creativeGuard = settings.isFreeHomesDisableInCreative() && creativeInvuln;
+        return a.isSelf() && !creativeGuard;
     }
 
     private void saveHomeToDatabaseAndDestroy(DatabaseAccessor session, CommandSender cmdSender, UUID player, Home home) {

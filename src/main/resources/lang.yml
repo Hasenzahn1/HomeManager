@@ -36,19 +36,20 @@ commands:
   homeList:
     noHomes: "&cYou have not set any homes."
     noHomesOther: "&cPlayer &6%player% &chas not set any homes."
-    header: "%prefix%&7Your Homes: "
+    header: "%prefix%&7Your Homes (%amount%): "
     home: "&7%homename%"
     separator: "&7, "
 
   homeadmin:
     cleanup:
-      message: "&aThis command will remove all homes in nonexistent worlds. To confirm, run this command again within &6%seconds% &aseconds."
+      message: "&aThis command will remove all homes in nonexistent worlds (%amount%). To confirm, run this command again within &6%seconds% &aseconds."
       success: "&aSuccessfully removed &6%amount% &ahomes from the database."
     purge:
-      message: "&aThis command will delete all homes in the specified world. To confirm, run this command again within &6%seconds% &aseconds."
+      message: "&aThis command will delete all homes in the specified world (%amount%). To confirm, run this command again within &6%seconds% &aseconds."
       success: "&aSuccessfully deleted &6%amount% &ahomes from the database."
     reload:
       success: "&aConfiguration &6%config% &asuccessfully reloaded."
+      unknownConfig: "&cUnknown config &6%config%."
     migrate:
       success: "&aSuccessfully migrated homes in &6%millis% &ams."
       invalidMigrator: "&cUnknown migrator with name &6%migrator%"
@@ -73,6 +74,7 @@ warnings:
   homeObstructed: "&cYour home location is obstructed. To proceed, retype the command within &6%seconds% &cseconds or click this message."
 
 teleportationDelay:
+  message: "&aTeleporting in &6%seconds%s"
   messageActionbar: "&aTeleporting in &6%seconds%s"
   teleportationCancelled: "&cTeleportation cancelled."
   teleportationSuccess: "&aSuccessfully teleported to home &6%homename%."
@@ -88,4 +90,4 @@ plotsquared:
   createHomesDisabled: "Home creation is disabled in this plot"
 
   teleportHomesCaption: "Disable/Enable home teleportation in this plot"
-  teleportHomesDisabled: "Home teleport is disabled in this region"
+  teleportHomesDisabled: "Home teleport is disabled in this plot"

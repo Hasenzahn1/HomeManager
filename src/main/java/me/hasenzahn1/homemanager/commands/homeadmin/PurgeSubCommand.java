@@ -10,7 +10,6 @@ import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.generator.WorldInfo;
 
 import java.util.HashMap;
@@ -18,8 +17,8 @@ import java.util.List;
 
 public class PurgeSubCommand implements ISubCommand {
 
-    private final HashMap<Player, Long> executionTimestamps;
-    private final HashMap<Player, String> executedHomes;
+    private final HashMap<CommandSender, Long> executionTimestamps;
+    private final HashMap<CommandSender, String> executedHomes;
 
     public PurgeSubCommand() {
         executionTimestamps = new HashMap<>();
@@ -27,7 +26,7 @@ public class PurgeSubCommand implements ISubCommand {
     }
 
     @Override
-    public void onCommand(Player executor, String[] args) {
+    public void onCommand(CommandSender executor, String[] args) {
         if (args.length == 0) {
             MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin " + getName() + " (world)");
             return;
@@ -40,24 +39,23 @@ public class PurgeSubCommand implements ISubCommand {
             return;
         }
 
-        if (executionTimestamps.getOrDefault(executor, 0L) < System.currentTimeMillis() - DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION * 1000) {
+        if (executionTimestamps.getOrDefault(executor, 0L) < (System.currentTimeMillis() - DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION * 1000) ||
+                !worldName.equalsIgnoreCase(executedHomes.get(executor))) {
             executionTimestamps.put(executor, System.currentTimeMillis());
             executedHomes.put(executor, worldName);
-            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION));
-            return;
-        }
 
-        if (!worldName.equalsIgnoreCase(executedHomes.get(executor))) {
-            executionTimestamps.put(executor, System.currentTimeMillis());
-            executedHomes.put(executor, worldName);
-            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION));
+            DatabaseAccessor accessor = DatabaseAccessor.openSession();
+            int count = accessor.purgeHomesInWorldGetAmount(world);
+            accessor.destroy();
+
+            MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION), "amount", String.valueOf(count));
             return;
         }
 
         executionTimestamps.remove(executor);
         executedHomes.remove(executor);
         DatabaseAccessor session = DatabaseAccessor.openSession();
-        int rowCount = session.purgeHomeInWorld(world);
+        int rowCount = session.purgeHomesInWorld(world);
         session.destroy();
         HomeManager.getInstance().getHomesCache().invalidateAll();
         MessageManager.sendMessage(executor, Language.HOME_ADMIN_PURGE_SUCCESS, "amount", String.valueOf(rowCount));

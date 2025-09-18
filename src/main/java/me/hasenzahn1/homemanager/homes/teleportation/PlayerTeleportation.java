@@ -10,6 +10,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -73,13 +74,26 @@ public class PlayerTeleportation {
     /**
      * Teleports the player to their home and deducts the required experience.
      * Sends a success message and logs the teleportation.
+     * If SafeTeleport is enabled the velocity/fallDistance of the player will be cleared before and after the fall
      */
     private void teleport() {
+        ensureSafeTeleport();
         home.teleport(player);
+        ensureSafeTeleport();
+
         player.setLevel(Math.max(player.getLevel() - experienceToBePaid, 0));
         sendSuccessMessage();
         TeleportationManager.getInstance().removeTeleportation(player);
         Logger.DEBUG.log("Teleported player " + player.getName() + " to home " + home.name() + " at location (" + home.location().getBlockX() + ", " + home.location().getBlockY() + ", " + home.location().getBlockZ() + ")");
+    }
+
+    /**
+     * Clears velocity and fall Distance if SafeTeleport is enabled
+     */
+    private void ensureSafeTeleport() {
+        if (!arguments.getWorldGroup().getSettings().isSafeTeleportActive()) return;
+        player.setVelocity(new Vector());
+        player.setFallDistance(0);
     }
 
     /**

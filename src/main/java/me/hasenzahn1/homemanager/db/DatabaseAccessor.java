@@ -91,14 +91,29 @@ public class DatabaseAccessor {
         return database.getTable(HomesTable.class).cleanupHomes(connection, worlds);
     }
 
-    public int purgeHomeInWorld(World world) {
+    public int cleanupHomesGetAmount(List<World> worlds) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(HomesTable.class).cleanupHomesGetAmount(connection, worlds);
+    }
+
+    public int purgeHomesInWorld(World world) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).purgeHomesInWorld(connection, world);
+    }
+
+    public int purgeHomesInWorldGetAmount(World world) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(HomesTable.class).purgeHomesInWorldGetAmount(connection, world);
     }
 
     public List<Home> getHomesInRadius(Location center, int radius) {
         if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
         return database.getTable(HomesTable.class).getHomesInRadius(connection, center, radius);
+    }
+
+    public List<Home> getHomesThatDontMatchRegex(String regex) {
+        if (connection == null || database == null) throw new RuntimeException("Database Connection closed");
+        return database.getTable(HomesTable.class).getHomesThatDontMatchRegex(connection, regex);
     }
 
     public int getVersion() {

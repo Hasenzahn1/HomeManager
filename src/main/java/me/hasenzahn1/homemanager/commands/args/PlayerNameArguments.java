@@ -1,5 +1,6 @@
 package me.hasenzahn1.homemanager.commands.args;
 
+import me.hasenzahn1.homemanager.config.DefaultConfig;
 import org.bukkit.entity.Player;
 
 /**
@@ -33,7 +34,7 @@ public class PlayerNameArguments extends PlayerArguments {
      * @return true if valid, false otherwise
      */
     public boolean isValidHomeName() {
-        return homeName.matches("[!-~]{0,30}");
+        return homeName.matches(DefaultConfig.SET_HOME_VALIDATION_REGEX);
     }
 
     /**

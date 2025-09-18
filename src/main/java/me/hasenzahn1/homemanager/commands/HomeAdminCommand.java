@@ -9,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,12 +34,7 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
 
-        if (!(commandSender instanceof Player executor)) {
-            MessageManager.sendMessage(commandSender, Language.NO_PLAYER);
-            return true;
-        }
-
-        if (!commandSender.hasPermission("homeadmin.commands.homeadmin")) {
+        if (!commandSender.hasPermission("homemanager.commands.homeadmin")) {
             MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
             return true;
         }
@@ -53,12 +47,12 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
         for (ISubCommand subCommand : subCommands) {
             if (!subCommand.getName().equalsIgnoreCase(args[0])) continue;
 
-            if (!commandSender.hasPermission("homeadmin.commands.homeadmin." + subCommand.getName())) {
+            if (!commandSender.hasPermission("homemanager.commands.homeadmin." + subCommand.getName())) {
                 MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
                 return true;
             }
 
-            subCommand.onCommand(executor, Arrays.copyOfRange(args, 1, args.length));
+            subCommand.onCommand(commandSender, Arrays.copyOfRange(args, 1, args.length));
             return true;
         }
 
@@ -75,7 +69,7 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
             for (ISubCommand subCommand : subCommands) {
                 if (!subCommand.getName().equalsIgnoreCase(args[0])) continue;
 
-                if (!commandSender.hasPermission("homeadmin.commands.homeadmin." + subCommand.getName())) {
+                if (!commandSender.hasPermission("homemanager.commands.homeadmin." + subCommand.getName())) {
                     return List.of();
                 }
 

@@ -68,9 +68,7 @@ public class DelHomeCommand extends BaseHomeCommand {
         Logger.DEBUG.log("Deleted home " + home.name() + " of player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
 
         //Grant free home
-        //boolean shouldNotGrantFreeHomes = !arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable();
-        boolean shouldGrantFreeHomes = arguments.isSelf() || (arguments.getWorldGroup().getSettings().isFreeHomesDisableInCreative() && arguments.getCmdSender().isInvulnerable());
-        if (arguments.getWorldGroup().getSettings().isFreeHomesActive() && shouldGrantFreeHomes) {
+        if (shouldGrantFreeHome(arguments)) {
             dbSession.incrementFreeHomes(arguments.getActionPlayerUUID(), arguments.getWorldGroup().getName());
             Logger.DEBUG.log("Granted freehome for player " + arguments.getActionPlayerUUID() + " in worldgroup " + arguments.getWorldGroup().getName());
         }
@@ -79,6 +77,14 @@ public class DelHomeCommand extends BaseHomeCommand {
         sendSuccessMessage(arguments, home);
         HomeManager.getInstance().getHomesCache().invalidateCache(arguments.getActionPlayerUUID());
         return true;
+    }
+
+    private boolean shouldGrantFreeHome(PlayerNameGroupArguments a) {
+        final var settings = a.getWorldGroup().getSettings();
+        if (!settings.isFreeHomesActive()) return false;
+        if (!a.isSelf()) return false;
+        if (!settings.isFreeHomesDisableInCreative()) return true;
+        return !a.getCmdSender().getGameMode().isInvulnerable();
     }
 
     public void sendSuccessMessage(PlayerNameGroupArguments arguments, Home home) {

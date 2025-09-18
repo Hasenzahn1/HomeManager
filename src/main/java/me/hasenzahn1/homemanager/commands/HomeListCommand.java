@@ -71,7 +71,7 @@ public class HomeListCommand extends BaseHomeCommand {
     }
 
     private Component createHomeListText(PlayerGroupArguments arguments, PlayerHomes playerHomes) {
-        Component display = Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX));
+        Component display = Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_HEADER, "prefix", HomeManager.PREFIX, "amount", playerHomes.getHomes().size() + ""));
         String player = playerHomes.getHomes().get(0).getOwnersName();
 
         List<Home> homes = playerHomes.getHomes().stream().sorted(Comparator.comparing(Home::name)).toList();
@@ -79,10 +79,10 @@ public class HomeListCommand extends BaseHomeCommand {
 
         //Create Components
         for (Home home : homes) {
-            Component currentHome = Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_HOME, "homename", home.name()));
+            Component currentHome = Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_HOME, "homename", home.name(), "amount", playerHomes.getHomes().size() + ""));
             currentHome = currentHome.clickEvent(ClickEvent.runCommand("/home " + player + " " + home.name() + " -g " + arguments.getWorldGroup().getName()));
             components.add(currentHome);
-            components.add(Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_SEPARATOR)));
+            components.add(Component.text(MessageManager.getPAPILang(arguments.getCmdSender(), Language.HOME_LIST_SEPARATOR, "amount", playerHomes.getHomes().size() + "")));
         }
 
         //Combine Components

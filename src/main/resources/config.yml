@@ -18,9 +18,13 @@ debug:
 # Cached data is only used for tab completion.
 cacheExpireDuration: 600
 
-# Duration in seconds of the visual highlight when using the /homesearch command.
+# Duration of the visual highlight in seconds when using the /homesearch command.
 homeSearchDurationInSeconds: 30
 
 # Time in seconds an admin has to confirm an action,
 # such as purging all homes in a world.
 homeAdminConfirmationDuration: 5
+
+# The regex used to validate a home name.
+# If the name does not match the regex, the commands.sethome.invalidName lang key is returned
+validHomeNameRegex: "[A-Za-z0-9-_]{0,30}"

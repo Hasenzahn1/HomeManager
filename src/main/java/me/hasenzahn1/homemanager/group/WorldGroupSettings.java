@@ -26,14 +26,12 @@ public class WorldGroupSettings {
     private boolean setHomeExperienceActive = false;
     private List<Integer> setHomeExperiencePerHome = List.of();
     private String setHomeExperienceFormula = "";
-    private boolean setHomeDisableWithBypassPerm = true;
 
     private boolean freeHomesActive = false;
     private boolean freeHomesDisableInCreative = true;
 
     private boolean homeTeleportExperienceActive = false;
     private String homeTeleportExperienceFormula = "";
-    private boolean homeTeleportDisableWithBypassPerm = true;
 
     private boolean delayActive = false;
     private int delayDurationInSeconds = 5;
@@ -43,6 +41,8 @@ public class WorldGroupSettings {
     private boolean timeoutActive = false;
     private int timeoutDurationInSeconds = 5;
     private List<EntityDamageEvent.DamageCause> timeoutCauses = List.of();
+
+    private boolean safeTeleportActive = false;
 
     private boolean obstructedHomeCheckActive = false;
     private boolean obstructedHomeCheckDisableInCreative = true;
@@ -66,14 +66,12 @@ public class WorldGroupSettings {
         setHomeExperienceActive = section.getBoolean("setHomeExperience.active", setHomeExperienceActive);
         setHomeExperienceFormula = section.getString("setHomeExperience.experienceFormula", setHomeExperienceFormula);
         setHomeExperiencePerHome = section.getIntegerList("setHomeExperience.experiencePerHome");
-        setHomeDisableWithBypassPerm = section.getBoolean("setHomeExperience.disableWithBypassPerm", setHomeDisableWithBypassPerm);
 
         freeHomesActive = section.getBoolean("freeHomes.active", freeHomesActive);
         freeHomesDisableInCreative = section.getBoolean("freeHomes.disableInCreative", freeHomesDisableInCreative);
 
         homeTeleportExperienceActive = section.getBoolean("homeTeleportExperience.active", homeTeleportExperienceActive);
         homeTeleportExperienceFormula = section.getString("homeTeleportExperience.formula", homeTeleportExperienceFormula);
-        homeTeleportDisableWithBypassPerm = section.getBoolean("homeTeleportExperience.disableWithBypassPerm", homeTeleportDisableWithBypassPerm);
 
         delayActive = section.getBoolean("delay.active", delayActive);
         delayDisableInCreative = section.getBoolean("delay.disableInCreative", delayDisableInCreative);
@@ -95,6 +93,8 @@ public class WorldGroupSettings {
                 return null;
             }
         }).filter(Objects::nonNull).toList();
+
+        safeTeleportActive = section.getBoolean("safeTeleport.active", safeTeleportActive);
 
         obstructedHomeCheckActive = section.getBoolean("obstructedHomeCheck.active", obstructedHomeCheckActive);
         obstructedHomeCheckDisableInCreative = section.getBoolean("obstructedHomeCheck.disableInCreative", obstructedHomeCheckDisableInCreative);
@@ -210,6 +210,10 @@ public class WorldGroupSettings {
         return homeTeleportOnGroundCheckActive;
     }
 
+    public boolean isSafeTeleportActive() {
+        return safeTeleportActive;
+    }
+
     public boolean isObstructedHomeCheckActive() {
         return obstructedHomeCheckActive;
     }
@@ -224,14 +228,6 @@ public class WorldGroupSettings {
 
     public boolean isHomeTeleportOnGroundCheckDisableInCreative() {
         return homeTeleportOnGroundCheckDisableInCreative;
-    }
-
-    public boolean isSetHomeDisableWithBypassPerm() {
-        return setHomeDisableWithBypassPerm;
-    }
-
-    public boolean isHomeTeleportDisableWithBypassPerm() {
-        return homeTeleportDisableWithBypassPerm;
     }
 
     public boolean isFreeHomesDisableInCreative() {

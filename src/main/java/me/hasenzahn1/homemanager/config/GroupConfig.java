@@ -41,10 +41,18 @@ public class GroupConfig extends CustomConfig {
             WorldGroup worldGroup = new WorldGroup(groupName, config.getConfigurationSection(groupName));
             worldGroups.put(worldGroup.getName(), worldGroup);
 
+            //If Global Group ignore worlds
+            if (worldGroup.getName().matches(WorldGroupManager.GLOBAL_GROUP)) worldGroup.getWorlds().clear();
+
             //Remove duplicate Worlds
-            worldGroup.getWorlds().removeIf(world -> groupedWorlds.contains(world) || worldGroupManager.groupExists(world));
-            //TODO: ADD LOGGING IF WORLD IN ANOTHER GROUP
-            
+            for (int i = worldGroup.getWorlds().size() - 1; i >= 0; i--) {
+                World w = worldGroup.getWorlds().get(i);
+                if (groupedWorlds.contains(w) || worldGroupManager.groupExists(w)) {
+                    worldGroup.getWorlds().remove(i);
+                    Logger.ERROR.log("Duplicate world " + w.getName() + " in worldgroups. Skipping world for worldgroup " + worldGroup.getName());
+                }
+            }
+
             //Add Worlds to groupWorlds
             groupedWorlds.addAll(worldGroup.getWorlds());
             Logger.DEBUG.log("Successfully loaded world group " + worldGroup.getName());

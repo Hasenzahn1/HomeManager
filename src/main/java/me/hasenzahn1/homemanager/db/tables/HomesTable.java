@@ -103,6 +103,26 @@ public class HomesTable extends Table {
     }
 
     /**
+     * Deletes all homes stored in the database that are located in the specified world.
+     *
+     * @param con   The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param world The world whose homes should be removed from the database.
+     * @return The number of homes deleted. Returns 0 if an error occurs during the operation.
+     */
+    public int purgeHomesInWorldGetAmount(Connection con, World world) {
+        try (PreparedStatement statement = con.prepareStatement("SELECT COUNT(*) FROM " + getTableName() + " WHERE world LIKE ?")) {
+            statement.setString(1, world.getName());
+            ResultSet result = statement.executeQuery();
+            if (result.next()) return result.getInt(1);
+            return 0;
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error purging homes from database in world " + world.getName());
+            Logger.ERROR.logException(e);
+        }
+        return 0;
+    }
+
+    /**
      * Deletes all homes from the database that are not located in the specified list of worlds.
      *
      * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
@@ -117,6 +137,31 @@ public class HomesTable extends Table {
         sql.delete(sql.length() - 4, sql.length());
         try (PreparedStatement statement = con.prepareStatement(sql.toString())) {
             return statement.executeUpdate();
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error cleaning homes from database with worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
+            Logger.ERROR.logException(e);
+        }
+
+        return 0;
+    }
+
+    /**
+     * Deletes all homes from the database that are not located in the specified list of worlds.
+     *
+     * @param con    The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @param worlds A list of worlds to keep; homes in other worlds will be removed.
+     * @return The number of homes deleted. Returns 0 if an error occurs during the operation.
+     */
+    public int cleanupHomesGetAmount(Connection con, List<World> worlds) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM " + getTableName() + " WHERE");
+        for (World world : worlds) {
+            sql.append(" world NOT LIKE '").append(world.getName()).append("'").append(" AND");
+        }
+        sql.delete(sql.length() - 4, sql.length());
+        try (PreparedStatement statement = con.prepareStatement(sql.toString())) {
+            ResultSet set = statement.executeQuery();
+            if (set.next()) return set.getInt(1);
+            return 0;
         } catch (SQLException e) {
             Logger.ERROR.log("Error cleaning homes from database with worlds " + String.join(", ", worlds.stream().map(World::getName).toList()));
             Logger.ERROR.logException(e);
@@ -197,6 +242,39 @@ public class HomesTable extends Table {
             Logger.ERROR.logException(e);
         }
         return new PlayerHomes(homes);
+    }
+
+    /**
+     * Retrieves all homes from a player in a specific worldgroup
+     *
+     * @param con The database connection, provided by {@link me.hasenzahn1.homemanager.db.DatabaseAccessor}.
+     * @return A {@link PlayerHomes} object with all the homes from the worldgroup
+     */
+    public List<Home> getHomesThatDontMatchRegex(Connection con, String regex) {
+        List<Home> homes = new ArrayList<>();
+        try (PreparedStatement statement = con.prepareStatement("SELECT * FROM " + getTableName())) {
+            ResultSet result = statement.executeQuery();
+            while (result.next()) {
+                String name = result.getString("name");
+                if (name.matches(regex)) continue;
+
+                UUID homeUUID = UUID.fromString(result.getString("uuid"));
+                String world = result.getString("world");
+                double x = result.getDouble("x");
+                double y = result.getDouble("y");
+                double z = result.getDouble("z");
+                float yaw = result.getFloat("yaw");
+                float pitch = result.getFloat("pitch");
+
+                Location location = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+
+                homes.add(new Home(homeUUID, name, location));
+            }
+        } catch (SQLException e) {
+            Logger.ERROR.log("Error retrieving homes that don't match regex " + regex);
+            Logger.ERROR.logException(e);
+        }
+        return homes;
     }
 
     /**

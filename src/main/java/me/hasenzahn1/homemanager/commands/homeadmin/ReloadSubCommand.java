@@ -6,14 +6,13 @@ import me.hasenzahn1.homemanager.Logger;
 import me.hasenzahn1.homemanager.MessageManager;
 import me.hasenzahn1.homemanager.commands.system.ISubCommand;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 public class ReloadSubCommand implements ISubCommand {
     @Override
-    public void onCommand(Player executor, String[] args) {
+    public void onCommand(CommandSender executor, String[] args) {
         if (args.length == 0) {
             MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin " + getName() + " <config/groups/lang>");
             return;
@@ -33,6 +32,8 @@ public class ReloadSubCommand implements ISubCommand {
                 Language.reload();
                 Logger.DEBUG.log("Reloaded lang.yml from disk");
                 break;
+            default:
+                MessageManager.sendMessage(executor, Language.HOME_ADMIN_RELOAD_UNKNOWN_CONFIG, "config", args[0].toLowerCase());
         }
 
         MessageManager.sendMessage(executor, Language.HOME_ADMIN_RELOAD_SUCCESS, "config", args[0].toLowerCase());

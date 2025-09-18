@@ -44,6 +44,9 @@ public class PlotsquaredRegionCheck {
                 player.getLocation().getBlockZ()
         );
 
+        //Check plotsquared bypass permission
+        if (player.hasPermission("plots.admin")) return true;
+
         PlotArea area = PlotsquaredIntegration.PLOT_API_INSTANCE.getPlotSquared()
                 .getPlotAreaManager().getPlotArea(location);
         if (area == null) return true;

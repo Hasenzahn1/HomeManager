@@ -55,6 +55,10 @@ public final class HomeManager extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        //Create and initialize database
+        database = new HomesDatabase();
+        database.init();
+
         //Load Default config
         config = new DefaultConfig();
 
@@ -64,10 +68,6 @@ public final class HomeManager extends JavaPlugin {
 
         //Load groups form config
         worldGroupManager = new WorldGroupManager();
-
-        //Create and initialize database
-        database = new HomesDatabase();
-        database.init();
 
         //Upgrade Versions
         VersionUpgrader versionUpgrader = new VersionUpgrader();

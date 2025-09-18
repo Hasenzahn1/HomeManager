@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 public class FreeHomesSubCommand implements ISubCommand {
 
     @Override
-    public void onCommand(Player executor, String[] args) {
+    public void onCommand(CommandSender executor, String[] args) {
         if (args.length < 2 || args.length > 4) {
             MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin " + getName() + " <add/get/remove/set> <player> <amount> (worldgroup)");
             return;
@@ -46,7 +46,13 @@ public class FreeHomesSubCommand implements ISubCommand {
         }
 
         //Validate and get WorldGroup optional arg
-        WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(executor.getWorld());
+        WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup("global");
+        if (Bukkit.getPlayer(playerUUID) != null) {
+            worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(Bukkit.getPlayer(playerUUID).getWorld());
+        } else if (executor instanceof Player) {
+            worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(((Player) executor).getWorld());
+        }
+
         if (args.length == 4) {
             worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(args[3]);
             if (worldGroup == null) {
@@ -72,7 +78,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin " + getName() + " <add/get/remove/set> <player> <amount> (worldgroup)");
     }
 
-    private void handleAdd(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
+    private void handleAdd(CommandSender player, UUID uuid, WorldGroup worldGroup, int amount) {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), freeHomes + amount);
@@ -81,7 +87,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_ADD_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(freeHomes + amount), "add", String.valueOf(amount));
     }
 
-    private void handleRemove(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
+    private void handleRemove(CommandSender player, UUID uuid, WorldGroup worldGroup, int amount) {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         int freeHomes = session.getFreeHomes(uuid, worldGroup.getName());
         session.saveFreeHomes(uuid, worldGroup.getName(), Math.max(0, freeHomes - amount));
@@ -90,7 +96,7 @@ public class FreeHomesSubCommand implements ISubCommand {
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_REMOVE_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(Math.max(0, freeHomes - amount)), "remove", String.valueOf(amount));
     }
 
-    private void handleSet(Player player, UUID uuid, WorldGroup worldGroup, int amount) {
+    private void handleSet(CommandSender player, UUID uuid, WorldGroup worldGroup, int amount) {
         DatabaseAccessor session = DatabaseAccessor.openSession();
         session.saveFreeHomes(uuid, worldGroup.getName(), amount);
         session.destroy();
@@ -99,14 +105,20 @@ public class FreeHomesSubCommand implements ISubCommand {
         MessageManager.sendMessage(player, Language.HOME_ADMIN_FREE_HOME_SET_SUCCESS, "name", PlayerNameUtils.getPlayerNameFromUUID(uuid), "amount", String.valueOf(amount));
     }
 
-    private void handleGet(Player executor, UUID uuid, String[] args) {
+    private void handleGet(CommandSender executor, UUID uuid, String[] args) {
         if (args.length > 3) {
             MessageManager.sendMessage(executor, Language.INVALID_COMMAND, "command", "/homeadmin " + getName() + " <add/get/remove/set> <player> <amount> (worldgroup)");
             return;
         }
 
+        WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup("global");
+        if (Bukkit.getPlayer(uuid) != null) {
+            worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(Bukkit.getPlayer(uuid).getWorld());
+        } else if (executor instanceof Player) {
+            worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(((Player) executor).getWorld());
+        }
+
         //Validate and get WorldGroup optional arg
-        WorldGroup worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(executor.getWorld());
         if (args.length == 3) {
             worldGroup = HomeManager.getInstance().getWorldGroupManager().getWorldGroup(args[2]);
             if (worldGroup == null) {

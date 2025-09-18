@@ -9,7 +9,6 @@ import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,17 +16,22 @@ import java.util.List;
 public class CleanupSubCommand implements ISubCommand {
 
 
-    private final HashMap<Player, Long> executionTimestamps;
+    private final HashMap<CommandSender, Long> executionTimestamps;
 
     public CleanupSubCommand() {
         executionTimestamps = new HashMap<>();
     }
 
     @Override
-    public void onCommand(Player executor, String[] args) {
+    public void onCommand(CommandSender executor, String[] args) {
         if (executionTimestamps.getOrDefault(executor, 0L) < System.currentTimeMillis() - DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION * 1000) {
             executionTimestamps.put(executor, System.currentTimeMillis());
-            MessageManager.sendMessage(executor, Language.HOME_ADMIN_CLEANUP_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION));
+            
+            DatabaseAccessor accessor = DatabaseAccessor.openSession();
+            int count = accessor.cleanupHomesGetAmount(Bukkit.getWorlds());
+            accessor.destroy();
+
+            MessageManager.sendMessage(executor, Language.HOME_ADMIN_CLEANUP_MESSAGE, "seconds", String.valueOf(DefaultConfig.HOME_ADMIN_CONFIRMATION_DURATION), "amount", String.valueOf(count));
             return;
         }
 

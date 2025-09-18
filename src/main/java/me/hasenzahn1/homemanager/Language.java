@@ -45,6 +45,7 @@ public class Language {
     public static final String HOME_ADMIN_PURGE_MESSAGE = "commands.homeadmin.purge.message";
     public static final String HOME_ADMIN_PURGE_SUCCESS = "commands.homeadmin.purge.success";
     public static final String HOME_ADMIN_RELOAD_SUCCESS = "commands.homeadmin.reload.success";
+    public static final String HOME_ADMIN_RELOAD_UNKNOWN_CONFIG = "commands.homeadmin.reload.unknownConfig";
     public static final String HOME_ADMIN_MIGRATE_SUCCESS = "commands.homeadmin.migrate.success";
     public static final String HOME_ADMIN_MIGRATE_INVALID_MIGRATOR = "commands.homeadmin.migrate.invalidMigrator";
     public static final String HOME_ADMIN_FREE_HOME_GET_SUCCESS = "commands.homeadmin.freehomes.getSuccess";

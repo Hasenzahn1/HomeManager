@@ -2,7 +2,6 @@ package me.hasenzahn1.homemanager.commands.checks;
 
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.homes.Home;
-import me.hasenzahn1.homemanager.permission.PermissionValidator;
 
 /**
  * Abstract base class for checking experience requirements when setting or modifying homes.
@@ -25,15 +24,14 @@ public abstract class HomeExperienceCheck {
      * Checks whether the player lacks the required experience levels for the action.
      * If a player does not have to pay experience this is ignored.
      *
-     * @param arguments             the parsed player and home arguments
-     * @param currentHomes          the number of homes the player currently owns
-     * @param requestedHome         the home being created or modified
-     * @param disableWithBypassPerm whether bypass permission disables the cost
+     * @param arguments     the parsed player and home arguments
+     * @param currentHomes  the number of homes the player currently owns
+     * @param requestedHome the home being created or modified
      * @return {@code true} if the player does not have enough experience, {@code false} otherwise
      */
-    public boolean checkForInvalidExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome, boolean disableWithBypassPerm) {
+    public boolean checkForInvalidExperience(PlayerNameArguments arguments, int currentHomes, Home requestedHome) {
         int requiredLevels = getRequiredExperience(arguments, currentHomes, requestedHome);
-        boolean hasToPayExperience = hasToPayExperience(arguments, disableWithBypassPerm);
+        boolean hasToPayExperience = hasToPayExperience(arguments);
 
         return hasToPayExperience && (arguments.getCmdSender().getLevel() < requiredLevels);
     }
@@ -48,14 +46,12 @@ public abstract class HomeExperienceCheck {
      *     <li>They have a bypass permission and {@code disableWithBypassPermission} is true</li>
      * </ul>
      *
-     * @param arguments                   the parsed player and home arguments
-     * @param disableWithBypassPermission whether having a bypass permission disables the cost
+     * @param arguments the parsed player and home arguments
      * @return {@code true} if the player must pay experience, {@code false} otherwise
      */
-    public boolean hasToPayExperience(PlayerNameArguments arguments, boolean disableWithBypassPermission) {
+    public boolean hasToPayExperience(PlayerNameArguments arguments) {
         return arguments.isSelf()
-                && !arguments.getCmdSender().getGameMode().isInvulnerable()
-                && (!disableWithBypassPermission || !PermissionValidator.hasBypassPermission(arguments.getCmdSender(), arguments.getWorldGroup()));
+                && !arguments.getCmdSender().getGameMode().isInvulnerable();
     }
 }
 

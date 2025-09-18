@@ -12,6 +12,20 @@ import org.bukkit.command.CommandSender;
  */
 public class PermissionValidator {
 
+    public static final String SET_HOME_WORLDGUARD_BYPASS = "sethomeworldguard";
+    public static final String SET_HOME_PLOTSQUARED_BYPASS = "sethomeplotsquared";
+    public static final String SET_HOME_MAX_HOMES_BYPASS = "sethomemaxhomes";
+    public static final String SET_HOME_EXPERIENCE_BYPASS = "sethomeexperience";
+
+    public static final String HOME_WORLDGUARD_BYPASS = "homeworldguard";
+    public static final String HOME_PLOTSQUARED_BYPASS = "homeplotsquared";
+    public static final String HOME_TIMEOUT_BYPASS = "hometimeout";
+    public static final String HOME_OBSTRUCTED_BYPASS = "homeobstructed";
+    public static final String HOME_EXPERIENCE_BYPASS = "homeexperience";
+    public static final String HOME_GROUND_CHECK_BYPASS = "homegroundcheck";
+    public static final String HOME_TELEPORTATION_DELAY_BYPASS = "teleportationdelay";
+
+
     /**
      * Checks if the sender has permission to execute a command affecting a player.
      * <p>
@@ -68,8 +82,8 @@ public class PermissionValidator {
      * @param worldGroup The world group the command affects.
      * @return true if the sender has the bypass permission; false otherwise.
      */
-    public static boolean hasBypassPermission(CommandSender sender, WorldGroup worldGroup) {
-        return sender.hasPermission("homemanager.bypass." + worldGroup.getName());
+    public static boolean hasBypassPermission(CommandSender sender, String command, WorldGroup worldGroup) {
+        return sender.hasPermission("homemanager.bypass." + command + "." + worldGroup.getName());
     }
 }
 

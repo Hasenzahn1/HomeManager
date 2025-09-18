@@ -36,7 +36,7 @@ public class WorldGuardIntegration {
      */
     public void register() {
         homeCreationFlag = registerFlag("create-homes");
-        homeTeleportFlag = registerFlag("teleport-home");
+        homeTeleportFlag = registerFlag("teleport-homes");
     }
 
     /**
