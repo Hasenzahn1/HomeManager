@@ -26,7 +26,7 @@ public final class HomeManager extends JavaPlugin {
     public static boolean PLACEHOLDER_API_EXISTS;
     public static boolean WORLD_GUARD_API_EXISTS;
     public static boolean PLOTSQUARED_API_EXISTS;
-    public static boolean DEV_MODE = true;
+    public static boolean DEV_MODE = false;
 
     public static String PREFIX = "[HomeManager]";
     private static HomeManager instance;
