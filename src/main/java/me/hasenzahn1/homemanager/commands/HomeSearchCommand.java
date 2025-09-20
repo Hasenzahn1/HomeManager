@@ -32,7 +32,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         Logger.DEBUG.log(commandSender.getName() + " executed /" + command.getName() + " " + String.join(" ", args));
-        if (!commandSender.hasPermission("homeadmin.commands.homesearch")) {
+        if (!commandSender.hasPermission("homemanager.commands.homesearch")) {
             MessageManager.sendMessage(commandSender, Language.NO_PERMISSION);
             return true;
         }
