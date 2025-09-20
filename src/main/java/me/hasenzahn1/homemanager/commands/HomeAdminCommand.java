@@ -62,7 +62,7 @@ public class HomeAdminCommand implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (args.length == 1) {
-            return subCommands.stream().map(ISubCommand::getName).filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase())).filter(name -> commandSender.hasPermission("homeadmin.commands.homeadmin." + name)).sorted().toList();
+            return subCommands.stream().map(ISubCommand::getName).filter(name -> name.toLowerCase().startsWith(args[0].toLowerCase())).filter(name -> commandSender.hasPermission("homemanager.commands.homeadmin." + name)).sorted().toList();
         }
 
         if (args.length >= 2) {
