@@ -38,7 +38,7 @@ global:
   freeHomes:
     # Enables or disables this feature.
     # Default: false
-    active: true
+    active: false
 
     # Disables the free homes feature when the player is in Creative or Spectator mode.
     # This means that no free homes will be granted or consumed while in these game modes.
@@ -115,7 +115,7 @@ global:
   safeTeleport:
     # Enables or disabled the Safe teleport feature
     # Default: false
-    active: true
+    active: false
 
 
   # Controls whether homes are checked for obstructions (e.g. blocks in the way).
