@@ -10,6 +10,7 @@ import me.hasenzahn1.homemanager.integration.PlotsquaredIntegration;
 import me.hasenzahn1.homemanager.integration.WorldGuardIntegration;
 import me.hasenzahn1.homemanager.listener.DelayListener;
 import me.hasenzahn1.homemanager.listener.HomeDisplayRemover;
+import me.hasenzahn1.homemanager.listener.TabCompletionConnectionListener;
 import me.hasenzahn1.homemanager.listener.TimeoutListener;
 import me.hasenzahn1.homemanager.migration.BasicHomesMigrator;
 import me.hasenzahn1.homemanager.migration.HomeMigrator;
@@ -86,6 +87,7 @@ public final class HomeManager extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(timeoutListener, this);
         Bukkit.getPluginManager().registerEvents(new DelayListener(this), this);
         Bukkit.getPluginManager().registerEvents(new HomeDisplayRemover(), this);
+        Bukkit.getPluginManager().registerEvents(new TabCompletionConnectionListener(), this);
 
         //Initialize External Plugins
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

@@ -13,7 +13,10 @@ import java.util.List;
 
 public class CompletionsHelper {
 
+    private List<String> offlinePlayers;
+
     public CompletionsHelper() {
+        loadOfflinePlayers();
     }
 
     public List<String> matchAndSort(List<String> options, String start) {
@@ -25,7 +28,7 @@ public class CompletionsHelper {
     }
 
     public List<String> getOfflinePlayers() {
-        return Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
+        return offlinePlayers;
     }
 
     public List<String> getHomeSuggestions(Player sender, String playerHomesToList) {
@@ -34,5 +37,9 @@ public class CompletionsHelper {
         if (playerToGetHomesFrom == null) return List.of();
 
         return HomeManager.getInstance().getHomesCache().get(playerToGetHomesFrom.getUniqueId()).getHomeNames(group);
+    }
+
+    public void loadOfflinePlayers() {
+        offlinePlayers = Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName).toList();
     }
 }
