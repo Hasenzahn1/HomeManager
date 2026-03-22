@@ -22,7 +22,7 @@ public class TabCompletionConnectionListener implements Listener {
             public void run() {
                 HomeManager.getInstance().getCompletionsHelper().loadOfflinePlayers();
             }
-        }.runTaskLater(HomeManager.getInstance(), 1);
+        }.runTaskLater(HomeManager.getInstance(), 20);
 
     }
 
