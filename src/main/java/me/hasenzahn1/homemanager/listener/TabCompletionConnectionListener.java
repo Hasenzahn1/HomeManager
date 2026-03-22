@@ -4,6 +4,7 @@ import me.hasenzahn1.homemanager.HomeManager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class TabCompletionConnectionListener implements Listener {
 
@@ -14,7 +15,15 @@ public class TabCompletionConnectionListener implements Listener {
      */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        HomeManager.getInstance().getCompletionsHelper().loadOfflinePlayers();
+        if (event.getPlayer().hasPlayedBefore()) return;
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                HomeManager.getInstance().getCompletionsHelper().loadOfflinePlayers();
+            }
+        }.runTaskLater(HomeManager.getInstance(), 1);
+
     }
 
 }
