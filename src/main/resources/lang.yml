@@ -19,6 +19,7 @@ commands:
     maxHomes: "&cYou have reached the maximum limit of &6%amount% &chomes."
     duplicateHome: "&cA home with the name &6%homename% &calready exists."
     duplicateHomeOther: "&cPlayer &6%player% &calready has a home named &6%homename%."
+    requiredFreeHome: "&cTo set a new home a free home is required."
     noExp: "&cYou need at least &6%levels% &clevels to set a home."
     success: "&aHome &6%homename% &asuccessfully set."
     successOther: "&aHome &6%homename% &asuccessfully set for player &6%player%."

@@ -1,4 +1,4 @@
-# One special "global" worldgroup always exists. You can add your own groups by copying or uncommenting the entries below.
+# One special "global" worldgroup always exists. You can add your own groups by duplicating this file and renaming the global header.
 # All settings are optional unless noted otherwise. If a setting is missing, the default will be used.
 # The only required setting per worldgroup is the list of worlds.
 global:
@@ -44,6 +44,11 @@ global:
     # This means that no free homes will be granted or consumed while in these game modes.
     # Default: true
     disableInCreative: true
+
+    # Whether a free home is required for placing a new home.
+    # To use this feature a way to grant free homes is required.
+    # This plugin only provides the /freehome command.
+    requiredForSetHome: false
 
 
   # Controls the experience cost behavior for the /home command.

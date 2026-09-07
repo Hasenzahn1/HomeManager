@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="HomeManager:jar">
-    <output-path>$PROJECT_DIR$/../../Servers/Canstein/1.21.1/HomeManager/plugins</output-path>
+    <output-path>$PROJECT_DIR$/../../Servers/Canstein/26.2/ServerUpdateTest/plugins</output-path>
     <root id="archive" name="HomeManager.jar">
       <element id="module-output" name="HomeManager" />
     </root>

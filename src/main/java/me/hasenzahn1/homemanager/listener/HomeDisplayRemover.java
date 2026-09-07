@@ -1,7 +1,7 @@
 package me.hasenzahn1.homemanager.listener;
 
 import me.hasenzahn1.homemanager.Logger;
-import me.hasenzahn1.homemanager.homes.HomeDisplay;
+import me.hasenzahn1.homemanager.homes.HomeDisplay_entity;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,7 +17,7 @@ public class HomeDisplayRemover implements Listener {
 
     /**
      * Handles the {@link ChunkUnloadEvent} and removes any entities that are marked as
-     * home displays via the {@link HomeDisplay#DISPLAY_KEY} in their persistent data container.
+     * home displays via the {@link HomeDisplay_entity#DISPLAY_KEY} in their persistent data container.
      *
      * @param event The chunk unload event
      */
@@ -25,7 +25,7 @@ public class HomeDisplayRemover implements Listener {
     public void onChunkUnload(ChunkUnloadEvent event) {
         int count = 0;
         for (Entity entity : event.getChunk().getEntities()) {
-            if (entity.getPersistentDataContainer().has(HomeDisplay.DISPLAY_KEY)) {
+            if (entity.getPersistentDataContainer().has(HomeDisplay_entity.DISPLAY_KEY)) {
                 entity.remove();
                 count++;
             }

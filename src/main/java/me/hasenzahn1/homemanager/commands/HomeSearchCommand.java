@@ -8,6 +8,8 @@ import me.hasenzahn1.homemanager.config.DefaultConfig;
 import me.hasenzahn1.homemanager.db.DatabaseAccessor;
 import me.hasenzahn1.homemanager.homes.Home;
 import me.hasenzahn1.homemanager.homes.HomeDisplay;
+import me.hasenzahn1.homemanager.homes.HomeDisplay_entity;
+import me.hasenzahn1.homemanager.homes.HomeDisplay_packet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -80,7 +82,7 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
         HOME_DISPLAYS.getOrDefault(player.getUniqueId(), new ArrayList<>()).forEach(HomeDisplay::destroy);
         HOME_DISPLAYS.put(player.getUniqueId(), new ArrayList<>());
         // Create displays
-        List<HomeDisplay> displays = homes.stream().map(h -> new HomeDisplay(player, h)).toList();
+        List<HomeDisplay> displays = homes.stream().map(h -> spawnDisplay(player, h)).toList();
 
         long spawned = displays.stream().filter(HomeDisplay::hasBeenSpawned).count();
         Logger.DEBUG.log("Homesearch spawned " + spawned + " homes (" + (displays.size() - spawned) + " in unloaded chunks) for player " + player.getName());
@@ -95,6 +97,11 @@ public class HomeSearchCommand implements CommandExecutor, TabCompleter {
                 Logger.DEBUG.log("Homesearch removed displays for player " + player.getName());
             }
         }.runTaskLater(HomeManager.getInstance(), DefaultConfig.HOME_SEARCH_DURATION_IN_SECONDS * 20);
+    }
+
+    private HomeDisplay spawnDisplay(Player player, Home home) {
+        if (HomeManager.PACKET_EVENTS_API_EXISTS) return new HomeDisplay_packet(player, home);
+        return new HomeDisplay_entity(player, home);
     }
 
     private void displayHomes(Player player, int radius, List<Home> homes) {

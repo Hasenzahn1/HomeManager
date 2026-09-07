@@ -29,6 +29,7 @@ public class WorldGroupSettings {
 
     private boolean freeHomesActive = false;
     private boolean freeHomesDisableInCreative = true;
+    private boolean freeHomesRequiredForSetHome = false;
 
     private boolean homeTeleportExperienceActive = false;
     private String homeTeleportExperienceFormula = "";
@@ -69,6 +70,7 @@ public class WorldGroupSettings {
 
         freeHomesActive = section.getBoolean("freeHomes.active", freeHomesActive);
         freeHomesDisableInCreative = section.getBoolean("freeHomes.disableInCreative", freeHomesDisableInCreative);
+        freeHomesRequiredForSetHome = section.getBoolean("freeHomes.requiredForSetHome", freeHomesRequiredForSetHome);
 
         homeTeleportExperienceActive = section.getBoolean("homeTeleportExperience.active", homeTeleportExperienceActive);
         homeTeleportExperienceFormula = section.getString("homeTeleportExperience.formula", homeTeleportExperienceFormula);
@@ -232,5 +234,9 @@ public class WorldGroupSettings {
 
     public boolean isFreeHomesDisableInCreative() {
         return freeHomesDisableInCreative;
+    }
+
+    public boolean isFreeHomesRequiredForSetHome() {
+        return freeHomesRequiredForSetHome;
     }
 }

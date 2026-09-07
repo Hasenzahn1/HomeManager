@@ -8,6 +8,7 @@ import me.hasenzahn1.homemanager.commands.args.ArgumentValidator;
 import me.hasenzahn1.homemanager.commands.args.PlayerNameArguments;
 import me.hasenzahn1.homemanager.commands.checks.HomeExperienceCheck;
 import me.hasenzahn1.homemanager.commands.checks.PlotsquaredRegionCheck;
+import me.hasenzahn1.homemanager.commands.checks.RequiredFreeHomeCheck;
 import me.hasenzahn1.homemanager.commands.checks.WorldGuardRegionCheck;
 import me.hasenzahn1.homemanager.commands.system.BaseHomeCommand;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
@@ -34,6 +35,8 @@ public class SetHomeCommand extends BaseHomeCommand {
 
     private PlotsquaredRegionCheck plotsquaredRegionCheck;
 
+    private final RequiredFreeHomeCheck requiredFreeHomeCheck;
+
     public SetHomeCommand(CompletionsHelper completionsHelper) {
         super(completionsHelper);
 
@@ -50,6 +53,8 @@ public class SetHomeCommand extends BaseHomeCommand {
         if (HomeManager.PLOTSQUARED_API_EXISTS) {
             plotsquaredRegionCheck = new PlotsquaredRegionCheck(PlotsquaredIntegration.CREATE_HOMES);
         }
+
+        requiredFreeHomeCheck = new RequiredFreeHomeCheck();
 
     }
 
@@ -89,6 +94,12 @@ public class SetHomeCommand extends BaseHomeCommand {
         //Access database for homes
         DatabaseAccessor dbSession = DatabaseAccessor.openSession();
         PlayerHomes playerHomes = dbSession.getHomesFromPlayer(arguments.getActionPlayerUUID(), arguments.getWorldGroup());
+
+        //Check if a free home is required and the player has free homes
+        if (requiredFreeHomeCheck.isRequired(arguments.getWorldGroup()) && !requiredFreeHomeCheck.hasFreeHome(arguments.getActionPlayerUUID(), arguments.getWorldGroup(), dbSession)) {
+            MessageManager.sendMessage(commandSender, Language.SET_HOME_REQUIRED_FREE_HOME);
+            return true;
+        }
 
         //Check Duplicate Home Name
         if (playerHomes.homeExists(arguments.getHomeName())) {

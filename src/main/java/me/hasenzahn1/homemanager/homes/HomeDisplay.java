@@ -1,35 +1,13 @@
 package me.hasenzahn1.homemanager.homes;
 
-import me.hasenzahn1.homemanager.HomeManager;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
-import org.bukkit.attribute.Attribute;
-import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.TextDisplay;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Transformation;
-import org.joml.AxisAngle4f;
-import org.joml.Vector3f;
 
 import java.util.UUID;
 
-/**
- * Represents a single home entry displayed as part of the {@code /homesearch} command.
- */
-public class HomeDisplay {
+public abstract class HomeDisplay {
 
-    public static NamespacedKey DISPLAY_KEY = new NamespacedKey(HomeManager.getInstance(), "home_display");
-
-    private final Player initiator;
-    private final Home home;
-
-    private Slime glowingMarker;
-    private TextDisplay nameDisplay;
+    protected Player initiator;
+    protected Home home;
 
     public HomeDisplay(Player initiator, Home home) {
         this.initiator = initiator;
@@ -41,44 +19,22 @@ public class HomeDisplay {
     /**
      * Spawns the glowing marker slime and the display. Loading the chunk in the process
      */
-    private void display() {
-        if (!home.location().getChunk().isLoaded()) return;
+    public abstract void display();
 
-        glowingMarker = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY(), home.location().getBlockZ() + 0.5), Slime.class, s -> {
-            s.setSize(2);
-            s.setAI(false);
-            s.setGlowing(true);
-            s.setGravity(false);
-            s.setInvulnerable(true);
-            s.setInvisible(true);
-            s.setRotation(0, 0);
-            s.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(100000000);
-            s.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(100000000);
-            s.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS).setBaseValue(100000000);
-            s.setHealth(2048);
-            s.addPotionEffect(PotionEffectType.REGENERATION.createEffect(255 * 20, 255 * 20).withAmbient(false).withParticles(false));
-            s.getPersistentDataContainer().set(DISPLAY_KEY, PersistentDataType.BYTE, (byte) 1);
+    /**
+     * Destroys the glowing marker and the name display.
+     */
+    public abstract void destroy();
 
-            s.setVisibleByDefault(false);
-            initiator.showEntity(HomeManager.getInstance(), s);
-        });
-
-        nameDisplay = home.location().getWorld().spawn(new Location(home.location().getWorld(), home.location().getBlockX() + 0.5, home.location().getBlockY() + 1.5, home.location().getBlockZ() + 0.5), TextDisplay.class, t -> {
-            t.setSeeThrough(true);
-            t.text(Component.text(home.name() + "\n" + home.getOwnersName())); // .color(TextColor.color(getColorFromUUID(home.uuid())))
-            t.setTextOpacity((byte) 255);
-            t.setBillboard(Display.Billboard.VERTICAL);
-            t.setLineWidth(t.getLineWidth() + 30);
-            t.setTransformation(new Transformation(new Vector3f(), new AxisAngle4f(), new Vector3f(1.5f, 1.5f, 1.5f), new AxisAngle4f()));
-            t.setBackgroundColor(Color.fromRGB(getColorFromUUID(home.uuid())));
-            t.setBrightness(new Display.Brightness(15, 15));
-            t.getPersistentDataContainer().set(DISPLAY_KEY, PersistentDataType.BYTE, (byte) 1);
-
-            t.setVisibleByDefault(false);
-            initiator.showEntity(HomeManager.getInstance(), t);
-        });
-
-    }
+    /**
+     * Checks if this home display has been spawned in the world.
+     * <p>
+     * A display is considered spawned if its visual representation
+     * has been created and placed into the Minecraft world.
+     *
+     * @return true if the display has been spawned, false otherwise
+     */
+    public abstract boolean hasBeenSpawned();
 
     /**
      * Generates a deterministic RGB color code based on the hash of the given UUID.
@@ -89,7 +45,7 @@ public class HomeDisplay {
      * @param uuid The UUID from which to generate the color.
      * @return An integer representing the RGB color.
      */
-    private int getColorFromUUID(UUID uuid) {
+    protected int getColorFromUUID(UUID uuid) {
         int hash = uuid.hashCode();
 
         int r = (hash >> 16) & 0xFF;
@@ -99,23 +55,4 @@ public class HomeDisplay {
         return (r << 16) | (g << 8) | b;
     }
 
-    /**
-     * Destroys the glowing marker and the name display.
-     */
-    public void destroy() {
-        if (glowingMarker != null) glowingMarker.remove();
-        if (nameDisplay != null) nameDisplay.remove();
-    }
-
-    /**
-     * Checks if this home display has been spawned in the world.
-     * <p>
-     * A display is considered spawned if its visual representation
-     * has been created and placed into the Minecraft world.
-     *
-     * @return true if the display has been spawned, false otherwise
-     */
-    public boolean hasBeenSpawned() {
-        return nameDisplay != null;
-    }
 }

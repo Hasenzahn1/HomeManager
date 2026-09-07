@@ -1,5 +1,7 @@
 package me.hasenzahn1.homemanager;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.hasenzahn1.homemanager.commands.*;
 import me.hasenzahn1.homemanager.commands.tabcompletion.CompletionsHelper;
 import me.hasenzahn1.homemanager.config.DefaultConfig;
@@ -27,6 +29,7 @@ public final class HomeManager extends JavaPlugin {
     public static boolean PLACEHOLDER_API_EXISTS;
     public static boolean WORLD_GUARD_API_EXISTS;
     public static boolean PLOTSQUARED_API_EXISTS;
+    public static boolean PACKET_EVENTS_API_EXISTS;
     public static boolean DEV_MODE = false;
 
     public static String PREFIX = "[HomeManager]";
@@ -50,11 +53,22 @@ public final class HomeManager extends JavaPlugin {
             new WorldGuardIntegration(this).register();
             Logger.DEBUG.log("Registered WorldGuard Integration");
         }
+
+        if (Bukkit.getPluginManager().getPlugin("packetevents") != null) {
+            PACKET_EVENTS_API_EXISTS = true;
+            PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+            PacketEvents.getAPI().load();
+            System.out.println("Loading Packetevents");
+            Logger.DEBUG.log("Packet Events found, now used for homesearch displays");
+        }
     }
 
     @Override
     public void onEnable() {
         instance = this;
+
+        //Initialize PacketEvents
+        if (PACKET_EVENTS_API_EXISTS) PacketEvents.getAPI().init();
 
         //Create and initialize database
         database = new HomesDatabase();
@@ -127,6 +141,7 @@ public final class HomeManager extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (PACKET_EVENTS_API_EXISTS) PacketEvents.getAPI().terminate();
         if (homesCache != null) homesCache.destroy();
         HomeSearchCommand.destroy();
     }

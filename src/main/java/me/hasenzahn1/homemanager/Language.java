@@ -18,6 +18,7 @@ public class Language {
     public static final String SET_HOME_MAX_HOMES = "commands.sethome.maxHomes";
     public static final String SET_HOME_DUPLICATE_HOME = "commands.sethome.duplicateHome";
     public static final String SET_HOME_DUPLICATE_HOME_OTHER = "commands.sethome.duplicateHomeOther";
+    public static final String SET_HOME_REQUIRED_FREE_HOME = "commands.sethome.requiredFreeHome";
     public static final String SET_HOME_NO_EXP = "commands.sethome.noExp";
     public static final String SET_HOME_SUCCESS = "commands.sethome.success";
     public static final String SET_HOME_SUCCESS_OTHER = "commands.sethome.successOther";
